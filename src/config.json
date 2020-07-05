@@ -1,0 +1,10 @@
+{
+    "levels": [
+        {
+            "maps": {},
+            "waves": [{
+                "nbEnemies": 2
+            }]
+        }
+    ]
+}

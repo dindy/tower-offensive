@@ -1,0 +1,30 @@
+{
+  "name": "tower-offense",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "webpack --watch",
+    "start": "webpack-dev-server --hot --inline",
+    "build": "webpack --config webpack.config.js --mode=production",
+    "test": "jest --watch --testPathIgnorePatterns data.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.3.3",
+    "@babel/preset-env": "^7.3.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^8.0.5",
+    "jest": "^24.7.1",
+    "webpack": "^4.29.5",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "dependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "babel-polyfill": "^6.26.0",
+    "konva": "^7.0.2"
+  }
+}
