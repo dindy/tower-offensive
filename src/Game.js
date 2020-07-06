@@ -1,13 +1,7 @@
-import Konva from 'konva'
 import Level from './Level'
-import GridCell from './GridCell'
+
 export default class Game {
     
-    cellSize = 50 
-    
-    nbCells = 10
-
-    gridCells = []
     
     lastTimestamp = null
     
@@ -19,6 +13,9 @@ export default class Game {
 
     constructor(config) 
     {
+        this.cellSize = config.cellSize 
+    
+        this.nbCells = config.nbCells
         this.width = this.cellSize * this.nbCells
         this.height = this.cellSize * this.nbCells
 
@@ -29,24 +26,20 @@ export default class Game {
           })
         
         this.layer = new Konva.Layer()
-        this.config = config
+        this.config = config    
         this.loadLevels()
-        console.log(this)
-        
-        this.gridLayer = new Konva.Layer()
-        this.createGridOfCells()
     }
 
     stop = () => {
         this.isStopped = true
     }
 
-    //Create levels from config files
+    // Create levels from config files
     loadLevels = () => {
 
         // Create levels
         this.config.levels.forEach(levelConfig => {
-            const level = new Level(levelConfig)            
+            const level = new Level(this, levelConfig)            
             this.levels.push(level)
         })
 
@@ -77,26 +70,14 @@ export default class Game {
         if (!this.isStopped) requestAnimationFrame(this.step)
     }
 
-    createGridOfCells = () => {
-        for(let y = 0; y < this.nbCells; y++){
-            for(let x = 0; x < this.nbCells; x++){
-                let cell = new GridCell(x, y, this.cellSize, this.gridLayer)
-                this.gridCells.push(cell)
-            }
-        }
-    }
-
-    //Update the data of the game
+    // Update the data of the game
     update = (diffTimestamp) => {
         this.currentLevel.update(diffTimestamp)
     }
 
-    //Global render, call render methods of all other classes
+    // Global render, call render methods of all other classes
     render = () => {
-        this.gridCells.forEach(cell => {
-            cell.render()
-        })
-        this.stage.add(this.gridLayer)
-        this.gridLayer.draw()
+
     }
+
 }

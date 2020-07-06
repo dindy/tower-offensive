@@ -1,13 +1,22 @@
 export default class GridCell {
 
+    static cellsCount = 0
+
     coords = {}
 
-    constructor(column, row, cellSize, layer){
-        this.layer = layer,
-        this.column = column,
+    constructor(column, row, cellSize){
+        this.column = column
         this.row = row
         this.cellSize = cellSize
         this.setCoords()
+        this.fillColor = 'grey'
+        this.strokeColor = 'black'
+        this.strokeWidth = 1
+        this.id = GridCell.generateId() 
+    }
+
+    static generateId = () => {
+        return GridCell.cellsCount++
     }
 
     //Set data for real coordonates of cell on the screen
@@ -20,19 +29,44 @@ export default class GridCell {
         }
     }
 
+    handleMouseover = (e) => {
+        this.fillColor = 'lightgrey'
+        var cell = e.target
+        this.partialRender(cell)
+    }
+
+    handleMouseout = (e) => {
+        this.fillColor = 'grey'
+        var cell = e.target
+        this.partialRender(cell)        
+    }
+
+    handleClick = (e) => {
+        console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
+    }
+
     //Render the cell from the data
-    render = () => {
+    render = (layer) => {
+        
         let cell = new Konva.Rect({
             x: this.coords.xMin,
             y: this.coords.yMin,
             width: this.cellSize,
             height: this.cellSize,
-            fill: 'grey',
-            stroke: 'black',
-            strokeWidth: 1,
-          });
+            fill: this.fillColor,
+            stroke: this.strokeColor,
+            strokeWidth: this.strokeWidth,
+        })
 
-          this.layer.add(cell);
+        cell.on('mouseover', this.handleMouseover)
+        cell.on('mouseout', this.handleMouseout)
+        cell.on('click', this.handleClick)
+        layer.add(cell)
+    }
+
+    partialRender = cell => {
+        cell.fill(this.fillColor)
+        cell.draw()
     }
 
 }
