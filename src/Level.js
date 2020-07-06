@@ -11,6 +11,7 @@ export default class Level {
         this.loadWaves()
     }
 
+    //Load the config and create data from it
     loadWaves = () => {
         
         // Create waves
@@ -23,6 +24,7 @@ export default class Level {
         
     } 
 
+    //Update the data
     update = (diffTimestamp) => {
 
         // Add new enemies to enemies

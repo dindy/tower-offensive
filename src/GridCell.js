@@ -10,6 +10,7 @@ export default class GridCell {
         this.setCoords()
     }
 
+    //Set data for real coordonates of cell on the screen
     setCoords = () => {
         this.coords = {
             xMin: this.column * this.cellSize,
@@ -19,6 +20,7 @@ export default class GridCell {
         }
     }
 
+    //Render the cell from the data
     render = () => {
         let cell = new Konva.Rect({
             x: this.coords.xMin,

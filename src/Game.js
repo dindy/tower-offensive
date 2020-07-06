@@ -41,6 +41,7 @@ export default class Game {
         this.isStopped = true
     }
 
+    //Create levels from config files
     loadLevels = () => {
 
         // Create levels
@@ -59,6 +60,7 @@ export default class Game {
     }
 
 
+    // Global Refresh loop
     step = (timestamp) => {
 
         // First iteration
@@ -84,10 +86,12 @@ export default class Game {
         }
     }
 
+    //Update the data of the game
     update = (diffTimestamp) => {
         this.currentLevel.update(diffTimestamp)
     }
 
+    //Global render, call render methods of all other classes
     render = () => {
         this.gridCells.forEach(cell => {
             cell.render()
