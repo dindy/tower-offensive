@@ -14,19 +14,21 @@ export default class Game {
     constructor(config) 
     {
         this.cellSize = config.cellSize 
-    
         this.nbCells = config.nbCells
+
         this.width = this.cellSize * this.nbCells
         this.height = this.cellSize * this.nbCells
 
         this.stage = new Konva.Stage({
-            container: 'container',   // id of container <div>
+            container: 'container',   
             width :this.width,
             height: this.height
           })
         
         this.layer = new Konva.Layer()
-        this.config = config    
+        this.config = config
+        
+
         this.loadLevels()
     }
 

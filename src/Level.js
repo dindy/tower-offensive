@@ -16,7 +16,7 @@ export default class Level {
         this.createCellsGridLayer()
     }
 
-    //Load the config and create data from it
+    // Create waves from config
     loadWaves = () => {
         
         // Create waves
@@ -25,10 +25,12 @@ export default class Level {
             this.waves.push(wave)
         })        
 
+        // Select the first wave
         this.currentWave = this.waves[0]
         
     } 
 
+    // Create a background grid for reference frame
     createCellsGridLayer = () => {
 
         this.gridLayer = new Konva.Layer()
@@ -44,6 +46,7 @@ export default class Level {
         this.renderGrid()
     }
 
+
     renderGrid = () => {
         
         this.game.stage.add(this.gridLayer)
@@ -52,7 +55,6 @@ export default class Level {
             cell.render(this.gridLayer)
         })
 
-        
         this.gridLayer.draw()
     }
 

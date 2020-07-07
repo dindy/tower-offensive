@@ -19,7 +19,7 @@ export default class GridCell {
         return GridCell.cellsCount++
     }
 
-    //Set data for real coordonates of cell on the screen
+    //Calculate real coordonates of cell on the screen and save it as props
     setCoords = () => {
         this.coords = {
             xMin: this.column * this.cellSize,
@@ -29,6 +29,7 @@ export default class GridCell {
         }
     }
 
+    // Mouse Event Handlers
     handleMouseover = (e) => {
         this.fillColor = 'lightgrey'
         var cell = e.target
@@ -48,6 +49,7 @@ export default class GridCell {
     //Render the cell from the data
     render = (layer) => {
         
+        // Create canva object
         let cell = new Konva.Rect({
             x: this.coords.xMin,
             y: this.coords.yMin,
@@ -58,12 +60,16 @@ export default class GridCell {
             strokeWidth: this.strokeWidth,
         })
 
+        // Add event to the object
         cell.on('mouseover', this.handleMouseover)
         cell.on('mouseout', this.handleMouseout)
         cell.on('click', this.handleClick)
+        
+        // add Cell to the layer ( draw is controlled by levels render method)
         layer.add(cell)
     }
 
+    // Redraw the cell in case of event
     partialRender = cell => {
         cell.fill(this.fillColor)
         cell.draw()
