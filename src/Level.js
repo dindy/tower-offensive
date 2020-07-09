@@ -12,6 +12,8 @@ export default class Level {
     constructor(game, config) {
         this.game = game
         this.config = config
+        this.dynamicLayer = new Konva.Layer()
+        this.game.stage.add(this.dynamicLayer)
         this.loadWaves()
         this.createCellsGridLayer()
     }
@@ -66,8 +68,19 @@ export default class Level {
             // Déterminer une position aléatoire d départ
             // Modifier les props de l'enemy
             this.enemies.push(enemy)
+            enemy.initRender(this.dynamicLayer)
         })
-
+        this.enemies.forEach(enemy => {
+            enemy.x++
+        })
     }
 
+    render = () => {
+        this.dynamicLayer.draw()
+        this.enemies.forEach(enemy => {
+            enemy.render(this.dynamicLayer, this.game.stage)
+            
+        })
+        this.dynamicLayer.draw()
+    }
 }

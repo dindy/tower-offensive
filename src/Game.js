@@ -28,7 +28,6 @@ export default class Game {
             height: this.height
           })
         
-        this.layer = new Konva.Layer()
         this.config = config
         
 
@@ -82,7 +81,7 @@ export default class Game {
 
     // Global render, call render methods of all other classes
     render = () => {
-
+        this.currentLevel.render()
     }
 
 }
