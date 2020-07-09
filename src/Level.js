@@ -33,13 +33,16 @@ export default class Level {
     // Create a background grid for reference frame
     createCellsGridLayer = () => {
 
-        this.gridLayer = new Konva.Layer()
+        this.gridLayer = document.getElementById(this.game.DOMGridId)
+        this.gridLayer.style.width = this.game.nbCells * this.game.cellSize + 'px' 
+        this.gridLayer.style.height = this.game.nbCells * this.game.cellSize + 'px' 
 
         for(let y = 0; y < this.game.nbCells; y++){
             for(let x = 0; x < this.game.nbCells; x++){
                 let cell = new GridCell(x, y, this.game.cellSize)
 
                 this.gridCells.push(cell)
+                this.gridLayer.appendChild(cell.DOMElement)
             }
         }
 
@@ -48,14 +51,10 @@ export default class Level {
 
 
     renderGrid = () => {
-        
-        this.game.stage.add(this.gridLayer)
 
         this.gridCells.forEach(cell => {
             cell.render(this.gridLayer)
         })
-
-        this.gridLayer.draw()
     }
 
     //Update the data

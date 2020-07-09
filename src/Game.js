@@ -11,8 +11,11 @@ export default class Game {
 
     isStopped = false
 
-    constructor(config) 
+    constructor(config, DOMContainerId, DOMGridId) 
     {
+        this.DOMContainerId = DOMContainerId
+        this.DOMGridId = DOMGridId
+
         this.cellSize = config.cellSize 
         this.nbCells = config.nbCells
 
@@ -20,7 +23,7 @@ export default class Game {
         this.height = this.cellSize * this.nbCells
 
         this.stage = new Konva.Stage({
-            container: 'container',   
+            container: this.DOMContainerId,   
             width :this.width,
             height: this.height
           })

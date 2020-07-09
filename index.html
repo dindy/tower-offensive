@@ -6,14 +6,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>RDFun Demo</title>
     <style>
-      canvas{
+      
+    canvas {
         border: 1px solid black;
-      }
+        z-index: 1;
+    }
+
+    .wrapper {
+        position: relative;          
+    }
+
+    .grid {
+        position: absolute;
+        top: 0;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+        z-index: 2;
+    }
+
+    .grid__cell {
+        background-color: rgba(128, 128, 128, 0.25);
+        border: 1px solid black;
+        border-style: inset;
+        box-sizing: border-box;
+    }
+
+    .grid__cell:hover {
+        background-color: rgba(128, 128, 128, 0.5);
+    }
+
     </style>
   </head>
   <body>
     <button id="stop">Stop</button>
-    <div id="container"></div>
+    
+    <div class="wrapper">
+        <div class="grid" id="grid"></div>
+        <div id="canvas-container"></div>
+    </div>    
     <script src="./bundle.js" charset="utf-8"></script>
   </body>
 </html>

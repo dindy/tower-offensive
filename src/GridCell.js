@@ -4,14 +4,21 @@ export default class GridCell {
 
     coords = {}
 
-    constructor(column, row, cellSize){
+    constructor(column, row, cellSize) {
+
         this.column = column
         this.row = row
         this.cellSize = cellSize
         this.setCoords()
-        this.fillColor = 'grey'
-        this.strokeColor = 'black'
-        this.strokeWidth = 1
+
+        this.DOMElement = document.createElement('div')
+        this.DOMElement.classList.add('grid__cell')
+        this.DOMElement.style.width = this.cellSize + 'px'
+        this.DOMElement.style.height = this.cellSize + 'px'
+
+        this.DOMElement.addEventListener('mouseup', this.handleClick)
+        this.DOMElement.addEventListener('mouseover', this.handleMouseover)
+
         this.id = GridCell.generateId() 
     }
 
@@ -31,15 +38,6 @@ export default class GridCell {
 
     // Mouse Event Handlers
     handleMouseover = (e) => {
-        this.fillColor = 'lightgrey'
-        var cell = e.target
-        this.partialRender(cell)
-    }
-
-    handleMouseout = (e) => {
-        this.fillColor = 'grey'
-        var cell = e.target
-        this.partialRender(cell)        
     }
 
     handleClick = (e) => {
@@ -49,30 +47,6 @@ export default class GridCell {
     //Render the cell from the data
     render = (layer) => {
         
-        // Create canva object
-        let cell = new Konva.Rect({
-            x: this.coords.xMin,
-            y: this.coords.yMin,
-            width: this.cellSize,
-            height: this.cellSize,
-            fill: this.fillColor,
-            stroke: this.strokeColor,
-            strokeWidth: this.strokeWidth,
-        })
-
-        // Add event to the object
-        cell.on('mouseover', this.handleMouseover)
-        cell.on('mouseout', this.handleMouseout)
-        cell.on('click', this.handleClick)
-        
-        // add Cell to the layer ( draw is controlled by levels render method)
-        layer.add(cell)
-    }
-
-    // Redraw the cell in case of event
-    partialRender = cell => {
-        cell.fill(this.fillColor)
-        cell.draw()
     }
 
 }
