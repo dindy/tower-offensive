@@ -1,4 +1,3 @@
-import Konva from 'konva'
 import Wave from './Wave'
 import GridCell from './GridCell'
 
@@ -18,8 +17,7 @@ export default class Level {
     }
     
     createDynamicLayer = () => {
-        this.dynamicLayer = new Konva.Layer()
-        this.game.stage.add(this.dynamicLayer)        
+        this.dynamicLayer = this.game.createCanvasLayer()
     }
 
     // Create waves from config
@@ -86,14 +84,14 @@ export default class Level {
     }
     
     render = () => {
-        if(!this.gridIsRenderd) this.cellDomRender()
+
         for (let i = 0; i < this.enemies.length; i++) {
             
             const enemy = this.enemies[i];
             enemy.render(this.dynamicLayer)
-            this.dynamicLayer.draw()
         }
 
+        this.dynamicLayer.update()
     }
 
 }

@@ -1,7 +1,7 @@
 import Level from './Level'
+import * as createjs from 'createjs-module'
 
 export default class Game {
-    
     
     lastTimestamp = null
     
@@ -22,17 +22,23 @@ export default class Game {
         this.width = this.cellSize * this.nbCells
         this.height = this.cellSize * this.nbCells
 
-        this.stage = new Konva.Stage({
-            container: this.DOMContainerId,   
-            width :this.width,
-            height: this.height
-          })
-        
-        this.layer = new Konva.Layer()
         this.config = config
-        
+    
+        this.loadLevels()    
+    }
 
-        this.loadLevels()
+    createCanvasLayer = () => {
+
+        const DOMCanvasElement = document.createElement('canvas')
+        const DOMContainer = document.getElementById(this.DOMContainerId)
+
+        DOMCanvasElement.setAttribute('width', this.width + 'px')
+        DOMCanvasElement.setAttribute('height', this.height + 'px')
+        DOMCanvasElement.style.border = 'none'
+
+        DOMContainer.appendChild(DOMCanvasElement)
+
+        return new createjs.Stage(DOMCanvasElement)
     }
 
     stop = () => {
@@ -82,7 +88,7 @@ export default class Game {
 
     // Global render, call render methods of all other classes
     render = () => {
-
+        this.currentLevel.render()
     }
 
 }
