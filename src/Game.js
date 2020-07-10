@@ -11,9 +11,9 @@ export default class Game {
 
     isStopped = false
 
-    constructor(config, DOMContainerId, DOMGridId) 
+    constructor(config, DOMCanvasContainerId, DOMGridId) 
     {
-        this.DOMContainerId = DOMContainerId
+        this.DOMCanvasContainerId = DOMCanvasContainerId
         this.DOMGridId = DOMGridId
 
         this.cellSize = config.cellSize 
@@ -30,7 +30,7 @@ export default class Game {
     createCanvasLayer = () => {
 
         const DOMCanvas = document.createElement('canvas')
-        const DOMContainer = document.getElementById(this.DOMContainerId)
+        const DOMContainer = document.getElementById(this.DOMCanvasContainerId)
 
         DOMCanvas.setAttribute('width', this.width + 'px')
         DOMCanvas.setAttribute('height', this.height + 'px')
