@@ -14,6 +14,12 @@ export default class Level {
         this.config = config
         this.loadWaves()
         this.createCellsGridLayer()
+        this.createDynamicLayer()
+    }
+    
+    createDynamicLayer = () => {
+        this.dynamicLayer = new Konva.Layer()
+        this.game.stage.add(this.dynamicLayer)        
     }
 
     // Create waves from config
@@ -76,6 +82,17 @@ export default class Level {
              }
             this.enemies.push(enemy)
         })
+
+    }
+    
+    render = () => {
+        if(!this.gridIsRenderd) this.cellDomRender()
+        for (let i = 0; i < this.enemies.length; i++) {
+            
+            const enemy = this.enemies[i];
+            enemy.render(this.dynamicLayer)
+            this.dynamicLayer.draw()
+        }
 
     }
 
