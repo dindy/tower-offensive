@@ -3,7 +3,7 @@ import * as createjs from 'createjs-module'
 export default class Enemy {
     
     constructor() {
-        this.isRendered = false
+        this.hasBeenRendered = false
     }
     
     initRender = layer => {
@@ -13,7 +13,7 @@ export default class Enemy {
             .drawRect(0, 0, 50, 50)
         
         layer.addChild(this.shape)
-        this.isRendered = true
+        this.hasBeenRendered = true
     }
     
     updatePosition = () => {
@@ -22,7 +22,7 @@ export default class Enemy {
 
     render = (layer) => {
 
-        if (!this.isRendered) this.initRender(layer)
+        if (!this.hasBeenRendered) this.initRender(layer)
 
         this.shape.x = this.x
         this.shape.y = this.y

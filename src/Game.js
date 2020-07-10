@@ -29,16 +29,16 @@ export default class Game {
 
     createCanvasLayer = () => {
 
-        const DOMCanvasElement = document.createElement('canvas')
+        const DOMCanvas = document.createElement('canvas')
         const DOMContainer = document.getElementById(this.DOMContainerId)
 
-        DOMCanvasElement.setAttribute('width', this.width + 'px')
-        DOMCanvasElement.setAttribute('height', this.height + 'px')
-        DOMCanvasElement.style.border = 'none'
+        DOMCanvas.setAttribute('width', this.width + 'px')
+        DOMCanvas.setAttribute('height', this.height + 'px')
+        DOMCanvas.style.border = 'none'
 
-        DOMContainer.appendChild(DOMCanvasElement)
+        DOMContainer.appendChild(DOMCanvas)
 
-        return new createjs.Stage(DOMCanvasElement)
+        return new createjs.Stage(DOMCanvas)
     }
 
     stop = () => {
