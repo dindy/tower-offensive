@@ -25,7 +25,7 @@ export default class Level {
         
         // Create waves
         this.config.waves.forEach(waveConfig => {
-            const wave = new Wave(waveConfig)            
+            const wave = new Wave(waveConfig, this)            
             this.waves.push(wave)
         })        
 
@@ -81,6 +81,9 @@ export default class Level {
             this.enemies.push(enemy)
         })
 
+        for (let i = 0; i < this.enemies.length; i++) {
+            this.enemies[i].update()
+        }
     }
     
     render = () => {

@@ -8,45 +8,43 @@ export default class Wave {
 
     spawnedEnemiesCount = 0
 
-    constructor(config) {
+    constructor(config, level) {
 
         this.config = config
-
+        this.level = level
+        this.spawnedEnemiesCount = 0
     }
 
     getSpawningEnemies = (diffTimestamp) => {
         
-        // If no enemies has spawn
-        if (this.timeSinceLastSpawn === null) {
-            
-            // Update timer
-            this.timeSinceLastSpawn = diffTimestamp
-            
-            // If there is enemies in the wave, return new Enemy
-            if (this.config.nbEnemies > 0) {
+        // If not all enemies have spawn
+        if (this.config.nbEnemies > this.spawnedEnemiesCount) {
+        
+            // If no enemies has spawn
+            if (this.timeSinceLastSpawn === null) {
+                
+                // Update timer
+                this.timeSinceLastSpawn = diffTimestamp
                 this.spawnedEnemiesCount++
-                return [new Enemy()]
-            }
-            
-        // If enemies have spawn
-        } else {
+                
+                return [new Enemy(this.level)]
+                
+            } else {
 
-            // Update timer
-            this.timeSinceLastSpawn += diffTimestamp
-            
-            // If more enemies to spawn
-            if (this.config.nbEnemies > this.spawnedEnemiesCount) {
+                this.timeSinceLastSpawn += diffTimestamp
                 
                 // If we've wait long enough since last spawn
                 if (this.timeSinceLastSpawn >= this.spawningFrequency) {
+
+                    // Update timer
+                    this.timeSinceLastSpawn = 0
                     this.spawnedEnemiesCount++
-                    return [new Enemy()]
-                }
+                    
+                    return [new Enemy(this.level)]    
+                }     
             }
-
-            return []
         }
+
+        return []
     }
-
-
 }
