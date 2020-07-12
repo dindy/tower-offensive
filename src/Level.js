@@ -66,18 +66,21 @@ export default class Level {
 
         // Add new enemies to enemies
         this.currentWave.getSpawningEnemies(diffTimestamp).forEach(enemy => {
-             // Récupérer les coordonnées de la 1ère cell du path
-             const firstCell = this.gridCells[this.config.map.path[0]]
-             const secondCell = this.gridCells[this.config.map.path[1]]
- 
-             // Déterminer une position aléatoire de départ
-             if(firstCell.column === secondCell.column) {
-                 enemy.x = Math.floor(Math.random() * this.game.cellSize) + firstCell.coords.xMin
-                 enemy.y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
-             } else if (firstCell.row === secondCell.row) {
-                 enemy.y = Math.floor(Math.random() * this.game.cellSize) + firstCell.coords.yMin
-                 enemy.x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
-             }
+            
+            // Récupérer les coordonnées de la 1ère cell du path
+            const firstCell = this.gridCells[this.config.map.path[0]]
+            const secondCell = this.gridCells[this.config.map.path[1]]
+
+            // Déterminer une position aléatoire de départ
+            enemy.offset = Math.random() * this.game.cellSize
+            
+            if(firstCell.column === secondCell.column) {
+                enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
+                enemy.y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
+            } else if (firstCell.row === secondCell.row) {
+                enemy.y = Math.floor(enemy.offset) + firstCell.coords.yMin
+                enemy.x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
+            }
             this.enemies.push(enemy)
         })
 
