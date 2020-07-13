@@ -66,7 +66,7 @@ export default class Level {
 
         // Add new enemies to enemies
         this.currentWave.getSpawningEnemies(diffTimestamp).forEach(enemy => {
-            
+
             // Récupérer les coordonnées de la 1ère cell du path
             const firstCell = this.gridCells[this.config.map.path[0]]
             const secondCell = this.gridCells[this.config.map.path[1]]
@@ -85,7 +85,7 @@ export default class Level {
         })
 
         for (let i = 0; i < this.enemies.length; i++) {
-            this.enemies[i].update()
+            this.enemies[i].update(diffTimestamp)
         }
     }
     

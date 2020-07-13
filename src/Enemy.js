@@ -7,6 +7,7 @@ export default class Enemy {
         this.level = level
         this.pathFinding = null
         this.offset = 0
+        this.speed = 0.1 // px / 1 ms
     }
     
     initRender = layer => {
@@ -76,13 +77,13 @@ export default class Enemy {
         let endPoint = {}
         let middlePoint = {}
 
-        console.log("cell", cell)
-        console.log("nextCell", nextCell)
+        //console.log("cell", cell)
+       // console.log("nextCell", nextCell)
 
         const direction = getDirection(cell, nextCell)
         const currentCellSide = getCurrentCellSide(cell, originPoint) 
 
-        console.log(direction)
+        //console.log(direction)
 
         if (direction == "up"){
             if(currentCellSide == "left"){
@@ -164,26 +165,58 @@ export default class Enemy {
             
         }
         
-        this.pathFinding = { originPoint, middlePoint, endPoint }        
+        this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}        
     }
 
-    updatePosition = () => {
+    updatePosition = (diffTimestamp) => {
         
-        if (this.pathFinding === null) {
+        
+        
+        if (this.pathFinding === null /*|| 
+            (this.pathFinding.endPoint.x === this.x && this.pathFinding.endPoint.y === this.y)*/
+        ) {
             this.calculatePathFinding()
             console.log(this.pathFinding)
         }
-            
-        //Determiner le point d'arriver
-        //Check si c'est ligne droite ou un courbe
         
-        // Déterminer les 3 points de la courbe de bézier
+        // Utiliser la formule pour avoir le prochain x et y
+        const getBezierPoint = (pathFinding, t) => {
 
-        // Calculer les prochaines coordonnées
+            const x1 = pathFinding.originPoint.x
+            const x2 = pathFinding.middlePoint.x 
+            const x3 = pathFinding.endPoint.x
+
+            const y1 = pathFinding.originPoint.y
+            const y2 = pathFinding.middlePoint.y 
+            const y3 = pathFinding.endPoint.y            
+            
+            // x = (1−t)^2 * x1 + 2 * (1−t) * t * x2 + t^2 * x3
+            // y = (1−t)^2 * y1 + 2 * (1−t) * t * y2 + t^2 * y3
+             
+            return { 
+                x : Math.pow((1 - t), 2) * x1 + 2 * (1 - t) * t * x2 + Math.pow(t, 2) * x3,
+                y : Math.pow((1 - t), 2) * y1 + 2 * (1 - t) * t * y2 + Math.pow(t, 2) * y3
+            }
+            
+        }
+        console.log(this.pathFinding.time);
+        
+        this.pathFinding.time += diffTimestamp
+        this.pathFinding.totalTime = this.level.game.cellSize / this.speed
+        const t = this.pathFinding.time / this.pathFinding.totalTime
+        if (t > 1) {
+            this.pathFinding = null
+        } else {
+            const newCoords = getBezierPoint(this.pathFinding, t)
+            // Update le x et y de l'enemy
+            this.x = newCoords.x
+            this.y = newCoords.y
+        }
+    
     }
 
-    update = () => {
-        this.updatePosition()
+    update = (diffTimestamp) => {
+        this.updatePosition(diffTimestamp)
     } 
 
     render = (layer) => {
