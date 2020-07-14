@@ -16,7 +16,8 @@ export default class Enemy {
         this.shape.graphics
             .beginFill('red')
             .drawRect(0, 0, 10, 10)
-        
+        this.shape.regX = 5
+        this.shape.regY = 5
         layer.addChild(this.shape)
         this.hasBeenRendered = true
     }
