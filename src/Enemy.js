@@ -8,31 +8,41 @@ export default class Enemy {
         this.pathFinding = null
         this.offset = 0
         this.speed = 0.1 // px / 1 ms
+        this.currentCellIndex = null
     }
     
     initRender = layer => {
         this.shape = new createjs.Shape()
         this.shape.graphics
             .beginFill('red')
-            .drawRect(0, 0, 50, 50)
+            .drawRect(0, 0, 10, 10)
         
         layer.addChild(this.shape)
         this.hasBeenRendered = true
     }
     
     calculatePathFinding = () => {
-        
-        // Récupère la cellule du path sur laquelle est l'ennemi
-        // Tableau des items du path
+        const pathCells = this.level.config.map.path.map(cellIndex => this.level.gridCells[cellIndex])
+        if (this.currentCellIndex == null) {
+            this.currentCellIndex = 0
+        } else {
+            this.currentCellIndex++
+        }        
+        const cell = pathCells[this.currentCellIndex]
+        const nextCell = pathCells[this.currentCellIndex + 1]
+        const previousCell = pathCells[this.currentCellIndex - 1]
+        // // Récupère la cellule du path sur laquelle est l'ennemi
+        // // Tableau des items du path
         const path = this.level.config.map.path
-        // Index de colonne et de ligne de la cellule courante
-        const currentCellCol = Math.floor(this.x / this.level.game.cellSize)
-        const currentCellRow = Math.floor(this.y / this.level.game.cellSize)
-        // Cellule courante
-        const cell = this.level.gridCells
-            .filter(cell => cell.column == currentCellCol)
-            .filter(cell => cell.row == currentCellRow)
-            [0]
+        // // Index de colonne et de ligne de la cellule courante
+        // const currentCellCol = Math.floor(this.x / this.level.game.cellSize)
+        // const currentCellRow = Math.floor(this.y / this.level.game.cellSize)
+        // // Cellule courante
+        // const cell = this.level.gridCells
+        //     .filter(cell => cell.column == currentCellCol)
+        //     .filter(cell => cell.row == currentCellRow)
+        //     [0]
+
         // Item du path qui correspond à la cellule courante
         // avec l'index du tableau du path qui correspond
         // + le prochain index du tableau du path
@@ -42,7 +52,7 @@ export default class Enemy {
             [0]
 
         // La cellule d'après
-        const nextCell = this.level.gridCells[path[currentPathItemIndex.nextPathIndex]]
+        // const nextCell = this.level.gridCells[path[currentPathItemIndex.nextPathIndex]]
         
         // cell = {xMin,xMax,yMin,yMax}
         // nextCell = {xMin,xMax,yMin,yMax}
@@ -52,7 +62,7 @@ export default class Enemy {
             if(cell.column > nextCell.column){
                 return "left"
             } else if (cell.column < nextCell.column){
-                return "rigth"
+                return "right"
             } else if (cell.row > nextCell.row){
                 return "up"
             } else {
@@ -60,11 +70,13 @@ export default class Enemy {
             }
         }
 
-        const getCurrentCellSide = (cell, originPoint) => {
-            if (originPoint.x == cell.xMin) return "left"
-            if (originPoint.x == cell.xMax) return "right"
-            if (originPoint.y == cell.yMin) return "top"
-            if (originPoint.y == cell.yMax) return "bottom" 
+        const getCurrentCellSide = (currentCell, previousCell) => {
+            if (typeof previousCell === 'undefined') return "up"
+            return getDirection(previousCell, currentCell)
+            // if (originPoint.x == cell.xMin) return "left"
+            // if (originPoint.x == cell.xMax) return "right"
+            // if (originPoint.y == cell.yMin) return "up"
+            // if (originPoint.y == cell.yMax) return "bottom" 
         }
         
         // 1er point d'origine = position de l'enemy
@@ -81,9 +93,9 @@ export default class Enemy {
        // console.log("nextCell", nextCell)
 
         const direction = getDirection(cell, nextCell)
-        const currentCellSide = getCurrentCellSide(cell, originPoint) 
+        const currentCellSide = getCurrentCellSide(cell, previousCell) 
 
-        //console.log(direction)
+        console.log(direction)
 
         if (direction == "up"){
             if(currentCellSide == "left"){
@@ -133,7 +145,7 @@ export default class Enemy {
                 middlePoint.x = originPoint.x
             } else if(currentCellSide == "down"){
                 endPoint.x = nextCell.coords.xMax
-                endPoint.y = nextCell.coords.yMin + offset
+                endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.y = endPoint.y
                 middlePoint.x = originPoint.x                 
             } else {
@@ -146,14 +158,16 @@ export default class Enemy {
 
         } else if (direction == "right"){
             
+            console.log('passss', currentCellSide);
             if(currentCellSide == "up"){
+                
                 endPoint.x = nextCell.coords.xMin
-                endPoint.y = nextCell.coords.yMin + offset
+                endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else if(currentCellSide == "down"){
                 endPoint.x = nextCell.coords.xMin
-                endPoint.y = nextCell.coords.yMax - offset
+                endPoint.y = nextCell.coords.yMax - this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else {
@@ -199,15 +213,17 @@ export default class Enemy {
             }
             
         }
-        console.log(this.pathFinding.time);
+        // console.log(this.pathFinding.time);
         
         this.pathFinding.time += diffTimestamp
         this.pathFinding.totalTime = this.level.game.cellSize / this.speed
         const t = this.pathFinding.time / this.pathFinding.totalTime
+        
         if (t > 1) {
             this.pathFinding = null
         } else {
             const newCoords = getBezierPoint(this.pathFinding, t)
+            console.log(newCoords);
             // Update le x et y de l'enemy
             this.x = newCoords.x
             this.y = newCoords.y
