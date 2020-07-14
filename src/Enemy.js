@@ -72,7 +72,7 @@ export default class Enemy {
 
         const getCurrentCellSide = (currentCell, previousCell) => {
             if (typeof previousCell === 'undefined') return "up"
-            return getDirection(previousCell, currentCell)
+            return getDirection(currentCell, previousCell)
             // if (originPoint.x == cell.xMin) return "left"
             // if (originPoint.x == cell.xMax) return "right"
             // if (originPoint.y == cell.yMin) return "up"
@@ -95,7 +95,7 @@ export default class Enemy {
         const direction = getDirection(cell, nextCell)
         const currentCellSide = getCurrentCellSide(cell, previousCell) 
 
-        console.log(direction)
+        console.log(direction, currentCellSide)
 
         if (direction == "up"){
             if(currentCellSide == "left"){
@@ -158,7 +158,6 @@ export default class Enemy {
 
         } else if (direction == "right"){
             
-            console.log('passss', currentCellSide);
             if(currentCellSide == "up"){
                 
                 endPoint.x = nextCell.coords.xMin
@@ -217,17 +216,21 @@ export default class Enemy {
         
         this.pathFinding.time += diffTimestamp
         this.pathFinding.totalTime = this.level.game.cellSize / this.speed
-        const t = this.pathFinding.time / this.pathFinding.totalTime
-        
+        let t = this.pathFinding.time / this.pathFinding.totalTime
+
+        let newCoords = null 
         if (t > 1) {
+            t = 1
+            newCoords = getBezierPoint(this.pathFinding, t)
             this.pathFinding = null
         } else {
-            const newCoords = getBezierPoint(this.pathFinding, t)
-            console.log(newCoords);
+            newCoords = getBezierPoint(this.pathFinding, t)
+        } 
+            // console.log(newCoords);
             // Update le x et y de l'enemy
             this.x = newCoords.x
             this.y = newCoords.y
-        }
+        // }
     
     }
 

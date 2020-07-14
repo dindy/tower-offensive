@@ -72,7 +72,10 @@ export default class Level {
             const secondCell = this.gridCells[this.config.map.path[1]]
 
             // Déterminer une position aléatoire de départ
-            enemy.offset = Math.random() * this.game.cellSize
+            enemy.offset = (Math.random() * (this.game.cellSize - 20)) + 10
+            // console.log(enemy.offset);
+            
+            // enemy.offset = 1
             
             if(firstCell.column === secondCell.column) {
                 enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
