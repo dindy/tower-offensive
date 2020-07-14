@@ -7,8 +7,11 @@ export default class Enemy {
         this.level = level
         this.pathFinding = null
         this.offset = 0
-        this.speed = 0.1 // px / 1 ms
+        this.speed = 0.15 // px / 1 ms
         this.currentCellIndex = null
+
+        // A DISCUTER ?
+        this.direction = 1
     }
     
     initRender = layer => {
@@ -23,42 +26,51 @@ export default class Enemy {
     }
     
     calculatePathFinding = () => {
+        //Tableau des indexs des cellules du path
+        const path = this.level.config.map.path
+
+        //Tableau des cellules du path
         const pathCells = this.level.config.map.path.map(cellIndex => this.level.gridCells[cellIndex])
+
+        // Check si c'est la 1er fois et selectionne la 1ere celulle du path
         if (this.currentCellIndex == null) {
             this.currentCellIndex = 0
         } else {
-            this.currentCellIndex++
-        }        
-        const cell = pathCells[this.currentCellIndex]
-        const nextCell = pathCells[this.currentCellIndex + 1]
-        const previousCell = pathCells[this.currentCellIndex - 1]
-        // // Récupère la cellule du path sur laquelle est l'ennemi
-        // // Tableau des items du path
-        const path = this.level.config.map.path
-        // // Index de colonne et de ligne de la cellule courante
-        // const currentCellCol = Math.floor(this.x / this.level.game.cellSize)
-        // const currentCellRow = Math.floor(this.y / this.level.game.cellSize)
-        // // Cellule courante
-        // const cell = this.level.gridCells
-        //     .filter(cell => cell.column == currentCellCol)
-        //     .filter(cell => cell.row == currentCellRow)
-        //     [0]
 
-        // Item du path qui correspond à la cellule courante
-        // avec l'index du tableau du path qui correspond
-        // + le prochain index du tableau du path
-        const currentPathItemIndex = path
-            .map((cellId, index) => ({cellId, pathIndex: index, nextPathIndex: index + 1})) 
-            .filter((pathItem) => pathItem.cellId == cell.id) 
-            [0]
+            if(this.direction == 1){
+                this.currentCellIndex++
+            } else {
+                this.currentCellIndex--
+            }
+        } 
 
-        // La cellule d'après
-        // const nextCell = this.level.gridCells[path[currentPathItemIndex.nextPathIndex]]
+        console.log(this.currentCellIndex);
+        // DOIT GERER LE RETOUR
+        let cell = pathCells[this.currentCellIndex]
+        let nextCell = pathCells[this.currentCellIndex + this.direction]
+        let previousCell = pathCells[this.currentCellIndex - this.direction]
         
-        // cell = {xMin,xMax,yMin,yMax}
-        // nextCell = {xMin,xMax,yMin,yMax}
-        // trouver l'offset de l'enemy par rapport a xMin ou yMax // Proprieté de enemy
+        // HACK POUR REVERSE LA DIRECTION
+        if(typeof pathCells[this.currentCellIndex + this.direction] == "undefined"){
+            if(this.direction == 1){
+
+                this.direction = this.direction * -1  
+                nextCell = {...cell}
+    
+                // nextCell.coords.xMin += this.level.game.cellSize
+                // nextCell.coords.xMax += this.level.game.cellSize
+                nextCell.coords.yMin += this.level.game.cellSize
+                nextCell.coords.yMax += this.level.game.cellSize
+            } 
+            if(this.direction == -1) { 
+                
+                
+            }
+        }
+
         
+        
+        //Return la direction de l'enemy - A EXTRAIRE ?
         const getDirection = (cell,nextCell) => {
             if(cell.column > nextCell.column){
                 return "left"
@@ -71,13 +83,17 @@ export default class Enemy {
             }
         }
 
+        //Return la side de la cell sur laquelle l'enemy se trouve - A EXTRAIRE ?
         const getCurrentCellSide = (currentCell, previousCell) => {
-            if (typeof previousCell === 'undefined') return "up"
+
+            if (typeof previousCell === 'undefined') {
+                if(currentCell.coords.yMin == 0) return "up"
+                if(currentCell.coords.yMax == this.level.game.cellSize * this.level.game.nbCells) return "down"
+                if(currentCell.coords.xMin == 0) return "left"
+                if(currentCell.coords.xMax == this.level.game.cellSize * this.level.game.nbCells) return "right"
+            }
             return getDirection(currentCell, previousCell)
-            // if (originPoint.x == cell.xMin) return "left"
-            // if (originPoint.x == cell.xMax) return "right"
-            // if (originPoint.y == cell.yMin) return "up"
-            // if (originPoint.y == cell.yMax) return "bottom" 
+            
         }
         
         // 1er point d'origine = position de l'enemy
@@ -86,18 +102,15 @@ export default class Enemy {
             y: this.y
         }
         
-        //Determiner la direction
+        // Declare les autres points
         let endPoint = {}
         let middlePoint = {}
 
-        //console.log("cell", cell)
-       // console.log("nextCell", nextCell)
-
+        // Get direction et la side actuelle
         const direction = getDirection(cell, nextCell)
         const currentCellSide = getCurrentCellSide(cell, previousCell) 
 
-        console.log(direction, currentCellSide)
-
+        // Update middlePoint et endPoint en fonction de la side et de la direction
         if (direction == "up"){
             if(currentCellSide == "left"){
                 endPoint.x = nextCell.coords.xMax - this.offset
@@ -107,7 +120,7 @@ export default class Enemy {
                 middlePoint.x = endPoint.x
             } else if(currentCellSide == "right"){
                 endPoint.x = nextCell.coords.xMin + this.offset
-                endPoint.y = nextCell.coords.yMin
+                endPoint.y = nextCell.coords.yMax
 
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
@@ -116,7 +129,7 @@ export default class Enemy {
                 endPoint.y = nextCell.coords.yMax
 
                 middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y + (this.level.game.cellSize / 2)
+                middlePoint.y = originPoint.y - (this.level.game.cellSize / 2)
             }
 
         } else if (direction == "down"){
@@ -152,7 +165,7 @@ export default class Enemy {
             } else {
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x + (this.level.game.cellSize / 2)
+                middlePoint.x = originPoint.x - (this.level.game.cellSize / 2)
                 middlePoint.y = originPoint.y           
             }
 
@@ -179,18 +192,18 @@ export default class Enemy {
             
         }
         
-        this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}        
+        //Met a jour la props pathFinding
+        this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}       
+        
     }
 
     updatePosition = (diffTimestamp) => {
         
         
         
-        if (this.pathFinding === null /*|| 
-            (this.pathFinding.endPoint.x === this.x && this.pathFinding.endPoint.y === this.y)*/
-        ) {
+        if (this.pathFinding === null ) {
             this.calculatePathFinding()
-            console.log(this.pathFinding)
+            
         }
         
         // Utiliser la formule pour avoir le prochain x et y
@@ -213,7 +226,7 @@ export default class Enemy {
             }
             
         }
-        // console.log(this.pathFinding.time);
+       
         
         this.pathFinding.time += diffTimestamp
         this.pathFinding.totalTime = this.level.game.cellSize / this.speed
@@ -227,7 +240,7 @@ export default class Enemy {
         } else {
             newCoords = getBezierPoint(this.pathFinding, t)
         } 
-            // console.log(newCoords);
+            
             // Update le x et y de l'enemy
             this.x = newCoords.x
             this.y = newCoords.y
