@@ -7,7 +7,7 @@ export default class Enemy {
         this.level = level
         this.pathFinding = null
         this.offset = 0
-        this.speed = 0.15 // px / 1 ms
+        this.speed = 0.02 // px / 1 ms
         this.currentCellIndex = null
 
         // A DISCUTER ?
@@ -31,42 +31,30 @@ export default class Enemy {
 
         //Tableau des cellules du path
         const pathCells = this.level.config.map.path.map(cellIndex => this.level.gridCells[cellIndex])
-
+        console.log(pathCells);
         // Check si c'est la 1er fois et selectionne la 1ere celulle du path
         if (this.currentCellIndex == null) {
             this.currentCellIndex = 0
-        } else {
-
-            if(this.direction == 1){
-                this.currentCellIndex++
-            } else {
-                this.currentCellIndex--
-            }
+        }
+        else if (this.direction == 1){
+            this.currentCellIndex++ 
         } 
 
-        console.log(this.currentCellIndex);
         // DOIT GERER LE RETOUR
         let cell = pathCells[this.currentCellIndex]
+        if (this.currentCellIndex == pathCells.length - 1 && this.direction == 1){
+            this.direction = -1 * this.direction
+            console.log("check");
+        }
+        else if (this.direction == -1){
+            this.currentCellIndex--
+        }
+        console.log("direction", this.direction);
+        console.log("index: ", this.currentCellIndex);
         let nextCell = pathCells[this.currentCellIndex + this.direction]
         let previousCell = pathCells[this.currentCellIndex - this.direction]
         
-        // HACK POUR REVERSE LA DIRECTION
-        if(typeof pathCells[this.currentCellIndex + this.direction] == "undefined"){
-            if(this.direction == 1){
-
-                this.direction = this.direction * -1  
-                nextCell = {...cell}
-    
-                // nextCell.coords.xMin += this.level.game.cellSize
-                // nextCell.coords.xMax += this.level.game.cellSize
-                nextCell.coords.yMin += this.level.game.cellSize
-                nextCell.coords.yMax += this.level.game.cellSize
-            } 
-            if(this.direction == -1) { 
-                
-                
-            }
-        }
+        
 
         
         
@@ -93,7 +81,6 @@ export default class Enemy {
                 if(currentCell.coords.xMax == this.level.game.cellSize * this.level.game.nbCells) return "right"
             }
             return getDirection(currentCell, previousCell)
-            
         }
         
         // 1er point d'origine = position de l'enemy
@@ -192,6 +179,10 @@ export default class Enemy {
             
         }
         
+        if(this.direction == -1 && this.currentCellIndex == pathCells.length - 1){
+            endPoint.y = this.level.game.cellSize * this.level.game.nbCells
+            middlePoint.y = originPoint.y
+        }
         //Met a jour la props pathFinding
         this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}       
         
@@ -206,7 +197,7 @@ export default class Enemy {
             
         }
         
-        // Utiliser la formule pour avoir le prochain x et y
+        // Utiliser la formule pour avoir le prochain x et y - A EXTRAIRE ?
         const getBezierPoint = (pathFinding, t) => {
 
             const x1 = pathFinding.originPoint.x
@@ -227,9 +218,13 @@ export default class Enemy {
             
         }
        
-        
+        // Update time passed in a cell
         this.pathFinding.time += diffTimestamp
+
+        // Calculate target time to passed in a cell
         this.pathFinding.totalTime = this.level.game.cellSize / this.speed
+
+        // Update t
         let t = this.pathFinding.time / this.pathFinding.totalTime
 
         let newCoords = null 
