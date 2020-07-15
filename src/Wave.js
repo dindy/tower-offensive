@@ -2,7 +2,7 @@ import Enemy from './Enemy'
 
 export default class Wave {
 
-    spawningFrequency = 750 // ms
+    spawningFrequency = 500 // ms
 
     timeSinceLastSpawn = null
 

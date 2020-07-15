@@ -7,7 +7,7 @@ export default class Enemy {
         this.level = level
         this.pathFinding = null
         this.offset = 0
-        this.speed = 0.02 // px / 1 ms
+        this.speed = 0.05// px / 1 ms
         this.currentCellIndex = null
 
         // A DISCUTER ?
@@ -31,7 +31,7 @@ export default class Enemy {
 
         //Tableau des cellules du path
         const pathCells = this.level.config.map.path.map(cellIndex => this.level.gridCells[cellIndex])
-        console.log(pathCells);
+        
         // Check si c'est la 1er fois et selectionne la 1ere celulle du path
         if (this.currentCellIndex == null) {
             this.currentCellIndex = 0
@@ -181,10 +181,11 @@ export default class Enemy {
         
         if(this.direction == -1 && this.currentCellIndex == pathCells.length - 1){
             endPoint.y = this.level.game.cellSize * this.level.game.nbCells
-            middlePoint.y = originPoint.y
+            middlePoint.y = endPoint.y - (this.level.game.cellSize / 2)
         }
         //Met a jour la props pathFinding
-        this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}       
+        this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}    
+        console.log(this.pathFinding)   
         
     }
 
