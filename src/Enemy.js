@@ -204,19 +204,14 @@ export default class Enemy {
      * Retourne l'objet cell en fonction de index
      * @param {number} index 
      */
-    getCellFromIndex = (index) => {
-
-        return this.level.config.map.path
-            .map(cellIndex => this.level.gridCells[cellIndex])  
-            [index]
-    }
+    getCellFromIndex = (index) => this.level.config.map.path
+        .map(cellIndex => this.level.gridCells[cellIndex])  
+        [index]
 
     /**
      * 
      */
-    getCellFromCurrentIndex = () => {
-        return this.getCellFromIndex(this.currentCellIndex)
-    }
+    getCellFromCurrentIndex = () => this.getCellFromIndex(this.currentCellIndex)
 
     /**
      * 
@@ -237,16 +232,12 @@ export default class Enemy {
     /**
      * 
      */
-    willTurnAround = () => {
-        return typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
-    }
+    willTurnAround = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
     
     /**
      * 
      */
-    willExit = () => {
-        return typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
-    }
+    willExit = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
 
     /**
      * 
@@ -255,11 +246,15 @@ export default class Enemy {
      */
     updateTurningPathCoordinates = (cell, previousCell) => {
         
-        const originPoint = { x: this.x, y: this.y }        
+        // Côté par lequel on arrive 
         const side = cell.getDirection(previousCell)  
+
+        // Points de référence du chemin pour la cellule courante
+        const originPoint = { x: this.x, y: this.y }       
         let endPoint = {...originPoint}
         let middlePoint = { }     
 
+        // Calcul des coordonnées des points de référence
         if (side == "up") {
             middlePoint.x = endPoint.x
             middlePoint.y = originPoint.y + (this.level.game.cellSize)
@@ -274,7 +269,8 @@ export default class Enemy {
             middlePoint.y = originPoint.y 
         }
 
-        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0}        
+        // On met à jour les coordonnées
+        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0 }        
     }
 
     /**
@@ -284,11 +280,15 @@ export default class Enemy {
      */
     updateExitingPathCoordinates = (cell, previousCell) => {
 
-        const originPoint = { x: this.x, y: this.y }        
+        // Côté par lequel on arrive
         const side = cell.getDirection(previousCell)  
+
+        // Points de référence du chemin pour la cellule courante
+        const originPoint = { x: this.x, y: this.y }        
         const endPoint = {...originPoint}
         let middlePoint = { }
 
+        // Calcul des coordonnées des points de référence
         if (side == "up") {
             endPoint.y += this.level.game.cellSize
             middlePoint.x = endPoint.x
@@ -296,7 +296,7 @@ export default class Enemy {
         } else if (side == "down") {
             endPoint.y = 0
             middlePoint.x = endPoint.x
-            middlePoint.y = this.level.game.cellSize/2
+            middlePoint.y = this.level.game.cellSize / 2
         } else if (side == "left") {
             endPoint.x += this.level.game.cellSize
             middlePoint.x = endPoint.x + (this.level.game.cellSize / 2)
@@ -307,7 +307,8 @@ export default class Enemy {
             middlePoint.y = originPoint.y 
         }
 
-        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0}        
+        // On met à jour les coordonnées
+        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0 }        
     }
 
     /**
@@ -318,20 +319,21 @@ export default class Enemy {
      */
     updateNormalPathCoordinates = (cell, nextCell, previousCell) => {
 
-        let direction = cell.getDirection(nextCell)
-        let side = undefined
+        // Direction entre la cellule courante et la prochaine
+        const direction = cell.getDirection(nextCell)
+
+        // Si on est sur la 1ère cellule, side dépend de la direction de départ
+        // (de la direction donnée par les 2 premières cellules du path)
+        const side = (typeof previousCell === 'undefined' && !this.isBack) ? 
+            nextCell.getDirection(cell) :
+            cell.getSide(previousCell)
+
+        // Points de référence du chemin pour la cellule courante
         const originPoint = { x: this.x, y: this.y } 
         let middlePoint = { }
         let endPoint = { }
 
-        // Si on est sur la 1ère cellule
-        if (typeof previousCell === 'undefined' && !this.isBack) {
-            side = nextCell.getDirection(cell)
-        } else {
-            side = cell.getSide(previousCell) 
-        }
-
-        // Update middlePoint et endPoint en fonction de la side et de la direction
+        // Calcul des coordonnées des points de référence
         if (direction === "up") {
 
             if (side === "left") {
@@ -408,12 +410,19 @@ export default class Enemy {
                 middlePoint.y = originPoint.y  
             }
         }
-
+        
+        // On met à jour les coordonnées
         this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0}    
     }
 
+    /**
+     * 
+     */
     removeCurrentPathCoordinates = () => this.pathCoordinates = null
 
+    /**
+     * 
+     */
     hasCurrentPath = () => this.pathCoordinates !== null
 
 }
