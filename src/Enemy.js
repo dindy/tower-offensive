@@ -9,9 +9,11 @@ export default class Enemy {
         this.level = level
         this.pathFinding = null
         this.offset = 0
-        this.speed = 0.05// px / 1 ms
+        this.speed = 0.1// px / 1 ms
         this.currentCellIndex = null
         this.isBack = false
+        this.isDeleted = false
+        this.isExiting = false
     }
     
     initRender = layer => {
@@ -27,6 +29,7 @@ export default class Enemy {
     
     // Rename to updatePathFinding ou setPathFinding ?
     calculatePathFinding = () => {
+
         //Tableau des indexs des cellules du path
         const path = this.level.config.map.path
 
@@ -47,13 +50,19 @@ export default class Enemy {
         let nextCell
         let previousCell
 
-        //Si l'aller est finit, start le retour
+        //Si l'aller est fini, start le retour
         if(typeof pathCells[this.currentCellIndex + 1] == "undefined" && !this.isBack){
             this.isBack = true
+        // Si retour fini
         }
-
+        
+        if( typeof pathCells[this.currentCellIndex - 1] == "undefined" &&  this.isBack){
+            cell = pathCells[this.currentCellIndex]
+            nextCell = pathCells[this.currentCellIndex - 1]
+            previousCell = pathCells[this.currentCellIndex + 1]
+        }   
         // Aller
-        if(!this.isBack){
+        else if (!this.isBack){
             cell = pathCells[this.currentCellIndex]
             nextCell = pathCells[this.currentCellIndex + 1]
             previousCell = pathCells[this.currentCellIndex - 1]
@@ -78,25 +87,64 @@ export default class Enemy {
         let middlePoint = {}
 
         // Get direction et la side actuelle
-        const direction = cell.getDirection(nextCell)
+        let direction = null 
+        if (typeof nextCell !== 'undefined') {
+            direction = cell.getDirection(nextCell)
+        } else {
+            direction = previousCell.getDirection(cell)
+        }
         let currentCellSide = null
 
         // Derniere cell du path, demi-tour
         if (typeof previousCell === 'undefined' && this.isBack) {
             
             currentCellSide = direction
+            endPoint = {...originPoint}
            
             if(currentCellSide == "up"){
-                endPoint = originPoint
                 middlePoint.x = endPoint.x
                 middlePoint.y = originPoint.y + (this.level.game.cellSize)
+            } else if (currentCellSide == "down"){
+                middlePoint.x = endPoint.x
+                middlePoint.y = originPoint.y - (this.level.game.cellSize)
+            } else if (currentCellSide == "left"){
+                middlePoint.x = endPoint.x + (this.level.game.cellSize)
+                middlePoint.y = originPoint.y 
+            } else if (currentCellSide == "right"){
+                middlePoint.x = endPoint.x - (this.level.game.cellSize)
+                middlePoint.y = originPoint.y 
             }
 
             this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}
 
             return
 
-        } 
+        } else if (typeof nextCell === 'undefined' && this.isBack){
+            currentCellSide = cell.getDirection(previousCell)
+            endPoint = {...originPoint}
+           
+            if(currentCellSide == "up"){
+                endPoint.y += this.level.game.cellSize
+                middlePoint.x = endPoint.x
+                middlePoint.y = originPoint.y + (this.level.game.cellSize/2)
+            } else if (currentCellSide == "down"){
+                endPoint.y = 0
+                middlePoint.x = endPoint.x
+                middlePoint.y = this.level.game.cellSize/2
+            } else if (currentCellSide == "left"){
+                endPoint.x += this.level.game.cellSize
+                middlePoint.x = endPoint.x + (this.level.game.cellSize/2)
+                middlePoint.y = originPoint.y 
+            } else if (currentCellSide == "right"){
+                this.level.game.cellSize
+                middlePoint.x = endPoint.x - (this.level.game.cellSize/2)
+                middlePoint.y = originPoint.y 
+            }
+
+            this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}
+            this.isExiting = true
+            return
+        }
 
         // Premiere cell du path
         else if (typeof previousCell === 'undefined' && !this.isBack) {
@@ -111,7 +159,6 @@ export default class Enemy {
             currentCellSide = cell.getSide(previousCell) 
         }
 
-        
         // Update middlePoint et endPoint en fonction de la side et de la direction
         // Switch to switch case ?
         if (direction == "up"){
@@ -197,7 +244,7 @@ export default class Enemy {
         }
 
         this.pathFinding = { originPoint, middlePoint, endPoint, time: 0}    
-        console.log(this.pathFinding)   
+        
         
     }
 
@@ -205,7 +252,6 @@ export default class Enemy {
 
         if (this.pathFinding === null ) {
             this.calculatePathFinding()
-            
         }
         
         // Update time passed in a cell
@@ -226,9 +272,9 @@ export default class Enemy {
         const y2 = this.pathFinding.middlePoint.y 
         const y3 = this.pathFinding.endPoint.y 
         
-       
-        if (t > 1) {
+        if (t >= 1) {
             t = 1
+            if (this.isExiting) this.isDeleted = true
             newCoords = utilities.getBezierPoint(x1, y1, x2, y2, x3, y3, t)
             this.pathFinding = null
         } else {
@@ -248,7 +294,7 @@ export default class Enemy {
     render = (layer) => {
 
         if (!this.hasBeenRendered) this.initRender(layer)
-
+        if (this.isDeleted) layer.removeChild(this.shape)
         this.shape.x = this.x
         this.shape.y = this.y
     }

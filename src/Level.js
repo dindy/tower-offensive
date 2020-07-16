@@ -99,7 +99,7 @@ export default class Level {
             const enemy = this.enemies[i];
             enemy.render(this.dynamicLayer)
         }
-
+        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
         this.dynamicLayer.update()
     }
 
