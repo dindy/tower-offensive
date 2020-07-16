@@ -44,6 +44,25 @@ export default class GridCell {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
     }
 
+
+    // Position and direction method
+
+    getDirection = (nextCell) => {
+        if(this.column > nextCell.column){
+            return "left"
+        } else if (this.column < nextCell.column){
+            return "right"
+        } else if (this.row > nextCell.row){
+            return "up"
+        } else {
+            return "down"
+        }
+    }
+
+    getSide = (previousCell) => {
+        return this.getDirection(previousCell)
+    }
+
     //Render the cell from the data
     render = (layer) => {
         
