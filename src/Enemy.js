@@ -86,7 +86,7 @@ export default class Enemy {
             }
 
             // On calcule le prochain chemin
-            this.updatePath()
+            this.updatePathCoordinates()
         }
 
         // On se déplace le long du chemin
@@ -122,7 +122,7 @@ export default class Enemy {
     /**
      * Gère le chemin parcouru par l'enemy sur la case courante
      */
-    updatePath = () => {
+    updatePathCoordinates = () => {
 
         // Update currentCellIndex
         this.updateCurrentCellIndex()
