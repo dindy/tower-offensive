@@ -69,21 +69,8 @@ export default class Enemy {
     updatePosition = (diffTimestamp) => {
         
         // S'il n'y a pas de chemin calculé 
-        // (si c'est le 1er appel ou si le précédent chemin 
-        // a été entièrement parcouru)
+        // (si c'est le 1er appel ou si le précédent chemin a été entièrement parcouru)
         if (!this.hasCurrentPath()) {
-
-            // Si on était sur un exit, on doit supprimer l'entité et c'est tout
-            if (this.isExiting) {
-                this.isDeleted = true
-                return
-            }
-
-            // Si on était en train de tourner, on est sur le retour et on ne tourne plus
-            if (this.isTurning) {
-                this.isBack = true
-                this.isTurning = false
-            }
 
             // On calcule le prochain chemin
             this.updatePathCoordinates()
@@ -91,7 +78,6 @@ export default class Enemy {
 
         // On se déplace le long du chemin
         this.moveAlongPath(diffTimestamp)
-
     }
 
     /**
@@ -136,18 +122,14 @@ export default class Enemy {
         if (this.willTurnAround()) {
             this.isTurning = true
             this.updateTurningPathCoordinates(cell, previousCell)
-        }
 
         // Last cell on backward
-        else if (this.willExit()) {
+        } else if (this.willExit()) {
             this.isExiting = true
             this.updateExitingPathCoordinates(cell, previousCell)
-        }
 
         // Other cells
-        else {
-            this.updateNormalPathCoordinates(cell, nextCell, previousCell) 
-        }
+        } else this.updateNormalPathCoordinates(cell, nextCell, previousCell) 
     }
 
     /**
@@ -162,7 +144,7 @@ export default class Enemy {
         // Calculate target time to passed in a cell
         this.pathCoordinates.totalTime = this.level.game.cellSize / this.speed
 
-        // Update t (la proportion de la courbe parcouruz de 0 à 1)
+        // Update t (la proportion de la courbe parcourue de 0 à 1)
         let t = this.pathCoordinates.time / this.pathCoordinates.totalTime
 
         // update coordinates with t
@@ -172,19 +154,31 @@ export default class Enemy {
         const p3 = this.pathCoordinates.endPoint
         
         // Si on a parcouru toute la courbe, on s'assure d'être exactment 
-        // sur le dernier point et on supprime le chemin 
+        // sur le dernier point et on met à jour les propriétés de l'enemy
         if (t >= 1) {
+
+            // t vaut au maximum 1
             t = 1
-            newCoords = utilities.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
-            this.removeCurrentPathCoordinates()
-        // Sinon on calcule les nouvelles coordonnées en fonction de t
-        } else {
-            newCoords = utilities.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
-        } 
             
+            // Si on était sur un exit, on doit supprimer l'entité 
+            if (this.isExiting) this.isDeleted = true
+
+            // Si on était en train de tourner, on est sur le retour et on ne tourne plus
+            if (this.isTurning) {
+                this.isBack = true
+                this.isTurning = false
+            }            
+        }
+
+        // On calcule les nouvelles coordonnées en fonction de t
+        newCoords = utilities.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
+        
         // Update le x et y de l'enemy
         this.x = newCoords.x
         this.y = newCoords.y
+
+        // On efface le chemin courant si on est au bout
+        if (t === 1) this.removeCurrentPathCoordinates()            
     }
 
     /**
@@ -212,11 +206,7 @@ export default class Enemy {
      */
     getCellFromIndex = (index) => {
 
-        return this
-            .level
-            .config
-            .map
-            .path
+        return this.level.config.map.path
             .map(cellIndex => this.level.gridCells[cellIndex])  
             [index]
     }
