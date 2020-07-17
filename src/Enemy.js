@@ -4,6 +4,10 @@ import * as utilities from "./utilities.js"
 
 export default class Enemy {
     
+    /**
+     * Enemy constructor
+     * @param {Level} level
+     */
     constructor(level) {
         
         // L'enemy a déjà été rendu une 1ère fois

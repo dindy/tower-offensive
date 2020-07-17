@@ -1,21 +1,28 @@
 import Wave from './Wave'
 import GridCell from './GridCell'
+import Building from './Building'
 
 export default class Level {
     
     waves = [] 
     enemies = []
+    buildings = []
     currentWave = null
     gridCells = []
 
-    constructor(game, config) {
+    constructor(game, levelConfig) {
         this.game = game
-        this.config = config
+        this.config = levelConfig
         this.loadWaves()
         this.createCellsGridLayer()
+        this.createStaticLayer()
         this.createDynamicLayer()
     }
     
+    createStaticLayer = () => {
+        this.staticLayer = this.game.createCanvasLayer()
+    }
+
     createDynamicLayer = () => {
         this.dynamicLayer = this.game.createCanvasLayer()
     }
@@ -43,7 +50,7 @@ export default class Level {
 
         for(let y = 0; y < this.game.nbCells; y++){
             for(let x = 0; x < this.game.nbCells; x++){
-                let cell = new GridCell(x, y, this.game.cellSize)
+                let cell = new GridCell(x, y, this)
 
                 this.gridCells.push(cell)
                 this.gridLayer.appendChild(cell.DOMElement)
@@ -53,6 +60,17 @@ export default class Level {
         this.renderGrid()
     }
 
+    addBuilding = (targetGridCell) => {
+        
+        const coords = targetGridCell.coords
+        const building = new Building(coords.xMin, coords.yMin)
+        this.buildings.push(building)
+        this.buildings.forEach(building => {
+            building.render(this.staticLayer)
+        })
+        this.staticLayer.update()
+        
+    }
 
     renderGrid = () => {
 
@@ -73,9 +91,6 @@ export default class Level {
 
             // Déterminer une position aléatoire de départ
             enemy.offset = (Math.random() * (this.game.cellSize - 20)) + 10
-            // console.log(enemy.offset);
-            
-            // enemy.offset = 1
             
             if(firstCell.column === secondCell.column) {
                 enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin

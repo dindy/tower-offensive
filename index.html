@@ -6,8 +6,19 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>RDFun Demo</title>
     <style>
-      
+
+    * {
+        box-sizing: border-box;
+    }
+    .canvas-container{
+        position: relative;
+        width: 500px;
+        height: 500px;
+    }
     canvas {
+        top: 0;
+        
+        position: absolute;
         border: 1px solid black;
         z-index: 1;
     }
@@ -16,6 +27,7 @@
         position: relative;          
     }
 
+    
     .grid {
         position: absolute;
         top: 0;
@@ -27,30 +39,65 @@
     }
 
     .grid__cell {
-        background-color: rgba(128, 128, 128, 0);
+        background-color: rgba(209, 209, 209, 1);
         border: 1px solid rgba(0, 0, 0, 0.1);
         border-style: inset;
         box-sizing: border-box;
+        opacity: 0;
     }
 
     .grid__cell:hover {
-        background-color: rgba(209, 209, 209, 0.5);
+        opacity : .5 !important
     }
 
-    #canvas-container{
+    .canvas-container{
         background-image: url("proto-map.png");
         background-repeat: no-repeat;
  
     }
+
+    .game{
+        display: flex;
+        justify-content: center;
+        margin: 0;
+        padding: 0;
+    }
+    .right-menu{
+        width: 200px;
+        max-height: 500px;
+        background: grey;
+        padding: 10px;
+        margin-left: 15px;
+        display: flex;
+        justify-content: start;
+        flex-direction: column;
+        
+    }
+    .right-menu__item{
+        width: 50px;
+        height: 50px;
+        background-color: red;
+        margin: 10px;
+
+    }
+
     </style>
   </head>
   <body>
     <button id="stop">Stop</button>
-    
-    <div class="wrapper">
-        <div class="grid" id="grid"></div>
-        <div id="canvas-container"></div>
-    </div>    
+
+    <div class="game">
+         
+        <div class="wrapper">
+            <div id="grid" class="grid"></div>
+            <div id="canvas-container" class="canvas-container"></div>
+        </div>  
+        <div id="right-menu" class="right-menu">
+
+        </div>
+
+    </div>
+
     <script src="./bundle.js" charset="utf-8"></script>
   </body>
 </html>

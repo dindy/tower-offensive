@@ -4,20 +4,25 @@ export default class GridCell {
 
     coords = {}
 
-    constructor(column, row, cellSize) {
+    constructor(column, row, level) {
 
+        this.level = level
         this.column = column
         this.row = row
-        this.cellSize = cellSize
+        this.cellSize = level.game.cellSize
         this.setCoords()
 
         this.DOMElement = document.createElement('div')
-        this.DOMElement.classList.add('grid__cell')
+        this.DOMElement.classList.add(level.game.DOMConfig.gridCell.class)
         this.DOMElement.style.width = this.cellSize + 'px'
         this.DOMElement.style.height = this.cellSize + 'px'
 
         this.DOMElement.addEventListener('mouseup', this.handleClick)
         this.DOMElement.addEventListener('mouseover', this.handleMouseover)
+        this.DOMElement.addEventListener('dragenter', this.handleDragenter)
+        this.DOMElement.addEventListener('dragover', this.handleDragover)
+        this.DOMElement.addEventListener('dragleave', this.handleDragleave)
+        this.DOMElement.addEventListener('drop', this.handleDrop)
 
         this.id = GridCell.generateId() 
     }
@@ -37,6 +42,25 @@ export default class GridCell {
     }
 
     // Mouse Event Handlers
+    handleDragenter = event => {
+        event.target.style.opacity = .5
+    }
+    
+    handleDragleave = event => {
+        event.target.style.opacity = 0
+    }
+
+    handleDragover = event => {
+        event.preventDefault()
+        
+    }
+
+    handleDrop = event => {
+        event.target.style.opacity = 0
+        this.level.addBuilding(this)
+
+    }
+
     handleMouseover = (e) => {
     }
 

@@ -1,4 +1,5 @@
 import Level from './Level'
+import BuildMenu from './BuildMenu'
 import * as createjs from 'createjs-module'
 
 export default class Game {
@@ -11,10 +12,11 @@ export default class Game {
 
     isStopped = false
 
-    constructor(config, DOMCanvasContainerId, DOMGridId) 
+    constructor(config, DOMConfig) 
     {
-        this.DOMCanvasContainerId = DOMCanvasContainerId
-        this.DOMGridId = DOMGridId
+        this.DOMConfig = DOMConfig
+        this.DOMCanvasContainerId = DOMConfig.canvas.id
+        this.DOMGridId = DOMConfig.grid.id
 
         this.cellSize = config.cellSize 
         this.nbCells = config.nbCells
@@ -23,6 +25,8 @@ export default class Game {
         this.height = this.cellSize * this.nbCells
 
         this.config = config
+
+        this.buildMenu = new BuildMenu(DOMConfig)
     
         this.loadLevels()    
     }
@@ -50,7 +54,7 @@ export default class Game {
 
         // Create levels
         this.config.levels.forEach(levelConfig => {
-            const level = new Level(this, levelConfig)            
+            const level = new Level(this, levelConfig, this.DOMConfig)            
             this.levels.push(level)
         })
 
