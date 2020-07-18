@@ -2,11 +2,12 @@ import * as createjs from 'createjs-module'
 
 export default class Building {
     
-    constructor(x, y)  {
-        this.x = x
-        this.y = y
+    constructor()  {
+        this.x = null
+        this.y = null
         this.shape = null
         this.hasBeenRendered = false
+        this.isPlaced = false
     }
 
     initRender = layer => {
@@ -24,7 +25,13 @@ export default class Building {
         
     }
     
+    place = (cell) => {
+        this.x = cell.coords.xMin
+        this.y = cell.coords.yMin  
+        this.isPlaced = true
+    }
+
     render = (layer) => {
-        if (!this.hasBeenRendered) this.initRender(layer)        
+        if (!this.hasBeenRendered && this.isPlaced) this.initRender(layer)        
     }
 }

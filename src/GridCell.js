@@ -44,6 +44,7 @@ export default class GridCell {
     // Mouse Event Handlers
     handleDragenter = event => {
         event.target.style.opacity = .5
+        this.level.highlightPlacingBuildingRange(this)
     }
     
     handleDragleave = event => {
@@ -57,7 +58,7 @@ export default class GridCell {
 
     handleDrop = event => {
         event.target.style.opacity = 0
-        this.level.addBuilding(this)
+        this.level.placeBuilding(this)
 
     }
 
@@ -68,6 +69,7 @@ export default class GridCell {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
     }
 
+    
 
     // Position and direction method
 
@@ -86,6 +88,12 @@ export default class GridCell {
     getSide = (previousCell) => {
         return this.getDirection(previousCell)
     }
+
+
+    getCenterPoint = () => ({
+        x: this.coords.xMin + (this.cellSize / 2),
+        y: this.coords.yMin + (this.cellSize / 2)
+    })
 
     //Render the cell from the data
     render = (layer) => {

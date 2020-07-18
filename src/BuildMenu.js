@@ -7,7 +7,9 @@ export default class BuildMenu {
         this.DOMMenu = document.getElementById(DOMConfig.buildMenu.id)
         this.addBuilding('Tour')
     }
-
+    setLevel = level => {
+        this.level = level
+    }
 
     addBuilding = () => {
         const element = document.createElement('div')
@@ -19,15 +21,9 @@ export default class BuildMenu {
     }
 
     dragStartHandler = event => {
-        // Créer un autre carré rouge
-        // var img = new Image(); 
-        // img.src = 'example.gif'; 
-        // ev.dataTransfer.setDragImage(img, 10, 10);
-        console.log('dragstart', event);
-                
+        this.level.startPlacingBuilding()
     }
+
     dragOverHandler = () => {}
 
-    
-    
 }

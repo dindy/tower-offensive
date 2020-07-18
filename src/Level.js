@@ -1,6 +1,7 @@
 import Wave from './Wave'
 import GridCell from './GridCell'
 import Building from './Building'
+import Tower from './buildings/Tower.js'
 
 export default class Level {
     
@@ -9,6 +10,7 @@ export default class Level {
     buildings = []
     currentWave = null
     gridCells = []
+    placingBuilding = null
 
     constructor(game, levelConfig) {
         this.game = game
@@ -19,6 +21,33 @@ export default class Level {
         this.createDynamicLayer()
     }
     
+    startPlacingBuilding = () => {
+        this.placingBuilding = new Tower()
+        
+    }
+
+    highlightPlacingBuildingRange = cell => {
+        this.placingBuilding.highlightRange(cell.getCenterPoint(), this.dynamicLayer)
+        this.staticLayer.update()
+    } 
+
+    removePlacingBuilding = () => {
+        this.placingBuilding = null
+        this.staticLayer.update()
+    }
+
+    placeBuilding = (targetGridCell) => {
+        
+        const building = this.placingBuilding 
+        building.place(targetGridCell)
+        this.buildings.push(building)
+        this.buildings.forEach(building => {
+            building.render(this.staticLayer)
+        })
+        this.staticLayer.update()
+        
+    }
+
     createStaticLayer = () => {
         this.staticLayer = this.game.createCanvasLayer()
     }
@@ -58,18 +87,6 @@ export default class Level {
         }
 
         this.renderGrid()
-    }
-
-    addBuilding = (targetGridCell) => {
-        
-        const coords = targetGridCell.coords
-        const building = new Building(coords.xMin, coords.yMin)
-        this.buildings.push(building)
-        this.buildings.forEach(building => {
-            building.render(this.staticLayer)
-        })
-        this.staticLayer.update()
-        
     }
 
     renderGrid = () => {

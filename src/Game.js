@@ -25,10 +25,11 @@ export default class Game {
         this.height = this.cellSize * this.nbCells
 
         this.config = config
-
-        this.buildMenu = new BuildMenu(DOMConfig)
     
         this.loadLevels()    
+
+        this.buildMenu = new BuildMenu(DOMConfig)
+        this.buildMenu.setLevel(this.currentLevel)
     }
 
     createCanvasLayer = () => {
