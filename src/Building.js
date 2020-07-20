@@ -16,7 +16,7 @@ export default class Building {
         this.shape = new createjs.Shape()
             
         this.shape.graphics
-            .beginFill('red')
+            .beginFill('blue')
             .drawRect(this.x, this.y, 50, 50)
 
         layer.addChild(this.shape)

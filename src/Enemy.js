@@ -28,7 +28,7 @@ export default class Enemy {
         this.offset = 0
 
         // Px / ms parcourus par l'enemy
-        this.speed = 0.2
+        this.speed = 0.08
 
         // Index de la cellule sur laquelle est l'enemy
         this.currentCellIndex = null

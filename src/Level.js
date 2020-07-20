@@ -27,7 +27,7 @@ export default class Level {
     }
 
     highlightPlacingBuildingRange = cell => {
-        this.placingBuilding.highlightRange(cell.getCenterPoint(), this.dynamicLayer)
+        this.placingBuilding.highlightRange(cell.getCenterPoint(), this.staticLayer)
         this.staticLayer.update()
     } 
 

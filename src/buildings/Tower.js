@@ -32,7 +32,7 @@ export default class Tower extends Building {
         const g = new createjs.Graphics()
             .setStrokeStyle(1)
             .beginStroke(createjs.Graphics.getRGB(0,0,0))
-            .beginFill(createjs.Graphics.getRGB(120,120,0,.3))
+            .beginFill(createjs.Graphics.getRGB(120,120,0,.6))
             .drawCircle(0,0, this.range)
 
         this.rangeShape = new createjs.Shape(g)
