@@ -32,8 +32,20 @@ export default class Level {
     } 
 
     removePlacingBuilding = () => {
+        
         this.placingBuilding = null
         this.staticLayer.update()
+    }
+
+    removePlacingBuildingRangeHighlight() {
+        this.placingBuilding.removeRangeHighlight()
+        this.staticLayer.update()
+    }
+
+    endPlacingBuilding() {
+        this.placingBuilding = null
+        this.staticLayer.update()
+        
     }
 
     placeBuilding = (targetGridCell) => {
@@ -122,6 +134,18 @@ export default class Level {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(diffTimestamp)
         }
+
+        for (let i = 0; i < this.buildings.length; i++) {
+            const building = this.buildings[i]
+            if (building instanceof Tower) {
+                for (let j = 0; j < this.enemies.length; j++) {
+                    
+                    const enemy = this.enemies[j]
+                }                
+            }
+        }
+
+
     }
     
     render = () => {

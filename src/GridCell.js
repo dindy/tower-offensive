@@ -2,6 +2,8 @@ export default class GridCell {
 
     static cellsCount = 0
 
+    static dragCount = 0
+
     coords = {}
 
     constructor(column, row, level) {
@@ -19,9 +21,9 @@ export default class GridCell {
 
         this.DOMElement.addEventListener('mouseup', this.handleClick)
         this.DOMElement.addEventListener('mouseover', this.handleMouseover)
+        this.DOMElement.addEventListener('dragleave', this.handleDragleave)
         this.DOMElement.addEventListener('dragenter', this.handleDragenter)
         this.DOMElement.addEventListener('dragover', this.handleDragover)
-        this.DOMElement.addEventListener('dragleave', this.handleDragleave)
         this.DOMElement.addEventListener('drop', this.handleDrop)
 
         this.id = GridCell.generateId() 
@@ -41,25 +43,29 @@ export default class GridCell {
         }
     }
 
+    handleDragleave = event => {
+        GridCell.dragCount--
+        event.target.style.opacity = 0
+        if (GridCell.dragCount < 1) {
+            this.level.removePlacingBuildingRangeHighlight()
+        }
+    }
     // Mouse Event Handlers
     handleDragenter = event => {
+        GridCell.dragCount++
         event.target.style.opacity = .5
         this.level.highlightPlacingBuildingRange(this)
     }
     
-    handleDragleave = event => {
-        event.target.style.opacity = 0
-    }
 
     handleDragover = event => {
         event.preventDefault()
-        
     }
 
     handleDrop = event => {
+        GridCell.dragCount = 0
         event.target.style.opacity = 0
         this.level.placeBuilding(this)
-
     }
 
     handleMouseover = (e) => {
@@ -68,8 +74,6 @@ export default class GridCell {
     handleClick = (e) => {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
     }
-
-    
 
     // Position and direction method
 

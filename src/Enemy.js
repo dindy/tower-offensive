@@ -9,7 +9,11 @@ export default class Enemy {
      * @param {Level} level
      */
     constructor(level) {
-        
+       
+       
+        this.x = null
+        this.y = null
+
         // L'enemy a déjà été rendu une 1ère fois
         this.hasBeenRendered = false
 

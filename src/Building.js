@@ -25,7 +25,7 @@ export default class Building {
         
     }
     
-    place = (cell) => {
+    place(cell) {
         this.x = cell.coords.xMin
         this.y = cell.coords.yMin  
         this.isPlaced = true

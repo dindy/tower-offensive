@@ -18,10 +18,17 @@ export default class BuildMenu {
         this.DOMMenu.appendChild(element)
 
         document.addEventListener("dragstart", this.dragStartHandler)
+        document.addEventListener("dragend", this.dragEndHandler)
     }
 
     dragStartHandler = event => {
         this.level.startPlacingBuilding()
+    }
+
+    dragEndHandler = event => {
+        if (event.dataTransfer.dropEffect === 'none') {
+            this.level.endPlacingBuilding()
+        }
     }
 
     dragOverHandler = () => {}

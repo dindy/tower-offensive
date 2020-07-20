@@ -17,15 +17,14 @@ export default class Tower extends Building {
         
         if(this.rangeShape == null) this.initRangeShape(layer)
 
-        this.rangeShape.alpha  = 1
+        this.rangeShape.alpha = 1
         this.rangeShape.x = coords.x
         this.rangeShape.y = coords.y
 
     }
 
     removeRangeHighlight = () => {
-
-        this.rangeShape.alpha  = 0
+        this.rangeShape.alpha = 0
     }
     
     initRangeShape = (layer) => {
@@ -41,15 +40,19 @@ export default class Tower extends Building {
         layer.addChild(this.rangeShape)
     }
 
-    place = (cell) => {
-        
-        // console.log(Object.getPrototypeOf(Object.getPrototypeOf(this)));
-        // Object.getPrototypeOf(Object.getPrototypeOf(this)).place.call(this,arg);
-        
-        
+    place(cell) {
+
         super.place(cell)
-        // console.log(Object.getPrototypeOf(this))
+
         this.removeRangeHighlight()
+    }
+
+    isInRange(enemy) {
+        
+        const dist_points = (enemy.x - this.rangeShape.x) * (enemy.x - this.rangeShape.x) + (enemy.y - this.rangeShape.y) * (enemy.y - this.rangeShape.y);
+        const r = this.range * this.range
+        
+        return dist_points < r
     }
 
 }
