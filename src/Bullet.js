@@ -32,17 +32,11 @@ export default class Bullet {
 
     update(diffTimestamp) {
 
-        // Fin du cycle de vie de la balle
-        // if (this.targetPoint.x == this.coords.x && this.targetPoint.y == this.coords.y ){
-        //     console.log()
-        //     this.isDeleted = true
-        //     return
-        // }
-        
         // Track le temps passer sur le chemin
         this.timeSpent += diffTimestamp
         let t = this.timeSpent / this.totalTime
-        if (t > 1) 
+
+        if (t > 1) // Fin du cycle de vie de la balle
             this.isDeleted = true
         else
             this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
