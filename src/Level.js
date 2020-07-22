@@ -8,6 +8,7 @@ export default class Level {
     waves = [] 
     enemies = []
     buildings = []
+    bullets = []
     currentWave = null
     gridCells = []
     placingBuilding = null
@@ -139,23 +140,37 @@ export default class Level {
             const building = this.buildings[i]
             if (building instanceof Tower) {
                 for (let j = 0; j < this.enemies.length; j++) {
-                    
                     const enemy = this.enemies[j]
+                    if (building.isInRange(enemy)) {
+                        const bullet = building.shoot(enemy, diffTimestamp)
+                        if (typeof bullet !== 'undefined')
+                            this.bullets.push(bullet)
+                    }
                 }                
             }
         }
 
+        for (let i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].update(diffTimestamp)
+        }
 
     }
     
     render = () => {
 
         for (let i = 0; i < this.enemies.length; i++) {
-            
             const enemy = this.enemies[i];
             enemy.render(this.dynamicLayer)
         }
+
+        for (let i = 0; i < this.bullets.length; i++) {
+            const bullet = this.bullets[i];
+            bullet.render(this.dynamicLayer)
+        }
+        
         this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
+        this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
+
         this.dynamicLayer.update()
     }
 

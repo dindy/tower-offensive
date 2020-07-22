@@ -433,4 +433,14 @@ export default class Enemy {
      */
     hasCurrentPath = () => this.pathCoordinates !== null
 
+    /**
+     * 
+     */
+    getCoords()  {
+        return {
+            x : this.x,
+            y : this.y
+        }
+    }
+
 }

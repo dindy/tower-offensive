@@ -1,6 +1,6 @@
 import * as createjs from 'createjs-module'
-import Building from '../Building.js'
-
+import Building from '../Building'
+import Bullet from '../Bullet'
 
 export default class Tower extends Building {
     
@@ -10,7 +10,8 @@ export default class Tower extends Building {
 
         this.range = 150
         this.rangeShape = null
-        
+        this.fireRate =  1000 // temps en ms entre chaque tire
+        this.timeSinceLastShot = Infinity
     }
 
     highlightRange = (coords, layer) => {
@@ -55,4 +56,14 @@ export default class Tower extends Building {
         return dist_points < r
     }
 
+    shoot(enemy, diffTimestamp) {
+        
+        this.timeSinceLastShot += diffTimestamp
+        
+        if (this.timeSinceLastShot >= this.fireRate) {
+            this.timeSinceLastShot = 0
+            return new Bullet(this.getMiddleCoords(), enemy.getCoords())
+        }
+        
+    }
 }
