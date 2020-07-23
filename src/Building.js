@@ -2,7 +2,9 @@ import * as createjs from 'createjs-module'
 
 export default class Building {
     
-    constructor()  {
+    constructor(level)  {
+
+        this.level = level
         this.shape = null
         this.hasBeenRendered = false
         this.isPlaced = false
@@ -48,5 +50,9 @@ export default class Building {
             x : this.cell.coords.xMin + offset,
             y : this.cell.coords.yMin + offset
         }
+    }
+
+    update() {
+
     }
 }

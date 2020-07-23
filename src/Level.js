@@ -7,7 +7,7 @@ export default class Level {
     
     waves = [] 
     enemies = []
-    buildings = []
+    towers = []
     bullets = []
     currentWave = null
     gridCells = []
@@ -23,8 +23,7 @@ export default class Level {
     }
     
     startPlacingBuilding = () => {
-        this.placingBuilding = new Tower()
-        
+        this.placingBuilding = new Tower(this)
     }
 
     highlightPlacingBuildingRange = cell => {
@@ -53,9 +52,9 @@ export default class Level {
         
         const building = this.placingBuilding 
         building.place(targetGridCell)
-        this.buildings.push(building)
-        this.buildings.forEach(building => {
-            building.render(this.staticLayer)
+        this.towers.push(building)
+        this.towers.forEach(tower => {
+            tower.render(this.staticLayer)
         })
         this.staticLayer.update()
         
@@ -90,8 +89,10 @@ export default class Level {
         this.gridLayer.style.width = this.game.nbCells * this.game.cellSize + 'px' 
         this.gridLayer.style.height = this.game.nbCells * this.game.cellSize + 'px' 
 
-        for(let y = 0; y < this.game.nbCells; y++){
-            for(let x = 0; x < this.game.nbCells; x++){
+        for (let y = 0; y < this.game.nbCells; y++) {
+
+            for (let x = 0; x < this.game.nbCells; x++) {
+
                 let cell = new GridCell(x, y, this)
 
                 this.gridCells.push(cell)
@@ -103,10 +104,7 @@ export default class Level {
     }
 
     renderGrid = () => {
-
-        this.gridCells.forEach(cell => {
-            cell.render(this.gridLayer)
-        })
+        this.gridCells.forEach(cell => cell.render(this.gridLayer))
     }
 
     //Update the data
@@ -114,21 +112,6 @@ export default class Level {
 
         // Add new enemies to enemies
         this.currentWave.getSpawningEnemies(diffTimestamp).forEach(enemy => {
-
-            // Récupérer les coordonnées de la 1ère cell du path
-            const firstCell = this.gridCells[this.config.map.path[0]]
-            const secondCell = this.gridCells[this.config.map.path[1]]
-
-            // Déterminer une position aléatoire de départ
-            enemy.offset = (Math.random() * (this.game.cellSize - 20)) + 10
-            
-            if(firstCell.column === secondCell.column) {
-                enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
-                enemy.y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
-            } else if (firstCell.row === secondCell.row) {
-                enemy.y = Math.floor(enemy.offset) + firstCell.coords.yMin
-                enemy.x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
-            }
             this.enemies.push(enemy)
         })
 
@@ -136,24 +119,10 @@ export default class Level {
             this.enemies[i].update(diffTimestamp)
         }
 
-        for (let i = 0; i < this.buildings.length; i++) {
-            const building = this.buildings[i]
-            if (building instanceof Tower) {
-                for (let j = 0; j < this.enemies.length; j++) {
-                    const enemy = this.enemies[j]
-                    if (building.isInRange(enemy)) {
-                        const bullet = building.shoot(enemy, diffTimestamp)
-                        if (typeof bullet !== 'undefined')
-                            this.bullets.push(bullet)
-                    }
-                }                
-            }
+        for (let i = 0; i < this.towers.length; i++) {
+            const tower = this.towers[i]
+            tower.update(diffTimestamp)
         }
-
-        for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].update(diffTimestamp)
-        }
-
     }
     
     render = () => {
@@ -163,13 +132,12 @@ export default class Level {
             enemy.render(this.dynamicLayer)
         }
 
-        for (let i = 0; i < this.bullets.length; i++) {
-            const bullet = this.bullets[i];
-            bullet.render(this.dynamicLayer)
+        for (let i = 0; i < this.towers.length; i++) {
+            const tower = this.towers[i];
+            tower.renderBullets(this.dynamicLayer)
         }
         
         this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
-        this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
 
         this.dynamicLayer.update()
     }

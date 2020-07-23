@@ -4,13 +4,15 @@ import { getDistance, getPositionOnLine } from './utilities'
 
 export default class Bullet {
 
-    constructor(originPoint, targetPoint) {
+    constructor(originPoint, targetPoint, range) {
 
+        // Centre de La tour et point d'origine des balles
         this.originPoint = originPoint
 
+        //Coordonnées de l'enemy
         this.targetPoint = targetPoint
 
-        this.speed = 0.15 // ps/ms
+        this.speed = 0.50 // ps/ms
         
         this.shape = null
 
@@ -20,26 +22,36 @@ export default class Bullet {
 
         this.isDeleted = false
 
-        this.distance = getDistance(originPoint.x, originPoint.y, targetPoint.x, targetPoint.y) // px
+        // Distance entre les coordonnées de départ et de destination en px
+        this.distance = getDistance(originPoint.x, originPoint.y, targetPoint.x, targetPoint.y) 
 
-        this.timeSpent = 0 // le temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
+        // Rapport entre les coordonnées de depart et destination et la range de le tower
+        this.coef = this.distance / range
 
-        this.totalTime = this.distance / this.speed // ms
+        // Temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
+        this.timeSpent = 0 
+
+        this.totalTime = range / this.speed 
 
     }
 
-    
-
     update(diffTimestamp) {
-
-        // Track le temps passer sur le chemin
+        
+        // Track le temps passé sur le chemin
         this.timeSpent += diffTimestamp
-        let t = this.timeSpent / this.totalTime
+        
+        // Rapport entre le temps écoulé et le temps total jusqu'au point de destination 
+        // ramené à la range de la tower (donc 1 / this.coef = valeur finale de t)
+        let t = (this.timeSpent / this.totalTime) / this.coef
 
-        if (t > 1) // Fin du cycle de vie de la balle
-            this.isDeleted = true
-        else
-            this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+        // Fin du cycle de vie de la balle (donc timeSpent / totalSpent = 1)
+        if (t * this.coef >= 1) { 
+            this.isDeleted = true // suppression à la prochaine frame
+            t = 1 / this.coef // On met t à sa valeur max
+        } 
+
+        // Update les coordonnées de la balle
+        this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
     }
 
     initRender(layer) {
@@ -57,10 +69,13 @@ export default class Bullet {
 
     render(layer) {
 
+        // Si n'a pas encore été render
         if (!this.hasBeenRendered) this.initRender(layer)
 
+        // Si doit être suprimé
         if (this.isDeleted) layer.removeChild(this.shape)
         
+        // Sinon update position
         this.shape.x = this.coords.x
         this.shape.y = this.coords.y
 

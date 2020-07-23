@@ -4,14 +4,15 @@ import Bullet from '../Bullet'
 
 export default class Tower extends Building {
     
-    constructor() {
+    constructor(level) {
         
-        super()
+        super(level)
 
         this.range = 150
         this.rangeShape = null
-        this.fireRate =  1000 // temps en ms entre chaque tire
+        this.fireRate =  150 // temps en ms entre chaque tir
         this.timeSinceLastShot = Infinity
+        this.bullets = []
     }
 
     highlightRange = (coords, layer) => {
@@ -56,14 +57,42 @@ export default class Tower extends Building {
         return dist_points < r
     }
 
-    shoot(enemy, diffTimestamp) {
-        
-        this.timeSinceLastShot += diffTimestamp
+    shoot(enemy) {
         
         if (this.timeSinceLastShot >= this.fireRate) {
             this.timeSinceLastShot = 0
-            return new Bullet(this.getMiddleCoords(), enemy.getCoords())
+            this.bullets.push(new Bullet(this.getMiddleCoords(), enemy.getCoords(), this.range))
         }
+    }
+
+    update(diffTimestamp) {
         
+        super.update()
+
+        const level = this.level
+        this.timeSinceLastShot += diffTimestamp
+
+        for (let j = 0; j < level.enemies.length; j++) {
+            const enemy = level.enemies[j]
+            if (this.isInRange(enemy)) this.shoot(enemy)
+        }
+
+        for (let i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].update(diffTimestamp)
+        }        
+    }
+
+    render(layer) {
+        super.render()
+    }
+
+    renderBullets(layer) {
+
+        for (let i = 0; i < this.bullets.length; i++) {
+            const bullet = this.bullets[i];
+            bullet.render(layer)
+        } 
+
+        this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
     }
 }
