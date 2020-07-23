@@ -1,37 +1,41 @@
 
 import * as createjs from 'createjs-module'
-import { getDistance, getPositionOnLine } from './utilities'
+import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utilities'
 
 export default class Bullet {
 
-    constructor(originPoint, targetPoint, range) {
+    constructor(tower, enemy) {
+
+        this.level = tower.level
 
         // Centre de La tour et point d'origine des balles
-        this.originPoint = originPoint
+        this.originPoint = tower.getMiddleCoords()
 
-        //Coordonnées de l'enemy
-        this.targetPoint = targetPoint
+        // Coordonnées de l'enemy
+        this.targetPoint = enemy.getCoords()
 
-        this.speed = 0.50 // ps/ms
+        this.speed = 0.5 // ps/ms
         
         this.shape = null
 
         this.hasBeenRendered = false
         
-        this.coords = originPoint
+        this.coords = this.originPoint
+
+        this.previousCoords = this.originPoint
 
         this.isDeleted = false
 
         // Distance entre les coordonnées de départ et de destination en px
-        this.distance = getDistance(originPoint.x, originPoint.y, targetPoint.x, targetPoint.y) 
+        this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
 
         // Rapport entre les coordonnées de depart et destination et la range de le tower
-        this.coef = this.distance / range
+        this.coef = this.distance / tower.range
 
         // Temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
         this.timeSpent = 0 
 
-        this.totalTime = range / this.speed 
+        this.totalTime = tower.range / this.speed 
 
     }
 
@@ -50,8 +54,13 @@ export default class Bullet {
             t = 1 / this.coef // On met t à sa valeur max
         } 
 
+        // Stock les coordonnées précédentes
+        this.previousCoords = this.coords
+
         // Update les coordonnées de la balle
         this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+        
+        this.detectCollisions()
     }
 
     initRender(layer) {
@@ -81,5 +90,18 @@ export default class Bullet {
 
     }
 
+    detectCollisions() {
+        for (let i = 0; i < this.level.enemies.length; i++){
+            let enemy = this.level.enemies[i]
+            let line = [ this.coords, this.previousCoords ]
+
+            if (lineIntersectsRectangle(line, enemy.getBoundingBox())) {
+                this.isDeleted = true
+                enemy.hit(1)
+            }
+
+            
+        }
+    }
 
 }

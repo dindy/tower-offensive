@@ -10,7 +10,7 @@ export default class Tower extends Building {
 
         this.range = 150
         this.rangeShape = null
-        this.fireRate =  150 // temps en ms entre chaque tir
+        this.fireRate =  250 // temps en ms entre chaque tir
         this.timeSinceLastShot = Infinity
         this.bullets = []
     }
@@ -61,7 +61,7 @@ export default class Tower extends Building {
         
         if (this.timeSinceLastShot >= this.fireRate) {
             this.timeSinceLastShot = 0
-            this.bullets.push(new Bullet(this.getMiddleCoords(), enemy.getCoords(), this.range))
+            this.bullets.push(new Bullet(this, enemy))
         }
     }
 

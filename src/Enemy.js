@@ -10,9 +10,12 @@ export default class Enemy {
      */
     constructor(level) {
        
-       
         this.x = null
         this.y = null
+        this.width = 10
+        this.height = this.width
+        
+        this.health = 15
 
         // L'enemy a déjà été rendu une 1ère fois
         this.hasBeenRendered = false
@@ -28,7 +31,7 @@ export default class Enemy {
         this.offset = 0
 
         // Px / ms parcourus par l'enemy
-        this.speed = 0.08
+        this.speed = 0.07
 
         // Index de la cellule sur laquelle est l'enemy
         this.currentCellIndex = null
@@ -57,7 +60,7 @@ export default class Enemy {
             
         this.shape.graphics
             .beginFill('red')
-            .drawRect(0, 0, 10, 10)
+            .drawRect(0, 0, this.width, this.height)
 
         // Set rotation point
         this.shape.regX = 5
@@ -443,4 +446,26 @@ export default class Enemy {
         }
     }
 
+    /**
+     * 
+     */
+    getBoundingBox() {
+        return {
+            xMin: this.x - (this.width / 2),
+            xMax: this.x + (this.width / 2),
+            yMin: this.y - (this.height / 2),
+            yMax: this.y + (this.height / 2)
+        }
+    }
+
+    /**
+     * 
+     */
+    hit(damage) {
+        this.health -= damage
+        console.log('touché !!!');
+        if (this.health <= 0) {
+            this.isDeleted = true
+        }
+    }
 }
