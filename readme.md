@@ -34,21 +34,23 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 
 **Prochain code** : ``H``
 
-**Légende des types de tache**
-🌟 Fonctionnalités
-🐞 Bugs
-🎨 Art work
-⚙️ Refactoring
-⚡️ Performances
-📐 U.I
-📖 Video game storytelling
-🎧 Sound design
-⚖️ Equilibrage
-📢 Communication
+| Emoji | Type de tache |
+|---|---|
+| 🌟 | Fonctionnalités |
+| 🐞 | Bugs |
+| 🎨 | Art work |
+| ⚙️ | Refactoring |
+| ⚡️ | Performances |
+| 📐 | U.I |
+| 📖 | Video game storytelling |
+| 🎧 | Sound design |
+| ⚖️ | Equilibrage |
+| 📢 | Communication |
 
-**Légende des statuts de tache**
-❌ To do
-🔨  Doing
-✔️ Done
+| Emoji | Statut de tache |
+|---|---|
+| ❌ | To do |
+| 🔨 | Doing |
+| ✔️ | Done |
 
 ---
