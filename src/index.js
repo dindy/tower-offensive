@@ -9,7 +9,11 @@ const DOMConfig = {
         id: 'grid',
     },
     gridCell: {
-        class: 'grid__cell'
+        class: 'grid__cell',
+        modifiers: {
+            accept: '--accept',
+            refuse: '--refuse',
+        }
     },
     buildMenu : {
         id: 'right-menu'

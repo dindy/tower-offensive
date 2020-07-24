@@ -117,11 +117,12 @@ export default class Game {
             for (let x = 0; x < this.nbCells; x++) {
 
                 let cell = new GridCell(x, y, this)
-
+                cell.isPath = this.currentLevel.config.map.path.includes(cell.id)
                 this.gridCells.push(cell)
                 this.gridLayer.appendChild(cell.DOMElement)
             }
         }
+
 
         this.renderGrid()
     }

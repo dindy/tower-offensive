@@ -12,6 +12,9 @@ export default class GridCell {
         this.column = column
         this.row = row
         this.cellSize = this.level.game.cellSize
+        this.isPath = false
+        this.hasBuilding = false
+
         this.setCoords()
 
         this.DOMElement = document.createElement('div')
@@ -45,7 +48,14 @@ export default class GridCell {
 
     handleDragleave = event => {
         GridCell.dragCount--
-        //event.target.style.opacity = 0
+
+        const defaultClass = this.level.game.DOMConfig.gridCell.class
+        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+
+        this.DOMElement.classList.remove(defaultClass + acceptModifier)
+        this.DOMElement.classList.remove(defaultClass + refuseModifier)
+
         if (GridCell.dragCount < 1) {
             this.level.removePlacingBuildingRangeHighlight()
         }
@@ -53,19 +63,37 @@ export default class GridCell {
     // Mouse Event Handlers
     handleDragenter = event => {
         GridCell.dragCount++
-        //event.target.style.opacity = .5
-        this.level.highlightPlacingBuildingRange(this)
+
+        const defaultClass = this.level.game.DOMConfig.gridCell.class
+        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+        
+        if (this.isBuildable()) {
+            this.DOMElement.classList.add(defaultClass + acceptModifier)
+            this.level.highlightPlacingBuildingRange(this)
+        } else {
+            this.DOMElement.classList.add(defaultClass + refuseModifier)
+            this.level.removePlacingBuildingRangeHighlight(this)
+        }
     }
     
 
     handleDragover = event => {
-        event.preventDefault()
+        if (this.isBuildable()) {
+            event.preventDefault()
+        }
     }
 
     handleDrop = event => {
         GridCell.dragCount = 0
-        event.target.style.opacity = 0
+        this.hasBuilding = true
         this.level.placeBuilding(this)
+        const defaultClass = this.level.game.DOMConfig.gridCell.class
+        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+
+        this.DOMElement.classList.remove(defaultClass + acceptModifier)
+        this.DOMElement.classList.remove(defaultClass + refuseModifier)        
     }
 
     handleMouseover = (e) => {
@@ -98,6 +126,10 @@ export default class GridCell {
         x: this.coords.xMin + (this.cellSize / 2),
         y: this.coords.yMin + (this.cellSize / 2)
     })
+
+    isBuildable() {
+        return !this.isPath && !this.hasBuilding
+    }
 
     //Render the cell from the data
     render = (layer) => {
