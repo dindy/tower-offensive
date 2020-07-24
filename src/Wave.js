@@ -53,8 +53,8 @@ export default class Wave {
         const enemy = new Enemy(this.level)
         
         // Récupérer les coordonnées de la 1ère cell du path
-        const firstCell = this.level.gridCells[this.level.config.map.path[0]]
-        const secondCell = this.level.gridCells[this.level.config.map.path[1]]
+        const firstCell = this.level.game.gridCells[this.level.config.map.path[0]]
+        const secondCell = this.level.game.gridCells[this.level.config.map.path[1]]
 
         // Déterminer une position aléatoire de départ
         enemy.offset = (Math.random() * (this.level.game.cellSize - 20)) + 10

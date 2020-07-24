@@ -4,6 +4,10 @@ import Bullet from '../Bullet'
 
 export default class Tower extends Building {
     
+    /**
+     * 
+     * @param {Instance} level - L'instance en cours de la class Level
+     */
     constructor(level) {
         
         super(level)
@@ -15,6 +19,11 @@ export default class Tower extends Building {
         this.bullets = []
     }
 
+    /**
+     * Rend visible la shape représentant la range de la tour et la center sur la cell en cours de hover
+     * @param {Object} coords Coordonnées de la cellules
+     * @param {Obecjt} layer Canvas layer pour le rendu
+     */
     highlightRange = (coords, layer) => {
         
         if(this.rangeShape == null) this.initRangeShape(layer)
@@ -25,10 +34,17 @@ export default class Tower extends Building {
 
     }
 
+    /**
+     * Cache la shape représentant la range de la tour
+     */
     removeRangeHighlight = () => {
         this.rangeShape.alpha = 0
     }
-    
+  
+    /**
+     * Créer la shape et lui attribut le style pour la visualisation de la range
+     * @param {Object} layer Canvas layer pour le rendu
+     */
     initRangeShape = (layer) => {
 
         const g = new createjs.Graphics()
@@ -42,6 +58,10 @@ export default class Tower extends Building {
         layer.addChild(this.rangeShape)
     }
 
+    /**
+     * 
+     * @param {Object} cell 
+     */
     place(cell) {
 
         super.place(cell)

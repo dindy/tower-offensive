@@ -1,5 +1,4 @@
 import Wave from './Wave'
-import GridCell from './GridCell'
 import Building from './Building'
 import Tower from './buildings/Tower.js'
 
@@ -10,16 +9,14 @@ export default class Level {
     towers = []
     bullets = []
     currentWave = null
-    gridCells = []
     placingBuilding = null
 
     constructor(game, levelConfig) {
         this.game = game
         this.config = levelConfig
         this.loadWaves()
-        this.createCellsGridLayer()
-        this.createStaticLayer()
-        this.createDynamicLayer()
+        this.staticLayer = game.staticLayer
+        this.dynamicLayer = game.dynamicLayer
     }
     
     startPlacingBuilding = () => {
@@ -59,15 +56,7 @@ export default class Level {
         this.staticLayer.update()
         
     }
-
-    createStaticLayer = () => {
-        this.staticLayer = this.game.createCanvasLayer()
-    }
-
-    createDynamicLayer = () => {
-        this.dynamicLayer = this.game.createCanvasLayer()
-    }
-
+    
     // Create waves from config
     loadWaves = () => {
         
@@ -81,32 +70,7 @@ export default class Level {
         this.currentWave = this.waves[0]
         
     } 
-
-    // Create a background grid for reference frame
-    createCellsGridLayer = () => {
-
-        this.gridLayer = document.getElementById(this.game.DOMGridId)
-        this.gridLayer.style.width = this.game.nbCells * this.game.cellSize + 'px' 
-        this.gridLayer.style.height = this.game.nbCells * this.game.cellSize + 'px' 
-
-        for (let y = 0; y < this.game.nbCells; y++) {
-
-            for (let x = 0; x < this.game.nbCells; x++) {
-
-                let cell = new GridCell(x, y, this)
-
-                this.gridCells.push(cell)
-                this.gridLayer.appendChild(cell.DOMElement)
-            }
-        }
-
-        this.renderGrid()
-    }
-
-    renderGrid = () => {
-        this.gridCells.forEach(cell => cell.render(this.gridLayer))
-    }
-
+    
     //Update the data
     update = (diffTimestamp) => {
 

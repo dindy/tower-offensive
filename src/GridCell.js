@@ -6,16 +6,16 @@ export default class GridCell {
 
     coords = {}
 
-    constructor(column, row, level) {
+    constructor(column, row, game) {
 
-        this.level = level
+        this.level = game.currentLevel
         this.column = column
         this.row = row
-        this.cellSize = level.game.cellSize
+        this.cellSize = this.level.game.cellSize
         this.setCoords()
 
         this.DOMElement = document.createElement('div')
-        this.DOMElement.classList.add(level.game.DOMConfig.gridCell.class)
+        this.DOMElement.classList.add(this.level.game.DOMConfig.gridCell.class)
         this.DOMElement.style.width = this.cellSize + 'px'
         this.DOMElement.style.height = this.cellSize + 'px'
 

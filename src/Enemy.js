@@ -216,16 +216,16 @@ export default class Enemy {
      * @param {number} index 
      */
     getCellFromIndex = (index) => this.level.config.map.path
-        .map(cellIndex => this.level.gridCells[cellIndex])  
+        .map(cellIndex => this.level.game.gridCells[cellIndex])  
         [index]
 
     /**
-     * 
+     * Retourne l'objet cell 
      */
     getCellFromCurrentIndex = () => this.getCellFromIndex(this.currentCellIndex)
 
     /**
-     * 
+     * Retourne la prochaine cell du tableau
      */
     getNextCellFromCurrentIndex = () => {
         const nextCellIndex = (this.isBack) ? this.currentCellIndex - 1 : this.currentCellIndex + 1 
@@ -233,7 +233,7 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Retourne la cell précédente du tableau
      */
     getPreviousCellFromCurrentIndex = () => {
         const previousCellIndex = (this.isBack) ? this.currentCellIndex + 1 : this.currentCellIndex - 1 
@@ -241,17 +241,17 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Retourne True si un virage dans le chemin va avoir lieu
      */
     willTurnAround = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
     
     /**
-     * 
+     * Retourne True si l'enemy va sortir de la map
      */
     willExit = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
 
     /**
-     * 
+     * Calcul et met a jour les coordonnées pour le virage
      * @param {Cell} cell 
      * @param {Cell} previousCell 
      */
@@ -285,7 +285,7 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Calcul et met a jour le coordonnées pour la sortie
      * @param {Cell} cell 
      * @param {Cell} previousCell 
      */
@@ -323,7 +323,7 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Calcul et met a jour le coordonnées pour le chemin normal
      * @param {Cell} cell 
      * @param {Cell} nextCell 
      * @param {Cell|undefined} previousCell 
@@ -427,17 +427,17 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Met a null les coordonnées enregistrées
      */
     removeCurrentPathCoordinates = () => this.pathCoordinates = null
 
     /**
-     * 
+     * Retourn True si les coordonnées ne sont pas définies
      */
     hasCurrentPath = () => this.pathCoordinates !== null
 
     /**
-     * 
+     * Retourne un objet contenant les coordonnées x et y
      */
     getCoords()  {
         return {
@@ -447,7 +447,7 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Retourne un objet contenant les coordonnées des 4 coins du carré
      */
     getBoundingBox() {
         return {
@@ -459,7 +459,9 @@ export default class Enemy {
     }
 
     /**
-     * 
+     * Met a jour la vie de l'enemy en fonction de dommage effectué et prépare le delet en cas de mort
+     * Appelé par la class Bullet lors d'une collision avec l'enemy
+     * @param {Number} damage
      */
     hit(damage) {
         this.health -= damage
