@@ -26,7 +26,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 
 1. ❌ ``A`` 🐞 Les cellules occupées devraient refuser le drag and drop de nouveaux batiments
 1. ✔️ ``B`` ⚡️⚙️ Déplacer la création des layers de la classe `Level` vers la classe `Game`
-1. ❌ ``C`` 🐞 Les projectiles ne devraient pas être masqués par les batiments
+1. ✔️ ``C`` 🐞 Les projectiles ne devraient pas être masqués par les batiments
 1. ❌ ``D`` 🌟 Rendre les tours sélectionnables pour afficher leur portée sur la map
 1. ❌ ``E`` 📖 Trouver un meilleur nom au jeu
 1. 🔨 ``F`` 📢 Rédiger une courte présentation du jeu

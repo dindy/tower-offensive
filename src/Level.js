@@ -24,25 +24,25 @@ export default class Level {
     }
 
     highlightPlacingBuildingRange = cell => {
-        this.placingBuilding.highlightRange(cell.getCenterPoint(), this.staticLayer)
+        this.placingBuilding.highlightRange(cell.getCenterPoint())
+        this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
         this.staticLayer.update()
     } 
 
     removePlacingBuilding = () => {
-        
         this.placingBuilding = null
-        this.staticLayer.update()
+        this.dynamicLayer.update()
     }
 
     removePlacingBuildingRangeHighlight() {
         this.placingBuilding.removeRangeHighlight()
-        this.staticLayer.update()
+        this.placingBuilding.renderRangeHighlight(this.dynamicLayer)        
+        this.dynamicLayer.update()
     }
 
     endPlacingBuilding() {
         this.placingBuilding = null
         this.staticLayer.update()
-        
     }
 
     placeBuilding = (targetGridCell) => {
@@ -95,6 +95,8 @@ export default class Level {
             const enemy = this.enemies[i];
             enemy.render(this.dynamicLayer)
         }
+
+        if (this.placingBuilding !== null) this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
 
         for (let i = 0; i < this.towers.length; i++) {
             const tower = this.towers[i];

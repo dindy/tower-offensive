@@ -45,7 +45,7 @@ export default class GridCell {
 
     handleDragleave = event => {
         GridCell.dragCount--
-        event.target.style.opacity = 0
+        //event.target.style.opacity = 0
         if (GridCell.dragCount < 1) {
             this.level.removePlacingBuildingRangeHighlight()
         }
@@ -53,7 +53,7 @@ export default class GridCell {
     // Mouse Event Handlers
     handleDragenter = event => {
         GridCell.dragCount++
-        event.target.style.opacity = .5
+        //event.target.style.opacity = .5
         this.level.highlightPlacingBuildingRange(this)
     }
     

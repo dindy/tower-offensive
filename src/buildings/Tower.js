@@ -14,9 +14,11 @@ export default class Tower extends Building {
 
         this.range = 150
         this.rangeShape = null
+        this.rangeShapeCoords = null
         this.fireRate =  250 // temps en ms entre chaque tir
         this.timeSinceLastShot = Infinity
         this.bullets = []
+        this.highlightedRange = false 
     }
 
     /**
@@ -24,21 +26,16 @@ export default class Tower extends Building {
      * @param {Object} coords Coordonnées de la cellules
      * @param {Obecjt} layer Canvas layer pour le rendu
      */
-    highlightRange = (coords, layer) => {
-        
-        if(this.rangeShape == null) this.initRangeShape(layer)
-
-        this.rangeShape.alpha = 1
-        this.rangeShape.x = coords.x
-        this.rangeShape.y = coords.y
-
+    highlightRange = (coords) => {
+        this.rangeShapeCoords = coords
+        this.highlightedRange = true        
     }
 
     /**
      * Cache la shape représentant la range de la tour
      */
     removeRangeHighlight = () => {
-        this.rangeShape.alpha = 0
+        this.highlightedRange = false
     }
   
     /**
@@ -71,7 +68,7 @@ export default class Tower extends Building {
 
     isInRange(enemy) {
         
-        const dist_points = (enemy.x - this.rangeShape.x) * (enemy.x - this.rangeShape.x) + (enemy.y - this.rangeShape.y) * (enemy.y - this.rangeShape.y);
+        const dist_points = (enemy.x - this.rangeShapeCoords.x) * (enemy.x - this.rangeShapeCoords.x) + (enemy.y - this.rangeShapeCoords.y) * (enemy.y - this.rangeShapeCoords.y);
         const r = this.range * this.range
         
         return dist_points < r
@@ -114,5 +111,22 @@ export default class Tower extends Building {
         } 
 
         this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
+    }
+
+    renderRangeHighlight(layer) {
+
+        if (this.rangeShape !== null) layer.removeChild(this.rangeShape)
+        this.initRangeShape(layer)
+        
+        if (this.highlightedRange) {
+            
+            this.rangeShape.alpha = 1
+            this.rangeShape.x = this.rangeShapeCoords.x
+            this.rangeShape.y = this.rangeShapeCoords.y
+
+        } else {
+
+            this.rangeShape.alpha = 0
+        }
     }
 }

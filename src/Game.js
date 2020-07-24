@@ -50,7 +50,7 @@ export default class Game {
         DOMCanvas.setAttribute('height', this.height + 'px')
         DOMCanvas.style.border = 'none'
 
-        DOMContainer.prepend(DOMCanvas)
+        DOMContainer.appendChild(DOMCanvas)
 
         return new createjs.Stage(DOMCanvas)
     }
