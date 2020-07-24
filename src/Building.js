@@ -2,6 +2,10 @@ import * as createjs from 'createjs-module'
 
 export default class Building {
     
+    /**
+     * Constructor
+     * @param {Object} level 
+     */
     constructor(level)  {
 
         this.level = level
@@ -11,6 +15,10 @@ export default class Building {
         this.cell = null
     }
 
+    /**
+     * Créer la shape et l'ajoute au layer
+     * @param {DOMElement} layer 
+     */
     initRender = layer => {
         
         const coords = this.getTopLeftCoords() 
@@ -28,15 +36,26 @@ export default class Building {
         
     }
     
+    /**
+     * Add la cell sur laquelle est placée la tower a ses propriétées
+     * @param {Object} cell 
+     */
     place(cell) {
         this.cell = cell
         this.isPlaced = true
     }
 
+    /**
+     * Rendu
+     * @param {DOMElement} layer 
+     */
     render = (layer) => {
         if (!this.hasBeenRendered && this.isPlaced) this.initRender(layer)        
     }
 
+    /**
+     * Retourne les coordonnéees du coin haut-gauche du rectangle
+     */
     getTopLeftCoords() {
         return {
             x : this.cell.coords.xMin,
@@ -44,6 +63,9 @@ export default class Building {
         }
     }
 
+    /**
+     * Retourne les coordonnées du centre du rectangle
+     */
     getMiddleCoords() {
         const offset = this.cell.cellSize / 2
         return {
@@ -52,6 +74,9 @@ export default class Building {
         }
     }
 
+    /**
+     * Update les datas a chaque refresh
+     */
     update() {
 
     }

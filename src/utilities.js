@@ -1,3 +1,14 @@
+
+/**
+ * Génere une courbe de bezier en fonction de 3 point de controle et retourne la position sur cette courbe en fonction de T
+ * @param {Number} x1 Coordonnées
+ * @param {Number} y1 Coordonnées
+ * @param {Number} x2 Coordonnées
+ * @param {Number} y2 Coordonnées
+ * @param {Number} x3 Coordonnées
+ * @param {Number} y3 Coordonnées
+ * @param {Number} t Ratio entre 0 et 1 ou 0 est le debut de la courbe et 1 la fin
+ */
 export function getBezierPoint(x1, y1, x2, y2, x3, y3, t) {
     
     /* Formula :
@@ -11,6 +22,13 @@ export function getBezierPoint(x1, y1, x2, y2, x3, y3, t) {
     }
 }
 
+/**
+ * Retourne la distance entre 2 points en pixels
+ * @param {Number} x1 Coordonnées 
+ * @param {Number} y1 Coordonnées 
+ * @param {Number} x2 Coordonnées 
+ * @param {Number} y2 Coordonnées 
+ */
 export function getDistance(x1, y1, x2, y2) {
     
     const a = x1 - x2;
@@ -19,6 +37,14 @@ export function getDistance(x1, y1, x2, y2) {
     return Math.sqrt( a * a + b * b );    
 }
 
+/**
+ * Retourne la position sur une ligne en fonction de T
+ * @param {Number} x1 Coordonnées
+ * @param {Number} y1 Coordonnées
+ * @param {Number} x2 Coordonnées
+ * @param {Number} y2 Coordonnées
+ * @param {Number} t Ratio entre 0 et 1 ou 0 est le debut de la courbe et 1 la fin
+ */
 export function getPositionOnLine(x1, y1, x2, y2, t) {
     return {
         x : (x1 + (x2 - x1) * t),
@@ -26,6 +52,10 @@ export function getPositionOnLine(x1, y1, x2, y2, t) {
     }
 }
 
+/**
+ * Renvoie les coordonnées des points d'origine et d'arrivée des 4 ligne formant les côtés d'un rectangle
+ * @param {Object} rect 
+ */
 export function getRectangleLines(rect) {
     return [ // Array of lines
         [ // Array of points
@@ -64,6 +94,13 @@ export function getRectangleLines(rect) {
     ]
 }
 
+/**
+ * Check si deux ligne s'intersectes en fonction des coordonnées de leur point d'origine et d'arrivée
+ * @param {Number} p1 Coordonnées
+ * @param {Number} p2 Coordonnées
+ * @param {Number} p3 Coordonnées
+ * @param {Number} p4 Coordonnées
+ */
 function lineIntersectsLine(p1, p2, p3, p4) {
 
     // calculate the distance to intersection point
@@ -76,6 +113,11 @@ function lineIntersectsLine(p1, p2, p3, p4) {
     return false
 }
 
+/**
+ * Check si la ligne et le rectangle s'intersectes
+ * @param {Object} line Contient toutes les coordonnées des point formant la ligne
+ * @param {Object} rect Contient toutes les coordonnées des point formant les 4 côtés du rectangle
+ */
 export function lineIntersectsRectangle(line, rect) {
 
 

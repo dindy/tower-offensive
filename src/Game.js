@@ -15,6 +15,11 @@ export default class Game {
 
     gridCells = []
 
+    /**
+     * COnstructor
+     * @param {JSON} config 
+     * @param {Object} DOMConfig 
+     */
     constructor(config, DOMConfig) 
     {
         this.DOMConfig = DOMConfig
@@ -41,6 +46,9 @@ export default class Game {
 
     }
 
+    /**
+     * Créer un Canvas et l'ajoute au DOM
+     */
     createCanvasLayer = () => {
 
         const DOMCanvas = document.createElement('canvas')
@@ -55,11 +63,16 @@ export default class Game {
         return new createjs.Stage(DOMCanvas)
     }
 
+    /**
+     * Stop le game
+     */
     stop = () => {
         this.isStopped = true
     }
 
-    // Create levels from config files
+    /**
+     * Créer un nouveau level en fonction de la config
+     */
     loadLevels = () => {
 
         // Create levels
@@ -73,12 +86,18 @@ export default class Game {
         
     }
 
+    /**
+     * Demarre le jeu
+     */
     start = () => {
         requestAnimationFrame(this.step)
     }
 
 
-    // Global Refresh loop
+    /**
+     * Gère le raffraichissement avec un appel recursif
+     * @param {Float} timestamp 
+     */
     step = (timestamp) => {
 
         // First iteration
@@ -95,17 +114,24 @@ export default class Game {
         if (!this.isStopped) requestAnimationFrame(this.step)
     }
 
-    // Update the data of the game
+    /**
+     * Upate les data 
+     * @param {Float} diffTimestamp 
+     */
     update = (diffTimestamp) => {
         this.currentLevel.update(diffTimestamp)
     }
 
-    // Global render, call render methods of all other classes
+    /**
+     * Rendu graphique
+     */
     render = () => {
         this.currentLevel.render()
     }
 
-    // Create a background grid for reference frame
+    /**
+     * Créer la grille de réference pour le jeu
+     */
     createCellsGridLayer = () => {
 
         this.gridLayer = document.getElementById(this.DOMGridId)
@@ -127,14 +153,23 @@ export default class Game {
         this.renderGrid()
     }
 
+    /**
+     * Rendu de la grille de référence
+     */
     renderGrid = () => {
         this.gridCells.forEach(cell => cell.render(this.gridLayer))
     }
 
+    /**
+     * Créer un Canvas utilisé pour rendre les élements static du jeu
+     */
     createStaticLayer = () => {
         this.staticLayer = this.createCanvasLayer()
     }
 
+    /**
+     * Créer un Canvas utilisé par les éléments dynamic du jeu
+     */
     createDynamicLayer = () => {
         this.dynamicLayer = this.createCanvasLayer()
     }

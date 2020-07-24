@@ -8,6 +8,11 @@ export default class Wave {
 
     spawnedEnemiesCount = 0
 
+    /**
+     * Constuctor
+     * @param {JSON} config 
+     * @param {Object} level 
+     */
     constructor(config, level) {
 
         this.config = config
@@ -15,6 +20,10 @@ export default class Wave {
         this.spawnedEnemiesCount = 0
     }
 
+    /**
+     * Gére le spawn des enemy en fonction du temps écoulé
+     * @param {Numbre} diffTimestamp Temps écoulé depuis le dernier raffraichissement
+     */
     getSpawningEnemies = (diffTimestamp) => {
         
         // If not all enemies have spawn
@@ -48,6 +57,9 @@ export default class Wave {
         return []
     }
 
+    /**
+     * Créer un nouvelle enemy et le positione de façon aléatoire sur la ligne de départ
+     */
     createEnemy() {
 
         const enemy = new Enemy(this.level)

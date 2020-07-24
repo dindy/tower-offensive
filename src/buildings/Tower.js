@@ -56,7 +56,7 @@ export default class Tower extends Building {
     }
 
     /**
-     * 
+     * Place le batiment sur la cell
      * @param {Object} cell 
      */
     place(cell) {
@@ -66,6 +66,10 @@ export default class Tower extends Building {
         this.removeRangeHighlight()
     }
 
+    /**
+     * Check si l'enemy est dans la range de la tower
+     * @param {Object} enemy 
+     */
     isInRange(enemy) {
         
         const dist_points = (enemy.x - this.rangeShapeCoords.x) * (enemy.x - this.rangeShapeCoords.x) + (enemy.y - this.rangeShapeCoords.y) * (enemy.y - this.rangeShapeCoords.y);
@@ -74,6 +78,10 @@ export default class Tower extends Building {
         return dist_points < r
     }
 
+    /**
+     * Tire sur l'enemy selectionné
+     * @param {Object} enemy 
+     */
     shoot(enemy) {
         
         if (this.timeSinceLastShot >= this.fireRate) {
@@ -82,6 +90,10 @@ export default class Tower extends Building {
         }
     }
 
+    /**
+     * Update les data en fonction du temps passé
+     * @param {Float} diffTimestamp 
+     */
     update(diffTimestamp) {
         
         super.update()
@@ -99,10 +111,18 @@ export default class Tower extends Building {
         }        
     }
 
+    /**
+     * Rendu sur le layer de la tower
+     * @param {DOMElement} layer 
+     */
     render(layer) {
         super.render()
     }
 
+    /**
+     * Rendu des balles tirées par la tower
+     * @param {DOMElement} layer 
+     */
     renderBullets(layer) {
 
         for (let i = 0; i < this.bullets.length; i++) {
@@ -113,6 +133,10 @@ export default class Tower extends Building {
         this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
     }
 
+    /**
+     * Rendu de la zone représenetant la range de la tower
+     * @param {DOMElement} layer 
+     */
     renderRangeHighlight(layer) {
 
         if (this.rangeShape !== null) layer.removeChild(this.rangeShape)

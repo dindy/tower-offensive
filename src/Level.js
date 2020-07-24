@@ -11,6 +11,11 @@ export default class Level {
     currentWave = null
     placingBuilding = null
 
+    /**
+     * Constructor
+     * @param {Object} game 
+     * @param {JSON} levelConfig 
+     */
     constructor(game, levelConfig) {
         this.game = game
         this.config = levelConfig
@@ -19,32 +24,52 @@ export default class Level {
         this.dynamicLayer = game.dynamicLayer
     }
     
+    /**
+     * Créer une nouvelle instance de tower
+     */
     startPlacingBuilding = () => {
         this.placingBuilding = new Tower(this)
     }
 
+    /**
+     * Update le layer avec la shape représentant la range du batiment
+     * @param {Object} cell 
+     */
     highlightPlacingBuildingRange = cell => {
         this.placingBuilding.highlightRange(cell.getCenterPoint())
         this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
         this.staticLayer.update()
     } 
 
+    /**
+     * Reset la propriété et update le layer 
+     */
     removePlacingBuilding = () => {
         this.placingBuilding = null
         this.dynamicLayer.update()
     }
 
+    /**
+     * Remove la shape représentant la range et update le layer
+     */
     removePlacingBuildingRangeHighlight() {
         this.placingBuilding.removeRangeHighlight()
         this.placingBuilding.renderRangeHighlight(this.dynamicLayer)        
         this.dynamicLayer.update()
     }
 
+    /**
+     * l'évenement placing building est finit, met a jour le layer 
+     */
     endPlacingBuilding() {
         this.placingBuilding = null
         this.staticLayer.update()
     }
 
+    /**
+     * Place le building sur le layer
+     * @param {Object} targetGridCell 
+     */
     placeBuilding = (targetGridCell) => {
         
         const building = this.placingBuilding 
@@ -57,7 +82,9 @@ export default class Level {
         
     }
     
-    // Create waves from config
+    /**
+     * Créer la vage en fonction de la config
+     */
     loadWaves = () => {
         
         // Create waves
@@ -71,7 +98,10 @@ export default class Level {
         
     } 
     
-    //Update the data
+    /**
+     * Update les data
+     * @param {Float} diffTimestamp 
+     */
     update = (diffTimestamp) => {
 
         // Add new enemies to enemies
@@ -89,6 +119,9 @@ export default class Level {
         }
     }
     
+    /**
+     * Rendue 
+     */
     render = () => {
 
         for (let i = 0; i < this.enemies.length; i++) {

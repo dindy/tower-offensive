@@ -6,6 +6,12 @@ export default class GridCell {
 
     coords = {}
 
+    /**
+     * Constructor
+     * @param {Number} column 
+     * @param {Number} row 
+     * @param {Object} game 
+     */
     constructor(column, row, game) {
 
         this.level = game.currentLevel
@@ -36,7 +42,9 @@ export default class GridCell {
         return GridCell.cellsCount++
     }
 
-    //Calculate real coordonates of cell on the screen and save it as props
+    /**
+     * Calcul les coordonnées réelles sur l'écran et les sauvegarde dans les propriétés
+     */
     setCoords = () => {
         this.coords = {
             xMin: this.column * this.cellSize,
@@ -46,6 +54,10 @@ export default class GridCell {
         }
     }
 
+    /**
+     * Quand le drag sorts de la cell
+     * @param {Event} event 
+     */
     handleDragleave = event => {
         GridCell.dragCount--
 
@@ -60,7 +72,11 @@ export default class GridCell {
             this.level.removePlacingBuildingRangeHighlight()
         }
     }
-    // Mouse Event Handlers
+    
+    /**
+     * Quand le drag rentre dans la cell
+     * @param {Event} event 
+     */
     handleDragenter = event => {
         GridCell.dragCount++
 
@@ -78,12 +94,20 @@ export default class GridCell {
     }
     
 
+    /**
+     * Quand le drag se finit sans un drop sur une cible valide
+     * @param {Event} event 
+     */
     handleDragover = event => {
         if (this.isBuildable()) {
             event.preventDefault()
         }
     }
 
+    /**
+     * Quand le drag se finit sur une cible valide
+     * @param {Event} event 
+     */
     handleDrop = event => {
         GridCell.dragCount = 0
         this.hasBuilding = true
@@ -96,15 +120,25 @@ export default class GridCell {
         this.DOMElement.classList.remove(defaultClass + refuseModifier)        
     }
 
+    /**
+     * Mouse over
+     * @param {Event} e 
+     */
     handleMouseover = (e) => {
     }
 
+    /**
+     * Affiche les infos de la cell au click pour le debug
+     * @param {Event} e 
+     */
     handleClick = (e) => {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
     }
 
-    // Position and direction method
-
+   /**
+    * Retourne la direction de la prochaine cell sur le chemin
+    * @param {Object} nextCell 
+    */
     getDirection = (nextCell) => {
         if(this.column > nextCell.column){
             return "left"
@@ -117,21 +151,33 @@ export default class GridCell {
         }
     }
 
+    /**
+     * Retourne le côté sur lequel se trouve l'enemy en fonction de la direction
+     * @param {Object} previousCell 
+     */
     getSide = (previousCell) => {
         return this.getDirection(previousCell)
     }
 
-
+    /**
+     * Retourne les coordonnées du centre de la cell
+     */
     getCenterPoint = () => ({
         x: this.coords.xMin + (this.cellSize / 2),
         y: this.coords.yMin + (this.cellSize / 2)
     })
 
+    /**
+     * Check si la cell est une zone constructible pour le placement de batiments
+     */
     isBuildable() {
         return !this.isPath && !this.hasBuilding
     }
 
-    //Render the cell from the data
+    /**
+     * Rendu graphique
+     * @param {DOMElement} layer 
+     */
     render = (layer) => {
         
     }

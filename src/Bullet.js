@@ -4,6 +4,11 @@ import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utili
 
 export default class Bullet {
 
+    /**
+     * Constructor 
+     * @param {Object} tower La tour d'où les balles sont tirées
+     * @param {Object} enemy Cible de la tour
+     */
     constructor(tower, enemy) {
 
         this.level = tower.level
@@ -39,6 +44,10 @@ export default class Bullet {
 
     }
 
+    /**
+     * Update les data
+     * @param {Number} diffTimestamp 
+     */
     update(diffTimestamp) {
         
         // Track le temps passé sur le chemin
@@ -63,6 +72,10 @@ export default class Bullet {
         this.detectCollisions()
     }
 
+    /**
+     * Créer la shape de la ball et l'ajoute au layer
+     * @param {DOMElement} layer 
+     */
     initRender(layer) {
 
         const g = new createjs.Graphics()
@@ -76,6 +89,10 @@ export default class Bullet {
         this.hasBeenRendered = true
     }
 
+    /**
+     * Met a jour le rendue 
+     * @param {DOMElement} layer 
+     */
     render(layer) {
 
         // Si n'a pas encore été render
@@ -90,6 +107,9 @@ export default class Bullet {
 
     }
 
+    /**
+     * Parcours les enemy et détect si il y a une collision, si True : appelle la methode HIT() de enemy
+     */
     detectCollisions() {
         for (let i = 0; i < this.level.enemies.length; i++){
             let enemy = this.level.enemies[i]
