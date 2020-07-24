@@ -6,7 +6,7 @@
 
 **Tower Offensive** est un jeu de [tower defense](https://fr.wikipedia.org/wiki/Tower_defense) dans lequel vous devez empêcher les capitalistes de s'emparer de la valeur économique créée par les travailleurs.
 
-**Tower Offensive** est inspiré du travail de l'économiste et sociologue [Bernard Friot](https://fr.wikipedia.org/wiki/Tower_defense) et a pour but de le faire découvrir aux joueurs. 
+**Tower Offensive** est inspiré du travail de l'économiste et sociologue [Bernard Friot](https://fr.wikipedia.org/wiki/Bernard_Friot_(sociologue)) et a pour but de le faire découvrir aux joueurs. 
 
 Le jeu est entièrement jouable dans un navigateur web moderne.
 
