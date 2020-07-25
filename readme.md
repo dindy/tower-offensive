@@ -31,7 +31,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ❌ ``J`` 🌟 Créer un nouveau type de tour "mortier"
 1. ❌ ``K`` 🌟 Créer un nouveau type de tour "balles téléguidées"
 1. ❌ ``L`` 🌟 Enchainer les vagues du level
-1. ❌ ``D`` 🌟 Rendre les tours sélectionnables pour afficher leur portée sur la map
+1. ✔️ ``D`` 🌟 Rendre les tours sélectionnables pour afficher leur portée sur la map
 1. ❌ ``E`` 📖 Trouver un meilleur nom au jeu
 1. 🔨 ``F`` 📢 Rédiger une courte présentation du jeu
 1. ❌ ``G`` 🎨 Créer un logo pour le jeu
