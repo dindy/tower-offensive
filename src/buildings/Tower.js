@@ -19,10 +19,24 @@ export default class Tower extends Building {
         this.timeSinceLastShot = Infinity
         this.bullets = []
         this.highlightedRange = false 
+        
+    }
+
+    select() {
+        console.log('select tower');
+        super.select()
+        this.highlightRange(this.cell.getCenterPoint())
+    }
+    
+    unselect() {
+        console.log('unselect tower', this.cell);
+        super.unselect()
+        console.log('unselect tower', this.isSelected);
+        this.removeRangeHighlight()
     }
 
     /**
-     * Rend visible la shape représentant la range de la tour et la center sur la cell en cours de hover
+     * Rend visible la shape représentant la range de la tour et la center sur coords
      * @param {Object} coords Coordonnées de la cellules
      * @param {Obecjt} layer Canvas layer pour le rendu
      */
@@ -149,7 +163,7 @@ export default class Tower extends Building {
             this.rangeShape.y = this.rangeShapeCoords.y
 
         } else {
-
+            console.log('mask in render');
             this.rangeShape.alpha = 0
         }
     }

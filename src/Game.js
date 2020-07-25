@@ -16,7 +16,7 @@ export default class Game {
     gridCells = []
 
     /**
-     * COnstructor
+     * Constructor
      * @param {JSON} config 
      * @param {Object} DOMConfig 
      */

@@ -19,7 +19,8 @@ export default class GridCell {
         this.row = row
         this.cellSize = this.level.game.cellSize
         this.isPath = false
-        this.hasBuilding = false
+        this.building = null
+        this.coords = null
 
         this.setCoords()
 
@@ -110,8 +111,7 @@ export default class GridCell {
      */
     handleDrop = event => {
         GridCell.dragCount = 0
-        this.hasBuilding = true
-        this.level.placeBuilding(this)
+        this.building = this.level.placeBuilding(this)
         const defaultClass = this.level.game.DOMConfig.gridCell.class
         const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
         const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
@@ -132,7 +132,11 @@ export default class GridCell {
      * @param {Event} e 
      */
     handleClick = (e) => {
-        console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords })
+        console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords, building: this.building })
+        this.level.unselectBuilding()
+        if (this.hasBuilding()) {
+            this.level.selectBuilding(this.building)
+        }
     }
 
    /**
@@ -168,10 +172,17 @@ export default class GridCell {
     })
 
     /**
-     * Check si la cell est une zone constructible pour le placement de batiments
+     * Check si un batiment est présent sur la tour
+     */
+    hasBuilding() {
+        return this.building !== null
+    }
+
+    /**
+     * Check si la cell est une zone constructible' pour le placement de batiments
      */
     isBuildable() {
-        return !this.isPath && !this.hasBuilding
+        return !this.isPath && !this.hasBuilding()
     }
 
     /**

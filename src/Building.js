@@ -13,7 +13,18 @@ export default class Building {
         this.hasBeenRendered = false
         this.isPlaced = false
         this.cell = null
+        this.isSelected = false
     }
+
+
+    select() {
+        this.isSelected = true
+    }
+    
+    unselect() {
+        this.isSelected = false
+    }
+
 
     /**
      * Créer la shape et l'ajoute au layer

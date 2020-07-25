@@ -38,6 +38,7 @@ export default class BuildMenu {
      * @param {Event} event 
      */
     dragStartHandler = event => {
+        this.level.unselectBuilding()
         this.level.startPlacingBuilding()
     }
 

@@ -10,6 +10,7 @@ export default class Level {
     bullets = []
     currentWave = null
     placingBuilding = null
+    selectedBuilding = null
 
     /**
      * Constructor
@@ -24,6 +25,18 @@ export default class Level {
         this.dynamicLayer = game.dynamicLayer
     }
     
+    selectBuilding(building) {
+        this.selectedBuilding = building
+        building.select()
+    }
+
+    unselectBuilding() {
+        if (this.selectedBuilding !== null) {
+            this.selectedBuilding.unselect()        
+            this.selectedBuilding = null
+        }
+    }
+
     /**
      * Créer une nouvelle instance de tower
      */
@@ -68,7 +81,7 @@ export default class Level {
 
     /**
      * Place le building sur le layer
-     * @param {Object} targetGridCell 
+     * @param {Object} GridCell 
      */
     placeBuilding = (targetGridCell) => {
         
@@ -79,11 +92,11 @@ export default class Level {
             tower.render(this.staticLayer)
         })
         this.staticLayer.update()
-        
+        return building
     }
     
     /**
-     * Créer la vage en fonction de la config
+     * Créer la vague en fonction de la config
      */
     loadWaves = () => {
         
@@ -134,6 +147,7 @@ export default class Level {
         for (let i = 0; i < this.towers.length; i++) {
             const tower = this.towers[i];
             tower.renderBullets(this.dynamicLayer)
+            tower.renderRangeHighlight(this.dynamicLayer)
         }
         
         this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
