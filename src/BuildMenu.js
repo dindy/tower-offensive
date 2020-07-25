@@ -16,27 +16,27 @@ export default class BuildMenu {
      * Ajoute le level en cours au propriétés
      * @param {Object} level 
      */
-    setLevel = level => {
+    setLevel(level) {
         this.level = level
     }
 
     /**
      * Ajoute le building au menu
      */
-    addBuilding = () => {
+    addBuilding() {
         const element = document.createElement('div')
         element.classList.add(this.DOMConfig.buildMenuItem.class)
         element.setAttribute("draggable", true)
         this.DOMMenu.appendChild(element)
 
-        element.addEventListener("dragend", this.dragEndHandler)
+        element.addEventListener("dragend", this.dragEndHandler.bind(this))
     }
 
     /**
      * Drag start
      * @param {Event} event 
      */
-    dragStartHandler = event => {
+    dragStartHandler(event) {
         this.level.unselectBuilding()
         this.level.startPlacingBuilding()
     }
@@ -45,7 +45,7 @@ export default class BuildMenu {
      * Drag finish
      * @param {Event} event 
      */
-    dragEndHandler = event => {
+    dragEndHandler(event) {
         if (event.dataTransfer.dropEffect === 'none') {
             this.level.endPlacingBuilding()
         }
@@ -54,6 +54,6 @@ export default class BuildMenu {
     /**
      * Drag over
      */
-    dragOverHandler = () => {}
+    dragOverHandler() {}
 
 }

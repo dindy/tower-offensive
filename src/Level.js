@@ -1,5 +1,4 @@
 import Wave from './Wave'
-import Building from './Building'
 import Tower from './buildings/Tower.js'
 
 export default class Level {
@@ -40,7 +39,7 @@ export default class Level {
     /**
      * Créer une nouvelle instance de tower
      */
-    startPlacingBuilding = () => {
+    startPlacingBuilding() {
         this.placingBuilding = new Tower(this)
     }
 
@@ -48,7 +47,7 @@ export default class Level {
      * Update le layer avec la shape représentant la range du batiment
      * @param {Object} cell 
      */
-    highlightPlacingBuildingRange = cell => {
+    highlightPlacingBuildingRange(cell) {
         this.placingBuilding.highlightRange(cell.getCenterPoint())
         this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
         this.staticLayer.update()
@@ -57,7 +56,7 @@ export default class Level {
     /**
      * Reset la propriété et update le layer 
      */
-    removePlacingBuilding = () => {
+    removePlacingBuilding() {
         this.placingBuilding = null
         this.dynamicLayer.update()
     }
@@ -72,7 +71,7 @@ export default class Level {
     }
 
     /**
-     * l'évenement placing building est finit, met a jour le layer 
+     * L'évènement placing building est fini, met a jour le layer 
      */
     endPlacingBuilding() {
         this.placingBuilding = null
@@ -83,13 +82,13 @@ export default class Level {
      * Place le building sur le layer
      * @param {Object} GridCell 
      */
-    placeBuilding = (targetGridCell) => {
+    placeBuilding(targetGridCell) {
         
         const building = this.placingBuilding 
         building.place(targetGridCell)
         this.towers.push(building)
         this.towers.forEach(tower => {
-            tower.render(this.staticLayer)
+            tower.render(this.dynamicLayer, this.staticLayer)
         })
         this.staticLayer.update()
         return building
@@ -98,7 +97,7 @@ export default class Level {
     /**
      * Créer la vague en fonction de la config
      */
-    loadWaves = () => {
+    loadWaves() {
         
         // Create waves
         this.config.waves.forEach(waveConfig => {
@@ -112,47 +111,79 @@ export default class Level {
     } 
     
     /**
-     * Update les data
+     * Call all updates
      * @param {Float} diffTimestamp 
      */
-    update = (diffTimestamp) => {
+    update(diffTimestamp) {
 
+        this.updateEnemies(diffTimestamp)
+
+        this.updateTowers(diffTimestamp)
+    }
+
+    /**
+     * Add spawning enemies to level and then update all enemies state
+     * @param {Float} diffTimestamp 
+     */    
+    updateEnemies(diffTimestamp) {
+        
         // Add new enemies to enemies
         this.currentWave.getSpawningEnemies(diffTimestamp).forEach(enemy => {
             this.enemies.push(enemy)
-        })
-
+        })    
+        
+        // Update enemies
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(diffTimestamp)
-        }
+        }        
+    }
+
+    /**
+     * Update all towers state
+     * @param {Float} diffTimestamp 
+     */    
+    updateTowers(diffTimestamp) {
 
         for (let i = 0; i < this.towers.length; i++) {
-            const tower = this.towers[i]
-            tower.update(diffTimestamp)
-        }
-    }
-    
+            this.towers[i].update(diffTimestamp)
+        }        
+    }    
+
     /**
-     * Rendue 
+     * Main render
      */
-    render = () => {
+    render() {
+
+        this.renderEnemies()
+        
+        this.renderPlacingBuilding()
+        
+        this.renderTowers()
+
+        this.dynamicLayer.update()
+    }
+
+    renderEnemies() {
 
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
             enemy.render(this.dynamicLayer)
         }
 
-        if (this.placingBuilding !== null) this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
+        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
+    }
+
+    renderPlacingBuilding() {
+
+        if (this.placingBuilding !== null) 
+            this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
+    }
+
+    renderTowers() {
 
         for (let i = 0; i < this.towers.length; i++) {
-            const tower = this.towers[i];
-            tower.renderBullets(this.dynamicLayer)
-            tower.renderRangeHighlight(this.dynamicLayer)
+            this.towers[i].render(this.dynamicLayer, this.staticLayer)
         }
-        
-        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
-
-        this.dynamicLayer.update()
     }
 
 }

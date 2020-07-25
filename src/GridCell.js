@@ -29,24 +29,24 @@ export default class GridCell {
         this.DOMElement.style.width = this.cellSize + 'px'
         this.DOMElement.style.height = this.cellSize + 'px'
 
-        this.DOMElement.addEventListener('mouseup', this.handleClick)
-        this.DOMElement.addEventListener('mouseover', this.handleMouseover)
-        this.DOMElement.addEventListener('dragleave', this.handleDragleave)
-        this.DOMElement.addEventListener('dragenter', this.handleDragenter)
-        this.DOMElement.addEventListener('dragover', this.handleDragover)
-        this.DOMElement.addEventListener('drop', this.handleDrop)
+        this.DOMElement.addEventListener('mouseup', this.handleClick.bind(this))
+        this.DOMElement.addEventListener('mouseover', this.handleMouseover.bind(this))
+        this.DOMElement.addEventListener('dragleave', this.handleDragleave.bind(this))
+        this.DOMElement.addEventListener('dragenter', this.handleDragenter.bind(this))
+        this.DOMElement.addEventListener('dragover', this.handleDragover.bind(this))
+        this.DOMElement.addEventListener('drop', this.handleDrop.bind(this))
 
         this.id = GridCell.generateId() 
     }
 
-    static generateId = () => {
+    static generateId() {
         return GridCell.cellsCount++
     }
 
     /**
      * Calcul les coordonnées réelles sur l'écran et les sauvegarde dans les propriétés
      */
-    setCoords = () => {
+    setCoords() {
         this.coords = {
             xMin: this.column * this.cellSize,
             xMax: this.column * this.cellSize + this.cellSize,
@@ -59,7 +59,7 @@ export default class GridCell {
      * Quand le drag sorts de la cell
      * @param {Event} event 
      */
-    handleDragleave = event => {
+    handleDragleave(event) {
         GridCell.dragCount--
 
         const defaultClass = this.level.game.DOMConfig.gridCell.class
@@ -78,7 +78,7 @@ export default class GridCell {
      * Quand le drag rentre dans la cell
      * @param {Event} event 
      */
-    handleDragenter = event => {
+    handleDragenter(event) {
 
         GridCell.dragCount++
 
@@ -100,7 +100,7 @@ export default class GridCell {
      * Quand le drag se finit sans un drop sur une cible valide
      * @param {Event} event 
      */
-    handleDragover = event => {
+    handleDragover(event) {
         if (this.isBuildable()) {
             event.preventDefault()
         }
@@ -110,7 +110,7 @@ export default class GridCell {
      * Quand le drag se finit sur une cible valide
      * @param {Event} event 
      */
-    handleDrop = event => {
+    handleDrop(event) {
         GridCell.dragCount = 0
         this.building = this.level.placeBuilding(this)
         const defaultClass = this.level.game.DOMConfig.gridCell.class
@@ -125,14 +125,14 @@ export default class GridCell {
      * Mouse over
      * @param {Event} e 
      */
-    handleMouseover = (e) => {
+    handleMouseover(e) {
     }
 
     /**
      * Affiche les infos de la cell au click pour le debug
      * @param {Event} e 
      */
-    handleClick = (e) => {
+    handleClick(e) {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords, building: this.building })
         this.level.unselectBuilding()
         if (this.hasBuilding()) {
@@ -144,7 +144,7 @@ export default class GridCell {
     * Retourne la direction de la prochaine cell sur le chemin
     * @param {Object} nextCell 
     */
-    getDirection = (nextCell) => {
+    getDirection(nextCell) {
         if(this.column > nextCell.column){
             return "left"
         } else if (this.column < nextCell.column){
@@ -160,17 +160,19 @@ export default class GridCell {
      * Retourne le côté sur lequel se trouve l'enemy en fonction de la direction
      * @param {Object} previousCell 
      */
-    getSide = (previousCell) => {
+    getSide(previousCell) {
         return this.getDirection(previousCell)
     }
 
     /**
      * Retourne les coordonnées du centre de la cell
      */
-    getCenterPoint = () => ({
-        x: this.coords.xMin + (this.cellSize / 2),
-        y: this.coords.yMin + (this.cellSize / 2)
-    })
+    getCenterPoint() {
+        return {
+            x: this.coords.xMin + (this.cellSize / 2),
+            y: this.coords.yMin + (this.cellSize / 2)
+        }
+    }
 
     /**
      * Check si un batiment est présent sur la tour
@@ -190,7 +192,7 @@ export default class GridCell {
      * Rendu graphique
      * @param {DOMElement} layer 
      */
-    render = (layer) => {
+    render(layer) {
         
     }
 

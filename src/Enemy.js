@@ -53,7 +53,7 @@ export default class Enemy {
      * Initie le rendu de l'enemy sur layer. Set une nouvelle shape et l'ajoute à layer.
      * @param {Layer} layer 
      */
-    initRender = layer => {
+    initRender(layer) {
         
         // Create new shape
         this.shape = new createjs.Shape()
@@ -77,7 +77,7 @@ export default class Enemy {
      * Gère la position de l'enemy
      * @param {number} diffTimestamp 
      */
-    updatePosition = (diffTimestamp) => {
+    updatePosition(diffTimestamp) {
         
         // S'il n'y a pas de chemin calculé 
         // (si c'est le 1er appel ou si le précédent chemin a été entièrement parcouru)
@@ -95,7 +95,7 @@ export default class Enemy {
      * Actualise l'état de l'enemy
      * @param {number} diffTimestamp 
      */
-    update = (diffTimestamp) => {
+    update(diffTimestamp) {
         this.updatePosition(diffTimestamp)
     } 
 
@@ -103,7 +103,7 @@ export default class Enemy {
      * Gère le rendu de l'enemy
      * @param {Layer} layer sur lequel on rend l'enemy  
      */
-    render = (layer) => {
+    render(layer) {
 
         // Rend la shape de l'enemy si nécessaire
         if (!this.hasBeenRendered) this.initRender(layer)
@@ -119,7 +119,7 @@ export default class Enemy {
     /**
      * Gère le chemin parcouru par l'enemy sur la case courante
      */
-    updatePathCoordinates = () => {
+    updatePathCoordinates() {
 
         // Update currentCellIndex
         this.updateCurrentCellIndex()
@@ -147,7 +147,7 @@ export default class Enemy {
      * Met à jour les coordonnées de l'enemy en suivant le pathfinding calculé
      * @param {number} diffTimestamp 
      */
-    moveAlongPath = diffTimestamp => {
+    moveAlongPath(diffTimestamp) {
 
         // Update time passed in a cell
         this.pathCoordinates.time += diffTimestamp
@@ -195,7 +195,7 @@ export default class Enemy {
     /**
      * Met à jour l'index courant de la cellule
      */    
-    updateCurrentCellIndex = () => {
+    updateCurrentCellIndex() {
 
         // Check si c'est la 1er fois et selectionne la 1ere celulle du path
         if (this.currentCellIndex == null) {
@@ -215,19 +215,24 @@ export default class Enemy {
      * Retourne l'objet cell en fonction de index
      * @param {number} index 
      */
-    getCellFromIndex = (index) => this.level.config.map.path
-        .map(cellIndex => this.level.game.gridCells[cellIndex])  
-        [index]
+    getCellFromIndex(index) {
+
+        return this.level.config.map.path
+            .map(cellIndex => this.level.game.gridCells[cellIndex])  
+            [index]
+    } 
 
     /**
      * Retourne l'objet cell 
      */
-    getCellFromCurrentIndex = () => this.getCellFromIndex(this.currentCellIndex)
+    getCellFromCurrentIndex()  {
+        return this.getCellFromIndex(this.currentCellIndex)
+    }
 
     /**
      * Retourne la prochaine cell du tableau
      */
-    getNextCellFromCurrentIndex = () => {
+    getNextCellFromCurrentIndex() {
         const nextCellIndex = (this.isBack) ? this.currentCellIndex - 1 : this.currentCellIndex + 1 
         return this.getCellFromIndex(nextCellIndex)
     }
@@ -235,27 +240,31 @@ export default class Enemy {
     /**
      * Retourne la cell précédente du tableau
      */
-    getPreviousCellFromCurrentIndex = () => {
+    getPreviousCellFromCurrentIndex() {
         const previousCellIndex = (this.isBack) ? this.currentCellIndex + 1 : this.currentCellIndex - 1 
         return this.getCellFromIndex(previousCellIndex)
     }
 
     /**
-     * Retourne True si un virage dans le chemin va avoir lieu
+     * Retourne True si l'ennemi va faire demi-tour après la cellule en cours
      */
-    willTurnAround = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
-    
+    willTurnAround() {
+        return typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
+    }
+
     /**
-     * Retourne True si l'enemy va sortir de la map
+     * Retourne True si l'enemy va sortir de la map après la cellule en cours
      */
-    willExit = () => typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
+    willExit() {
+        return typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
+    } 
 
     /**
      * Calcul et met a jour les coordonnées pour le virage
      * @param {Cell} cell 
      * @param {Cell} previousCell 
      */
-    updateTurningPathCoordinates = (cell, previousCell) => {
+    updateTurningPathCoordinates(cell, previousCell) {
         
         // Côté par lequel on arrive 
         const side = cell.getDirection(previousCell)  
@@ -289,7 +298,7 @@ export default class Enemy {
      * @param {Cell} cell 
      * @param {Cell} previousCell 
      */
-    updateExitingPathCoordinates = (cell, previousCell) => {
+    updateExitingPathCoordinates(cell, previousCell) {
 
         // Côté par lequel on arrive
         const side = cell.getDirection(previousCell)  
@@ -328,7 +337,7 @@ export default class Enemy {
      * @param {Cell} nextCell 
      * @param {Cell|undefined} previousCell 
      */
-    updateNormalPathCoordinates = (cell, nextCell, previousCell) => {
+    updateNormalPathCoordinates(cell, nextCell, previousCell) {
 
         // Direction entre la cellule courante et la prochaine
         const direction = cell.getDirection(nextCell)
@@ -429,17 +438,21 @@ export default class Enemy {
     /**
      * Met a null les coordonnées enregistrées
      */
-    removeCurrentPathCoordinates = () => this.pathCoordinates = null
+    removeCurrentPathCoordinates() {
+        return this.pathCoordinates = null
+    }
 
     /**
      * Retourn True si les coordonnées ne sont pas définies
      */
-    hasCurrentPath = () => this.pathCoordinates !== null
+    hasCurrentPath() {
+        return this.pathCoordinates !== null
+    }
 
     /**
      * Retourne un objet contenant les coordonnées x et y
      */
-    getCoords()  {
+    getCoords() {
         return {
             x : this.x,
             y : this.y

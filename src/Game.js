@@ -43,14 +43,15 @@ export default class Game {
 
         this.buildMenu = new BuildMenu(DOMConfig)
         this.buildMenu.setLevel(this.currentLevel)
-        document.addEventListener("dragstart", this.dragStartHandler)
+        document.addEventListener("dragstart", this.dragStartHandler.bind(this))
     }
 
     isValidDragEventSource(event) {
+        
         return event.target.classList.contains(this.DOMConfig.buildMenuItem.class)        
     }
 
-    dragStartHandler = event => {
+    dragStartHandler(event) {
 
         if (!this.isValidDragEventSource(event)) {
             event.preventDefault()
@@ -62,7 +63,7 @@ export default class Game {
     /**
      * Créer un Canvas et l'ajoute au DOM
      */
-    createCanvasLayer = () => {
+    createCanvasLayer() {
 
         const DOMCanvas = document.createElement('canvas')
         const DOMContainer = document.getElementById(this.DOMCanvasContainerId)
@@ -79,14 +80,14 @@ export default class Game {
     /**
      * Stop le game
      */
-    stop = () => {
+    stop() {
         this.isStopped = true
     }
 
     /**
      * Créer un nouveau level en fonction de la config
      */
-    loadLevels = () => {
+    loadLevels() {
 
         // Create levels
         this.config.levels.forEach(levelConfig => {
@@ -102,8 +103,8 @@ export default class Game {
     /**
      * Demarre le jeu
      */
-    start = () => {
-        requestAnimationFrame(this.step)
+    start() {
+        requestAnimationFrame(this.step.bind(this))
     }
 
 
@@ -111,7 +112,7 @@ export default class Game {
      * Gère le raffraichissement avec un appel recursif
      * @param {Float} timestamp 
      */
-    step = (timestamp) => {
+    step(timestamp) {
 
         // First iteration
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
@@ -124,28 +125,28 @@ export default class Game {
 
         this.render()
 
-        if (!this.isStopped) requestAnimationFrame(this.step)
+        if (!this.isStopped) requestAnimationFrame(this.step.bind(this))
     }
 
     /**
      * Upate les data 
      * @param {Float} diffTimestamp 
      */
-    update = (diffTimestamp) => {
+    update(diffTimestamp) {
         this.currentLevel.update(diffTimestamp)
     }
 
     /**
      * Rendu graphique
      */
-    render = () => {
+    render() {
         this.currentLevel.render()
     }
 
     /**
      * Créer la grille de réference pour le jeu
      */
-    createCellsGridLayer = () => {
+    createCellsGridLayer() {
 
         this.gridLayer = document.getElementById(this.DOMGridId)
         this.gridLayer.style.width = this.nbCells * this.cellSize + 'px' 
@@ -162,28 +163,27 @@ export default class Game {
             }
         }
 
-
         this.renderGrid()
     }
 
     /**
      * Rendu de la grille de référence
      */
-    renderGrid = () => {
+    renderGrid() {
         this.gridCells.forEach(cell => cell.render(this.gridLayer))
     }
 
     /**
      * Créer un Canvas utilisé pour rendre les élements static du jeu
      */
-    createStaticLayer = () => {
+    createStaticLayer() {
         this.staticLayer = this.createCanvasLayer()
     }
 
     /**
      * Créer un Canvas utilisé par les éléments dynamic du jeu
      */
-    createDynamicLayer = () => {
+    createDynamicLayer() {
         this.dynamicLayer = this.createCanvasLayer()
     }
 

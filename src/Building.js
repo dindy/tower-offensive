@@ -30,7 +30,7 @@ export default class Building {
      * Créer la shape et l'ajoute au layer
      * @param {DOMElement} layer 
      */
-    initRender = layer => {
+    initRender(layer) {
         
         const coords = this.getTopLeftCoords() 
         
@@ -60,7 +60,7 @@ export default class Building {
      * Rendu
      * @param {DOMElement} layer 
      */
-    render = (layer) => {
+    render(layer) {
         if (!this.hasBeenRendered && this.isPlaced) this.initRender(layer)        
     }
 

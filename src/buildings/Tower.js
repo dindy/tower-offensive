@@ -37,7 +37,7 @@ export default class Tower extends Building {
      * @param {Object} coords Coordonnées de la cellules
      * @param {Obecjt} layer Canvas layer pour le rendu
      */
-    highlightRange = (coords) => {
+    highlightRange(coords) {
         this.rangeShapeCoords = coords
         this.highlightedRange = true        
     }
@@ -45,7 +45,7 @@ export default class Tower extends Building {
     /**
      * Cache la shape représentant la range de la tour
      */
-    removeRangeHighlight = () => {
+    removeRangeHighlight() {
         this.highlightedRange = false
     }
   
@@ -53,7 +53,7 @@ export default class Tower extends Building {
      * Créer la shape et lui attribut le style pour la visualisation de la range
      * @param {Object} layer Canvas layer pour le rendu
      */
-    initRangeShape = (layer) => {
+    initRangeShape(layer) {
 
         const g = new createjs.Graphics()
             .setStrokeStyle(1)
@@ -126,8 +126,10 @@ export default class Tower extends Building {
      * Rendu sur le layer de la tower
      * @param {DOMElement} layer 
      */
-    render(layer) {
-        super.render()
+    render(dynamicLayer, staticLayer) {
+        super.render(staticLayer)
+        this.renderBullets(dynamicLayer)
+        this.renderRangeHighlight(dynamicLayer)
     }
 
     /**
