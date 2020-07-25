@@ -29,8 +29,7 @@ export default class BuildMenu {
         element.setAttribute("draggable", true)
         this.DOMMenu.appendChild(element)
 
-        document.addEventListener("dragstart", this.dragStartHandler)
-        document.addEventListener("dragend", this.dragEndHandler)
+        element.addEventListener("dragend", this.dragEndHandler)
     }
 
     /**

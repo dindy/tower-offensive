@@ -79,6 +79,7 @@ export default class GridCell {
      * @param {Event} event 
      */
     handleDragenter = event => {
+
         GridCell.dragCount++
 
         const defaultClass = this.level.game.DOMConfig.gridCell.class

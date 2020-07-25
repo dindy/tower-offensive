@@ -43,9 +43,22 @@ export default class Game {
 
         this.buildMenu = new BuildMenu(DOMConfig)
         this.buildMenu.setLevel(this.currentLevel)
-
+        document.addEventListener("dragstart", this.dragStartHandler)
     }
 
+    isValidDragEventSource(event) {
+        return event.target.classList.contains(this.DOMConfig.buildMenuItem.class)        
+    }
+
+    dragStartHandler = event => {
+
+        if (!this.isValidDragEventSource(event)) {
+            event.preventDefault()
+            return false
+        } else {
+            this.buildMenu.dragStartHandler(event)
+        }
+    }
     /**
      * Créer un Canvas et l'ajoute au DOM
      */

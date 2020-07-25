@@ -23,15 +23,12 @@ export default class Tower extends Building {
     }
 
     select() {
-        console.log('select tower');
         super.select()
         this.highlightRange(this.cell.getCenterPoint())
     }
     
     unselect() {
-        console.log('unselect tower', this.cell);
         super.unselect()
-        console.log('unselect tower', this.isSelected);
         this.removeRangeHighlight()
     }
 
@@ -163,7 +160,6 @@ export default class Tower extends Building {
             this.rangeShape.y = this.rangeShapeCoords.y
 
         } else {
-            console.log('mask in render');
             this.rangeShape.alpha = 0
         }
     }
