@@ -1,6 +1,4 @@
-import * as createjs from 'createjs-module'
 import * as utilities from "./utilities.js"
-
 
 export default class Enemy {
     
@@ -16,9 +14,6 @@ export default class Enemy {
         this.height = this.width
         
         this.health = 15
-
-        // L'enemy a déjà été rendu une 1ère fois
-        this.hasBeenRendered = false
 
         // Objet level auquel appartient l'enemy
         this.level = level
@@ -47,30 +42,6 @@ export default class Enemy {
 
         // L'enemy est en train de parcourir la dernière cellule du retour du chemin
         this.isExiting = false        
-    }
-    
-    /**
-     * Initie le rendu de l'enemy sur layer. Set une nouvelle shape et l'ajoute à layer.
-     * @param {Layer} layer 
-     */
-    initRender(layer) {
-        
-        // Create new shape
-        this.shape = new createjs.Shape()
-            
-        this.shape.graphics
-            .beginFill('red')
-            .drawRect(0, 0, this.width, this.height)
-
-        // Set rotation point
-        this.shape.regX = 5
-        this.shape.regY = 5
-
-        // Add shape to layer
-        layer.addChild(this.shape)
-        
-        // Set internal flag
-        this.hasBeenRendered = true
     }
 
     /**
@@ -104,16 +75,13 @@ export default class Enemy {
      * @param {Layer} layer sur lequel on rend l'enemy  
      */
     render(layer) {
-
-        // Rend la shape de l'enemy si nécessaire
-        if (!this.hasBeenRendered) this.initRender(layer)
         
-        // Supprime l'enemy du layer si nécessaire
-        if (this.isDeleted) return layer.removeChild(this.shape)
-        
-        // Place l'enemy selon ses coordonnées
-        this.shape.x = this.x
-        this.shape.y = this.y
+        if (!this.isDeleted) {
+            layer.beginPath()
+            layer.rect(this.x - (this.width / 2), this.y - (this.height / 2), this.width, this.height)
+            layer.fillStyle = "red"
+            layer.fill()
+        }
     }
 
     /**

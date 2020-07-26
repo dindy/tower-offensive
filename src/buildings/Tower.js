@@ -1,4 +1,3 @@
-import * as createjs from 'createjs-module'
 import Building from '../Building'
 import Bullet from '../Bullet'
 
@@ -47,23 +46,6 @@ export default class Tower extends Building {
      */
     removeRangeHighlight() {
         this.highlightedRange = false
-    }
-  
-    /**
-     * Créer la shape et lui attribut le style pour la visualisation de la range
-     * @param {Object} layer Canvas layer pour le rendu
-     */
-    initRangeShape(layer) {
-
-        const g = new createjs.Graphics()
-            .setStrokeStyle(1)
-            .beginStroke(createjs.Graphics.getRGB(0,0,0))
-            .beginFill(createjs.Graphics.getRGB(120,120,0,.6))
-            .drawCircle(0,0, this.range)
-
-        this.rangeShape = new createjs.Shape(g)
-        
-        layer.addChild(this.rangeShape)
     }
 
     /**
@@ -126,10 +108,8 @@ export default class Tower extends Building {
      * Rendu sur le layer de la tower
      * @param {DOMElement} layer 
      */
-    render(dynamicLayer, staticLayer) {
-        super.render(staticLayer)
-        this.renderBullets(dynamicLayer)
-        this.renderRangeHighlight(dynamicLayer)
+    render(layer) {
+        super.render(layer)
     }
 
     /**
@@ -152,17 +132,22 @@ export default class Tower extends Building {
      */
     renderRangeHighlight(layer) {
 
-        if (this.rangeShape !== null) layer.removeChild(this.rangeShape)
-        this.initRangeShape(layer)
-        
         if (this.highlightedRange) {
-            
-            this.rangeShape.alpha = 1
-            this.rangeShape.x = this.rangeShapeCoords.x
-            this.rangeShape.y = this.rangeShapeCoords.y
+            layer.beginPath()
+            layer.arc(this.rangeShapeCoords.x, this.rangeShapeCoords.y, this.range, 0, 2 * Math.PI)
+            layer.fillStyle = "rgba(200, 200, 200, 0.5)"
+            layer.strokeStyle = "rgba(200, 200, 200, 0.8)"
+            layer.fill()
+            layer.stroke()
 
-        } else {
-            this.rangeShape.alpha = 0
+            // Nettoie la zone de la cellule du batiment pour donner l'impression
+            // que la forme de la range est en dessous de la tower
+            // @todo Dynamically determines the zone
+            const coords = this.isPlaced ? 
+                this.getTopLeftCoords() :
+                { x: this.rangeShapeCoords.x - (50 / 2), y: this.rangeShapeCoords.y - (50 / 2) }
+            
+            layer.clearRect(coords.x, coords.y, 50, 50)
         }
     }
 }

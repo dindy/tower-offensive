@@ -1,6 +1,5 @@
 import Level from './Level'
 import BuildMenu from './BuildMenu'
-import * as createjs from 'createjs-module'
 import GridCell from './GridCell'
 
 export default class Game {
@@ -74,7 +73,11 @@ export default class Game {
 
         DOMContainer.appendChild(DOMCanvas)
 
-        return new createjs.Stage(DOMCanvas)
+        if (DOMCanvas.getContext) {
+            return DOMCanvas.getContext('2d')
+        } else {
+            throw new Error('Canvas context is not supported by your browser. Please update your browser.')
+        }
     }
 
     /**
@@ -120,11 +123,15 @@ export default class Game {
         // Update timestamp
         const diffTimestamp = timestamp - this.lastTimestamp
         this.lastTimestamp = timestamp
-
         this.update(diffTimestamp)
 
+        // Clear all the dynamic canvas before re-render
+        this.dynamicLayer.clearRect(0, 0, this.width, this.height)
+
+        // Render all the game
         this.render()
 
+        // Handle stop rendering
         if (!this.isStopped) requestAnimationFrame(this.step.bind(this))
     }
 

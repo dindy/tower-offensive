@@ -35,7 +35,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ❌ ``E`` 📖 Trouver un meilleur nom au jeu
 1. 🔨 ``F`` 📢 Rédiger une courte présentation du jeu
 1. ❌ ``G`` 🎨 Créer un logo pour le jeu
-1. ❌ ``H`` ⚡️⚙️ Supprimer EaselJS
+1. ✔️ ``H`` ⚡️⚙️ Supprimer EaselJS
 
 **Prochain code** : ``M``
 

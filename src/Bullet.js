@@ -1,5 +1,3 @@
-
-import * as createjs from 'createjs-module'
 import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utilities'
 
 export default class Bullet {
@@ -22,8 +20,6 @@ export default class Bullet {
         this.speed = 0.5 // ps/ms
         
         this.shape = null
-
-        this.hasBeenRendered = false
         
         this.coords = this.originPoint
 
@@ -73,44 +69,24 @@ export default class Bullet {
     }
 
     /**
-     * Créer la shape de la ball et l'ajoute au layer
-     * @param {DOMElement} layer 
-     */
-    initRender(layer) {
-
-        const g = new createjs.Graphics()
-            .beginFill(createjs.Graphics.getRGB(0,0,0))
-            .drawCircle(0, 0, 2, 2)
-
-        this.shape = new createjs.Shape(g)
-        
-        layer.addChild(this.shape)        
-        
-        this.hasBeenRendered = true
-    }
-
-    /**
-     * Met a jour le rendue 
+     * Met a jour le rendu
      * @param {DOMElement} layer 
      */
     render(layer) {
 
-        // Si n'a pas encore été render
-        if (!this.hasBeenRendered) this.initRender(layer)
-
-        // Si doit être suprimé
-        if (this.isDeleted) layer.removeChild(this.shape)
-        
-        // Sinon update position
-        this.shape.x = this.coords.x
-        this.shape.y = this.coords.y
-
+        if (!this.isDeleted) {
+            layer.beginPath()
+            layer.arc(this.coords.x, this.coords.y, 2, 0, 2 * Math.PI)
+            layer.fillStyle = "black"
+            layer.fill()
+        }
     }
 
     /**
      * Parcours les enemy et détect si il y a une collision, si True : appelle la methode HIT() de enemy
      */
     detectCollisions() {
+
         for (let i = 0; i < this.level.enemies.length; i++){
             let enemy = this.level.enemies[i]
             let line = [ this.coords, this.previousCoords ]
@@ -119,8 +95,6 @@ export default class Bullet {
                 this.isDeleted = true
                 enemy.hit(1)
             }
-
-            
         }
     }
 
