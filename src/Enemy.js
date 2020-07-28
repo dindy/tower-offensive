@@ -10,7 +10,7 @@ export default class Enemy {
        
         this.x = null
         this.y = null
-        this.width = 10
+        this.width = 40
         this.height = this.width
         
         this.health = 15
@@ -41,7 +41,10 @@ export default class Enemy {
         this.isTurning = false
 
         // L'enemy est en train de parcourir la dernière cellule du retour du chemin
-        this.isExiting = false        
+        this.isExiting = false    
+
+        // Load the image of the enemy
+        this.image = document.getElementById('enemy')
     }
 
     /**
@@ -77,10 +80,21 @@ export default class Enemy {
     render(layer) {
         
         if (!this.isDeleted) {
-            layer.beginPath()
-            layer.rect(this.x - (this.width / 2), this.y - (this.height / 2), this.width, this.height)
-            layer.fillStyle = "red"
-            layer.fill()
+            
+            // Get new enemy position
+            // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
+            const x = this.x - (this.width / 2)
+            const y = this.y - (this.height / 2)
+
+            // Render drawing
+            // layer.beginPath()
+            // layer.rect(x, y, this.width, this.height)
+            // layer.fillStyle = "red"
+            // layer.fill()
+
+            // Render image
+            layer.drawImage(this.image, x, y, this.width, this.height)
+            
         }
     }
 
