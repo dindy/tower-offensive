@@ -1,6 +1,6 @@
 import Level from './Level'
 import BuildMenu from './BuildMenu'
-import GridCell from './GridCell'
+import Scene from './Scene'
 
 export default class Game {
     
@@ -12,37 +12,31 @@ export default class Game {
 
     isStopped = false
 
-    gridCells = []
-
     /**
      * Constructor
      * @param {JSON} config 
      * @param {Object} DOMConfig 
      */
     constructor(config, DOMConfig) 
-    {
-        this.DOMConfig = DOMConfig
-        this.DOMCanvasContainerId = DOMConfig.canvas.id
-        this.DOMGridId = DOMConfig.grid.id
-
-        this.cellSize = config.cellSize 
-        this.nbCells = config.nbCells
-
-        this.width = this.cellSize * this.nbCells
-        this.height = this.cellSize * this.nbCells
-
+    {        
         this.config = config
-        
-        this.createStaticLayer()
-        this.createDynamicLayer()
+        this.DOMConfig = DOMConfig
 
         this.loadLevels()    
-
-        this.createCellsGridLayer()
+        this.scene = new Scene(this) 
 
         this.buildMenu = new BuildMenu(DOMConfig)
         this.buildMenu.setLevel(this.currentLevel)
+        
+        document.addEventListener("wheel", this.scene.zoomHandler.bind(this.scene), false)
+        document.addEventListener('mousedown', this.scene.touchstartHandler.bind(this.scene), false)
+        document.addEventListener('mousemove', this.scene.touchmoveHandler.bind(this.scene), false)
+        document.addEventListener('mouseup', this.scene.touchendHandler.bind(this.scene), false)
         document.addEventListener("dragstart", this.dragStartHandler.bind(this))
+    }
+
+    hasCurrentLevel() {
+        return this.currentLevel !== null
     }
 
     isValidDragEventSource(event) {
@@ -57,26 +51,6 @@ export default class Game {
             return false
         } else {
             this.buildMenu.dragStartHandler(event)
-        }
-    }
-    /**
-     * Créer un Canvas et l'ajoute au DOM
-     */
-    createCanvasLayer() {
-
-        const DOMCanvas = document.createElement('canvas')
-        const DOMContainer = document.getElementById(this.DOMCanvasContainerId)
-
-        DOMCanvas.setAttribute('width', this.width + 'px')
-        DOMCanvas.setAttribute('height', this.height + 'px')
-        DOMCanvas.style.border = 'none'
-
-        DOMContainer.appendChild(DOMCanvas)
-
-        if (DOMCanvas.getContext) {
-            return DOMCanvas.getContext('2d')
-        } else {
-            throw new Error('Canvas context is not supported by your browser. Please update your browser.')
         }
     }
 
@@ -112,7 +86,7 @@ export default class Game {
 
 
     /**
-     * Gère le raffraichissement avec un appel recursif
+     * Gère le rafraichissement avec un appel recursif via requestAnimationFrame
      * @param {Float} timestamp 
      */
     step(timestamp) {
@@ -123,10 +97,9 @@ export default class Game {
         // Update timestamp
         const diffTimestamp = timestamp - this.lastTimestamp
         this.lastTimestamp = timestamp
-        this.update(diffTimestamp)
 
-        // Clear all the dynamic canvas before re-render
-        this.dynamicLayer.clearRect(0, 0, this.width, this.height)
+        // Update
+        this.update(diffTimestamp)
 
         // Render all the game
         this.render()
@@ -140,58 +113,14 @@ export default class Game {
      * @param {Float} diffTimestamp 
      */
     update(diffTimestamp) {
-        this.currentLevel.update(diffTimestamp)
+        this.scene.update(diffTimestamp)
     }
 
     /**
      * Rendu graphique
      */
     render() {
-        this.currentLevel.render()
-    }
-
-    /**
-     * Créer la grille de réference pour le jeu
-     */
-    createCellsGridLayer() {
-
-        this.gridLayer = document.getElementById(this.DOMGridId)
-        this.gridLayer.style.width = this.nbCells * this.cellSize + 'px' 
-        this.gridLayer.style.height = this.nbCells * this.cellSize + 'px' 
-
-        for (let y = 0; y < this.nbCells; y++) {
-
-            for (let x = 0; x < this.nbCells; x++) {
-
-                let cell = new GridCell(x, y, this)
-                cell.isPath = this.currentLevel.config.map.path.includes(cell.id)
-                this.gridCells.push(cell)
-                this.gridLayer.appendChild(cell.DOMElement)
-            }
-        }
-
-        this.renderGrid()
-    }
-
-    /**
-     * Rendu de la grille de référence
-     */
-    renderGrid() {
-        this.gridCells.forEach(cell => cell.render(this.gridLayer))
-    }
-
-    /**
-     * Créer un Canvas utilisé pour rendre les élements static du jeu
-     */
-    createStaticLayer() {
-        this.staticLayer = this.createCanvasLayer()
-    }
-
-    /**
-     * Créer un Canvas utilisé par les éléments dynamic du jeu
-     */
-    createDynamicLayer() {
-        this.dynamicLayer = this.createCanvasLayer()
+        this.scene.render()
     }
 
 }

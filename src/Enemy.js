@@ -121,7 +121,7 @@ export default class Enemy {
         this.pathCoordinates.time += diffTimestamp
 
         // Calculate target time to passed in a cell
-        this.pathCoordinates.totalTime = this.level.game.cellSize / this.speed
+        this.pathCoordinates.totalTime = this.level.game.scene.cellSize / this.speed
 
         // Update t (la proportion de la courbe parcourue de 0 à 1)
         let t = this.pathCoordinates.time / this.pathCoordinates.totalTime
@@ -186,7 +186,7 @@ export default class Enemy {
     getCellFromIndex(index) {
 
         return this.level.config.map.path
-            .map(cellIndex => this.level.game.gridCells[cellIndex])  
+            .map(cellIndex => this.level.game.scene.gridCells[cellIndex])  
             [index]
     } 
 
@@ -245,15 +245,15 @@ export default class Enemy {
         // Calcul des coordonnées des points de référence
         if (side == "up") {
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.cellSize)
+            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize)
         } else if (side == "down") {
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y - (this.level.game.cellSize)
+            middlePoint.y = originPoint.y - (this.level.game.scene.cellSize)
         } else if (side == "left") {
-            middlePoint.x = endPoint.x + (this.level.game.cellSize)
+            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
-            middlePoint.x = endPoint.x - (this.level.game.cellSize)
+            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         }
 
@@ -278,20 +278,20 @@ export default class Enemy {
 
         // Calcul des coordonnées des points de référence
         if (side == "up") {
-            endPoint.y += this.level.game.cellSize
+            endPoint.y += this.level.game.scene.cellSize
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.cellSize / 2)
+            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2)
         } else if (side == "down") {
             endPoint.y = 0
             middlePoint.x = endPoint.x
-            middlePoint.y = this.level.game.cellSize / 2
+            middlePoint.y = this.level.game.scene.cellSize / 2
         } else if (side == "left") {
-            endPoint.x += this.level.game.cellSize
-            middlePoint.x = endPoint.x + (this.level.game.cellSize / 2)
+            endPoint.x += this.level.game.scene.cellSize
+            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
-            endPoint.x -= this.level.game.cellSize
-            middlePoint.x = endPoint.x - (this.level.game.cellSize / 2)
+            endPoint.x -= this.level.game.scene.cellSize
+            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         }
 
@@ -338,7 +338,7 @@ export default class Enemy {
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y - (this.level.game.cellSize / 2)
+                middlePoint.y = originPoint.y - (this.level.game.scene.cellSize / 2)
             }
 
         } else if (direction == "down") {
@@ -357,7 +357,7 @@ export default class Enemy {
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y + (this.level.game.cellSize / 2) 
+                middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2) 
             }
 
         } else if (direction == "left") {
@@ -375,7 +375,7 @@ export default class Enemy {
             } else {
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x - (this.level.game.cellSize / 2)
+                middlePoint.x = originPoint.x - (this.level.game.scene.cellSize / 2)
                 middlePoint.y = originPoint.y           
             }
 
@@ -394,7 +394,7 @@ export default class Enemy {
             } else {
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x + (this.level.game.cellSize / 2)
+                middlePoint.x = originPoint.x + (this.level.game.scene.cellSize / 2)
                 middlePoint.y = originPoint.y  
             }
         }

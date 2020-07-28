@@ -20,8 +20,8 @@ export default class Level {
         this.game = game
         this.config = levelConfig
         this.loadWaves()
-        this.staticLayer = game.staticLayer
-        this.dynamicLayer = game.dynamicLayer
+        // this.game.scene.staticLayer = game.scene.staticLayer
+        // this.game.scene.dynamicLayer = game.scene.dynamicLayer
     }
     
     selectBuilding(building) {
@@ -49,7 +49,7 @@ export default class Level {
      */
     highlightPlacingBuildingRange(cell) {
         this.placingBuilding.highlightRange(cell.getCenterPoint())
-        this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
+        this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     } 
 
     /**
@@ -132,6 +132,7 @@ export default class Level {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(diffTimestamp)
         }        
+
     }
 
     /**
@@ -164,7 +165,7 @@ export default class Level {
     renderEnemies() {
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            enemy.render(this.dynamicLayer)
+            enemy.render(this.game.scene.dynamicLayer)
         }
 
         this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
@@ -172,24 +173,24 @@ export default class Level {
 
     renderPlacingBuilding() {
         if (this.placingBuilding !== null) 
-            this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
+            this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     }
 
     renderTowers() {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].render(this.staticLayer)
+            this.towers[i].render(this.game.scene.staticLayer)
         }
     }
 
     renderTowersRanges() {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].renderRangeHighlight(this.dynamicLayer)
+            this.towers[i].renderRangeHighlight(this.game.scene.dynamicLayer)
         }
     }
 
     renderBullets() {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].renderBullets(this.dynamicLayer)
+            this.towers[i].renderBullets(this.game.scene.dynamicLayer)
         }
     }
 

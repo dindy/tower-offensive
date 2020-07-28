@@ -10,14 +10,14 @@ export default class GridCell {
      * Constructor
      * @param {Number} column 
      * @param {Number} row 
-     * @param {Object} game 
+     * @param {Object} scene 
      */
-    constructor(column, row, game) {
+    constructor(column, row, scene) {
 
-        this.level = game.currentLevel
+        this.scene = scene
         this.column = column
         this.row = row
-        this.cellSize = this.level.game.cellSize
+        this.cellSize = scene.cellSize
         this.isPath = false
         this.building = null
         this.coords = null
@@ -25,7 +25,7 @@ export default class GridCell {
         this.setCoords()
 
         this.DOMElement = document.createElement('div')
-        this.DOMElement.classList.add(this.level.game.DOMConfig.gridCell.class)
+        this.DOMElement.classList.add(scene.game.DOMConfig.gridCell.class)
         this.DOMElement.style.width = this.cellSize + 'px'
         this.DOMElement.style.height = this.cellSize + 'px'
 
@@ -62,15 +62,15 @@ export default class GridCell {
     handleDragleave(event) {
         GridCell.dragCount--
 
-        const defaultClass = this.level.game.DOMConfig.gridCell.class
-        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
-        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+        const defaultClass = this.scene.game.DOMConfig.gridCell.class
+        const acceptModifier = this.scene.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.scene.game.DOMConfig.gridCell.modifiers.refuse
 
         this.DOMElement.classList.remove(defaultClass + acceptModifier)
         this.DOMElement.classList.remove(defaultClass + refuseModifier)
 
         if (GridCell.dragCount < 1) {
-            this.level.removePlacingBuildingRangeHighlight()
+            this.scene.game.currentLevel.removePlacingBuildingRangeHighlight()
         }
     }
     
@@ -82,16 +82,16 @@ export default class GridCell {
 
         GridCell.dragCount++
 
-        const defaultClass = this.level.game.DOMConfig.gridCell.class
-        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
-        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+        const defaultClass = this.scene.game.DOMConfig.gridCell.class
+        const acceptModifier = this.scene.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.scene.game.DOMConfig.gridCell.modifiers.refuse
         
         if (this.isBuildable()) {
             this.DOMElement.classList.add(defaultClass + acceptModifier)
-            this.level.highlightPlacingBuildingRange(this)
+            this.scene.game.currentLevel.highlightPlacingBuildingRange(this)
         } else {
             this.DOMElement.classList.add(defaultClass + refuseModifier)
-            this.level.removePlacingBuildingRangeHighlight(this)
+            this.scene.game.currentLevel.removePlacingBuildingRangeHighlight(this)
         }
     }
     
@@ -112,10 +112,10 @@ export default class GridCell {
      */
     handleDrop(event) {
         GridCell.dragCount = 0
-        this.building = this.level.placeBuilding(this)
-        const defaultClass = this.level.game.DOMConfig.gridCell.class
-        const acceptModifier = this.level.game.DOMConfig.gridCell.modifiers.accept
-        const refuseModifier = this.level.game.DOMConfig.gridCell.modifiers.refuse
+        this.building = this.scene.game.currentLevel.placeBuilding(this)
+        const defaultClass = this.scene.game.DOMConfig.gridCell.class
+        const acceptModifier = this.scene.game.DOMConfig.gridCell.modifiers.accept
+        const refuseModifier = this.scene.game.DOMConfig.gridCell.modifiers.refuse
 
         this.DOMElement.classList.remove(defaultClass + acceptModifier)
         this.DOMElement.classList.remove(defaultClass + refuseModifier)        
@@ -134,9 +134,9 @@ export default class GridCell {
      */
     handleClick(e) {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords, building: this.building })
-        this.level.unselectBuilding()
+        this.scene.game.currentLevel.unselectBuilding()
         if (this.hasBuilding()) {
-            this.level.selectBuilding(this.building)
+            this.scene.game.currentLevel.selectBuilding(this.building)
         }
     }
 
