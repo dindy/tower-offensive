@@ -7,7 +7,7 @@ export default class Bullet {
      * @param {Object} tower La tour d'où les balles sont tirées
      * @param {Object} enemy Cible de la tour
      */
-    constructor(tower, enemy) {
+    constructor(tower, enemy, dammage, speed) {
 
         this.level = tower.level
 
@@ -16,9 +16,11 @@ export default class Bullet {
 
         // Coordonnées de l'enemy
         this.targetPoint = enemy.getCoords()
-
-        this.speed = 0.5 // ps/ms
         
+        this.speed = speed // ps/ms
+        
+        this.dammage = dammage
+
         this.shape = null
         
         this.coords = this.originPoint
@@ -93,7 +95,7 @@ export default class Bullet {
 
             if (lineIntersectsRectangle(line, enemy.getBoundingBox())) {
                 this.isDeleted = true
-                enemy.hit(1)
+                enemy.hit(this.dammage)
             }
         }
     }

@@ -69,7 +69,7 @@ export default class Wave {
         const secondCell = this.level.game.scene.gridCells[this.level.config.map.path[1]]
 
         // Déterminer une position aléatoire de départ
-        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - 20)) + 10
+        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
         
         if(firstCell.column === secondCell.column) {
             enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin

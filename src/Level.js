@@ -1,5 +1,6 @@
 import Wave from './Wave'
-import Tower from './buildings/Tower.js'
+import Basic from './buildings/Basic'
+import Sniper from './buildings/Sniper'
 
 export default class Level {
     
@@ -20,8 +21,10 @@ export default class Level {
         this.game = game
         this.config = levelConfig
         this.loadWaves()
-        // this.game.scene.staticLayer = game.scene.staticLayer
-        // this.game.scene.dynamicLayer = game.scene.dynamicLayer
+        this.availableBuildings = {
+            'Basic': Basic,
+            'Sniper': Sniper,
+        }
     }
     
     selectBuilding(building) {
@@ -39,8 +42,9 @@ export default class Level {
     /**
      * Créer une nouvelle instance de tower
      */
-    startPlacingBuilding() {
-        this.placingBuilding = new Tower(this)
+    startPlacingBuilding(name) {
+        
+        this.placingBuilding = new this.availableBuildings[name](this)
     }
 
     /**

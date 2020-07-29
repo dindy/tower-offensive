@@ -7,7 +7,8 @@ export default class BuildMenu {
     constructor(DOMConfig) {
         this.DOMConfig = DOMConfig
         this.DOMMenu = document.getElementById(DOMConfig.buildMenu.id)
-        this.addBuilding('Tour')
+        this.addBuilding('Basic')
+        this.addBuilding('Sniper')
     }
 
     /**
@@ -21,12 +22,12 @@ export default class BuildMenu {
     /**
      * Ajoute le building au menu
      */
-    addBuilding() {
+    addBuilding(name) {
         const element = document.createElement('div')
         element.classList.add(this.DOMConfig.buildMenuItem.class)
         element.setAttribute("draggable", true)
+        element.dataset.name = name
         this.DOMMenu.appendChild(element)
-
         element.addEventListener("dragend", this.dragEndHandler.bind(this))
     }
 
@@ -35,8 +36,9 @@ export default class BuildMenu {
      * @param {Event} event 
      */
     dragStartHandler(event) {
+        const name = event.target.dataset.name
         this.level.unselectBuilding()
-        this.level.startPlacingBuilding()
+        this.level.startPlacingBuilding(name)
     }
 
     /**

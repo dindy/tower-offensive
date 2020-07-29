@@ -7,18 +7,20 @@ export default class Tower extends Building {
      * 
      * @param {Instance} level - L'instance en cours de la class Level
      */
-    constructor(level) {
+    constructor(level, range, fireRate, dammage, speed) {
         
         super(level)
 
-        this.range = 150
+        this.range = range
         this.rangeShape = null
         this.rangeShapeCoords = null
-        this.fireRate =  250 // temps en ms entre chaque tir
+        this.fireRate = fireRate // temps en ms entre chaque tir
+        this.dammage = dammage
+        this.speed = speed
         this.timeSinceLastShot = Infinity
         this.bullets = []
         this.highlightedRange = false 
-        
+
     }
 
     select() {
@@ -77,10 +79,7 @@ export default class Tower extends Building {
      */
     shoot(enemy) {
         
-        if (this.timeSinceLastShot >= this.fireRate) {
-            this.timeSinceLastShot = 0
-            this.bullets.push(new Bullet(this, enemy))
-        }
+
     }
 
     /**

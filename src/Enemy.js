@@ -7,7 +7,8 @@ export default class Enemy {
      * @param {Level} level
      */
     constructor(level) {
-       
+        
+        // Center point is the reference for enemy
         this.x = null
         this.y = null
         this.width = 40
