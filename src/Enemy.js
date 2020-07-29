@@ -1,6 +1,4 @@
-import * as createjs from 'createjs-module'
 import * as utilities from "./utilities.js"
-
 
 export default class Enemy {
     
@@ -12,13 +10,10 @@ export default class Enemy {
        
         this.x = null
         this.y = null
-        this.width = 10
+        this.width = 40
         this.height = this.width
         
         this.health = 15
-
-        // L'enemy a déjà été rendu une 1ère fois
-        this.hasBeenRendered = false
 
         // Objet level auquel appartient l'enemy
         this.level = level
@@ -46,31 +41,10 @@ export default class Enemy {
         this.isTurning = false
 
         // L'enemy est en train de parcourir la dernière cellule du retour du chemin
-        this.isExiting = false        
-    }
-    
-    /**
-     * Initie le rendu de l'enemy sur layer. Set une nouvelle shape et l'ajoute à layer.
-     * @param {Layer} layer 
-     */
-    initRender(layer) {
-        
-        // Create new shape
-        this.shape = new createjs.Shape()
-            
-        this.shape.graphics
-            .beginFill('red')
-            .drawRect(0, 0, this.width, this.height)
+        this.isExiting = false    
 
-        // Set rotation point
-        this.shape.regX = 5
-        this.shape.regY = 5
-
-        // Add shape to layer
-        layer.addChild(this.shape)
-        
-        // Set internal flag
-        this.hasBeenRendered = true
+        // Load the image of the enemy
+        this.image = document.getElementById('enemy')
     }
 
     /**
@@ -104,16 +78,24 @@ export default class Enemy {
      * @param {Layer} layer sur lequel on rend l'enemy  
      */
     render(layer) {
+        
+        if (!this.isDeleted) {
+            
+            // Get new enemy position
+            // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
+            const x = this.x - (this.width / 2)
+            const y = this.y - (this.height / 2)
 
-        // Rend la shape de l'enemy si nécessaire
-        if (!this.hasBeenRendered) this.initRender(layer)
-        
-        // Supprime l'enemy du layer si nécessaire
-        if (this.isDeleted) return layer.removeChild(this.shape)
-        
-        // Place l'enemy selon ses coordonnées
-        this.shape.x = this.x
-        this.shape.y = this.y
+            // Render drawing
+            // layer.beginPath()
+            // layer.rect(x, y, this.width, this.height)
+            // layer.fillStyle = "red"
+            // layer.fill()
+
+            // Render image
+            layer.drawImage(this.image, x, y, this.width, this.height)
+            
+        }
     }
 
     /**
@@ -153,7 +135,7 @@ export default class Enemy {
         this.pathCoordinates.time += diffTimestamp
 
         // Calculate target time to passed in a cell
-        this.pathCoordinates.totalTime = this.level.game.cellSize / this.speed
+        this.pathCoordinates.totalTime = this.level.game.scene.cellSize / this.speed
 
         // Update t (la proportion de la courbe parcourue de 0 à 1)
         let t = this.pathCoordinates.time / this.pathCoordinates.totalTime
@@ -218,7 +200,7 @@ export default class Enemy {
     getCellFromIndex(index) {
 
         return this.level.config.map.path
-            .map(cellIndex => this.level.game.gridCells[cellIndex])  
+            .map(cellIndex => this.level.game.scene.gridCells[cellIndex])  
             [index]
     } 
 
@@ -277,15 +259,15 @@ export default class Enemy {
         // Calcul des coordonnées des points de référence
         if (side == "up") {
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.cellSize)
+            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize)
         } else if (side == "down") {
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y - (this.level.game.cellSize)
+            middlePoint.y = originPoint.y - (this.level.game.scene.cellSize)
         } else if (side == "left") {
-            middlePoint.x = endPoint.x + (this.level.game.cellSize)
+            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
-            middlePoint.x = endPoint.x - (this.level.game.cellSize)
+            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         }
 
@@ -310,20 +292,20 @@ export default class Enemy {
 
         // Calcul des coordonnées des points de référence
         if (side == "up") {
-            endPoint.y += this.level.game.cellSize
+            endPoint.y += this.level.game.scene.cellSize
             middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.cellSize / 2)
+            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2)
         } else if (side == "down") {
             endPoint.y = 0
             middlePoint.x = endPoint.x
-            middlePoint.y = this.level.game.cellSize / 2
+            middlePoint.y = this.level.game.scene.cellSize / 2
         } else if (side == "left") {
-            endPoint.x += this.level.game.cellSize
-            middlePoint.x = endPoint.x + (this.level.game.cellSize / 2)
+            endPoint.x += this.level.game.scene.cellSize
+            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
-            endPoint.x -= this.level.game.cellSize
-            middlePoint.x = endPoint.x - (this.level.game.cellSize / 2)
+            endPoint.x -= this.level.game.scene.cellSize
+            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         }
 
@@ -370,7 +352,7 @@ export default class Enemy {
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y - (this.level.game.cellSize / 2)
+                middlePoint.y = originPoint.y - (this.level.game.scene.cellSize / 2)
             }
 
         } else if (direction == "down") {
@@ -389,7 +371,7 @@ export default class Enemy {
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y + (this.level.game.cellSize / 2) 
+                middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2) 
             }
 
         } else if (direction == "left") {
@@ -407,7 +389,7 @@ export default class Enemy {
             } else {
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x - (this.level.game.cellSize / 2)
+                middlePoint.x = originPoint.x - (this.level.game.scene.cellSize / 2)
                 middlePoint.y = originPoint.y           
             }
 
@@ -426,7 +408,7 @@ export default class Enemy {
             } else {
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x + (this.level.game.cellSize / 2)
+                middlePoint.x = originPoint.x + (this.level.game.scene.cellSize / 2)
                 middlePoint.y = originPoint.y  
             }
         }

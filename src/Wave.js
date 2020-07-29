@@ -65,11 +65,11 @@ export default class Wave {
         const enemy = new Enemy(this.level)
         
         // Récupérer les coordonnées de la 1ère cell du path
-        const firstCell = this.level.game.gridCells[this.level.config.map.path[0]]
-        const secondCell = this.level.game.gridCells[this.level.config.map.path[1]]
+        const firstCell = this.level.game.scene.gridCells[this.level.config.map.path[0]]
+        const secondCell = this.level.game.scene.gridCells[this.level.config.map.path[1]]
 
         // Déterminer une position aléatoire de départ
-        enemy.offset = (Math.random() * (this.level.game.cellSize - 20)) + 10
+        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - 20)) + 10
         
         if(firstCell.column === secondCell.column) {
             enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
@@ -78,7 +78,7 @@ export default class Wave {
             enemy.y = Math.floor(enemy.offset) + firstCell.coords.yMin
             enemy.x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
         }
-        
+
         return enemy
     }
 }

@@ -1,5 +1,3 @@
-import * as createjs from 'createjs-module'
-
 export default class Building {
     
     /**
@@ -10,7 +8,6 @@ export default class Building {
 
         this.level = level
         this.shape = null
-        this.hasBeenRendered = false
         this.isPlaced = false
         this.cell = null
         this.isSelected = false
@@ -23,28 +20,6 @@ export default class Building {
     
     unselect() {
         this.isSelected = false
-    }
-
-
-    /**
-     * Créer la shape et l'ajoute au layer
-     * @param {DOMElement} layer 
-     */
-    initRender(layer) {
-        
-        const coords = this.getTopLeftCoords() 
-        
-        // Create new shape
-        this.shape = new createjs.Shape()
-        
-        this.shape.graphics
-            .beginFill('blue')
-            .drawRect(coords.x, coords.y, 50, 50)
-
-        layer.addChild(this.shape)
-
-        this.hasBeenRendered = true
-        
     }
     
     /**
@@ -61,7 +36,18 @@ export default class Building {
      * @param {DOMElement} layer 
      */
     render(layer) {
-        if (!this.hasBeenRendered && this.isPlaced) this.initRender(layer)        
+        
+        const coords = this.getTopLeftCoords()
+        
+        layer.beginPath()
+        
+        layer.rect(coords.x, coords.y, 50, 50)
+        layer.fillStyle = "blue"
+        layer.fill()
+
+        // layer.lineWidth = 2
+        // layer.strokeStyle = "rgba(0, 0, 0, 1)"
+        // layer.stroke()
     }
 
     /**

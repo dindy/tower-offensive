@@ -5,8 +5,18 @@ import Game from './Game'
  * Continer les Classe et id des différent élement HTML
  */
 const DOMConfig = {
-    canvas: {
+    wrapper: {
+        id: 'wrapper'
+    },
+    canvasContainer: {
         id: 'canvas-container',
+    },
+    scene: {
+        id: 'scene',
+        class: 'scene',
+        modifiers: {
+            moving: '--moving'
+        }
     },
     grid: {
         id: 'grid',

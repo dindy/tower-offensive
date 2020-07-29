@@ -20,8 +20,8 @@ export default class Level {
         this.game = game
         this.config = levelConfig
         this.loadWaves()
-        this.staticLayer = game.staticLayer
-        this.dynamicLayer = game.dynamicLayer
+        // this.game.scene.staticLayer = game.scene.staticLayer
+        // this.game.scene.dynamicLayer = game.scene.dynamicLayer
     }
     
     selectBuilding(building) {
@@ -49,33 +49,28 @@ export default class Level {
      */
     highlightPlacingBuildingRange(cell) {
         this.placingBuilding.highlightRange(cell.getCenterPoint())
-        this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
-        this.staticLayer.update()
+        this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     } 
 
     /**
-     * Reset la propriété et update le layer 
+     * Set current placing building to null
      */
     removePlacingBuilding() {
         this.placingBuilding = null
-        this.dynamicLayer.update()
     }
 
     /**
-     * Remove la shape représentant la range et update le layer
+     * Remove la shape représentant la range
      */
     removePlacingBuildingRangeHighlight() {
         this.placingBuilding.removeRangeHighlight()
-        this.placingBuilding.renderRangeHighlight(this.dynamicLayer)        
-        this.dynamicLayer.update()
     }
 
     /**
-     * L'évènement placing building est fini, met a jour le layer 
+     * L'évènement placing building est fini
      */
     endPlacingBuilding() {
         this.placingBuilding = null
-        this.staticLayer.update()
     }
 
     /**
@@ -83,17 +78,18 @@ export default class Level {
      * @param {Object} GridCell 
      */
     placeBuilding(targetGridCell) {
-        
-        const building = this.placingBuilding 
+        const building = this.placingBuilding
+        this.placingBuilding = null 
         building.place(targetGridCell)
         this.towers.push(building)
-        this.towers.forEach(tower => {
-            tower.render(this.dynamicLayer, this.staticLayer)
-        })
-        this.staticLayer.update()
+        this.renderStaticLayer()
         return building
     }
     
+    renderStaticLayer() {
+        this.renderTowers()
+    }
+
     /**
      * Créer la vague en fonction de la config
      */
@@ -136,6 +132,7 @@ export default class Level {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(diffTimestamp)
         }        
+
     }
 
     /**
@@ -158,31 +155,42 @@ export default class Level {
         
         this.renderPlacingBuilding()
         
-        this.renderTowers()
+        this.renderBullets()
+        
+        // Ranges must be on top (last call)
+        this.renderTowersRanges()
 
-        this.dynamicLayer.update()
     }
 
     renderEnemies() {
-
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            enemy.render(this.dynamicLayer)
+            enemy.render(this.game.scene.dynamicLayer)
         }
 
         this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
     }
 
     renderPlacingBuilding() {
-
         if (this.placingBuilding !== null) 
-            this.placingBuilding.renderRangeHighlight(this.dynamicLayer)
+            this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     }
 
     renderTowers() {
-
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].render(this.dynamicLayer, this.staticLayer)
+            this.towers[i].render(this.game.scene.staticLayer)
+        }
+    }
+
+    renderTowersRanges() {
+        for (let i = 0; i < this.towers.length; i++) {
+            this.towers[i].renderRangeHighlight(this.game.scene.dynamicLayer)
+        }
+    }
+
+    renderBullets() {
+        for (let i = 0; i < this.towers.length; i++) {
+            this.towers[i].renderBullets(this.game.scene.dynamicLayer)
         }
     }
 
