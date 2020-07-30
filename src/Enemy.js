@@ -26,7 +26,7 @@ export default class Enemy {
         // Offset en px par rapport à l'origine de la cellule (x ou y)
         this.offset = 0
 
-        // Px / ms parcourus par l'enemy
+        // Px / ms parcourus par l'enemyi
         this.speed = 0.07
 
         // Index de la cellule sur laquelle est l'enemy
@@ -45,7 +45,7 @@ export default class Enemy {
         this.isExiting = false    
 
         // Load the image of the enemy
-        this.image = document.getElementById('enemy')
+        this.image = document.getElementById(level.game.DOMConfig.sprites.enemy)
     }
 
     /**

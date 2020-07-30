@@ -13,6 +13,13 @@ export default class Building {
         this.isSelected = false
     }
 
+    renderBuilding(layer) {
+        const coords = this.getTopLeftCoords()
+        layer.beginPath()
+        layer.rect(coords.x, coords.y, 50, 50)
+        layer.fillStyle = "blue"
+        layer.fill()
+    }
 
     select() {
         this.isSelected = true
@@ -36,18 +43,7 @@ export default class Building {
      * @param {DOMElement} layer 
      */
     render(layer) {
-        
-        const coords = this.getTopLeftCoords()
-        
-        layer.beginPath()
-        
-        layer.rect(coords.x, coords.y, 50, 50)
-        layer.fillStyle = "blue"
-        layer.fill()
-
-        // layer.lineWidth = 2
-        // layer.strokeStyle = "rgba(0, 0, 0, 1)"
-        // layer.stroke()
+        this.renderBuilding(layer)
     }
 
     /**

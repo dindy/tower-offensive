@@ -33,6 +33,15 @@ const DOMConfig = {
     },
     buildMenuItem: {
         class: 'right-menu__item'
+    },
+    sprites: {
+        enemy: 'enemy',
+        towerBasic: 'tower-basic',
+    },
+    icons: {
+        towerBasic: 'tower-basic-icon',
+        towerRocket: 'tower-rocket-icon',
+        towerSniper: 'tower-sniper-icon',
     }
 }
 

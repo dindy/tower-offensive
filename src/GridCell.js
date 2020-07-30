@@ -111,6 +111,7 @@ export default class GridCell {
      * @param {Event} event 
      */
     handleDrop(event) {
+        event.preventDefault() // Prevent opening image in window
         GridCell.dragCount = 0
         this.building = this.scene.game.currentLevel.placeBuilding(this)
         const defaultClass = this.scene.game.DOMConfig.gridCell.class

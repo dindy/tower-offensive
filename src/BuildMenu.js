@@ -7,8 +7,8 @@ export default class BuildMenu {
     constructor(DOMConfig) {
         this.DOMConfig = DOMConfig
         this.DOMMenu = document.getElementById(DOMConfig.buildMenu.id)
-        this.addBuilding('Basic')
-        this.addBuilding('Sniper')
+        this.addBuilding('Basic', document.getElementById(DOMConfig.icons.towerBasic))
+        this.addBuilding('Sniper', document.getElementById(DOMConfig.icons.towerSniper))
     }
 
     /**
@@ -22,8 +22,9 @@ export default class BuildMenu {
     /**
      * Ajoute le building au menu
      */
-    addBuilding(name) {
-        const element = document.createElement('div')
+    addBuilding(name, DOMImg) {
+        const element = document.createElement('img')
+        element.src = DOMImg.src
         element.classList.add(this.DOMConfig.buildMenuItem.class)
         element.setAttribute("draggable", true)
         element.dataset.name = name

@@ -10,12 +10,9 @@ export default class Sniper extends Tower {
     }
 
     shoot(enemy) {
-        if (this.timeSinceLastShot >= this.fireRate) {
-            this.timeSinceLastShot = 0
-            if (Math.floor(Math.random() * 10) + 1 == 5) return false 
-            enemy.hit(this.dammage)
-            this.currentEnemyPosition = enemy.getCoords()
-        }        
+        if (Math.floor(Math.random() * 10) + 1 == 5) return false 
+        enemy.hit(this.dammage)
+        this.currentEnemyPosition = enemy.getCoords()    
     }
 
     renderBullets(layer) {

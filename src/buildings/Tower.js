@@ -19,8 +19,8 @@ export default class Tower extends Building {
         this.speed = speed
         this.timeSinceLastShot = Infinity
         this.bullets = []
-        this.highlightedRange = false 
-
+        this.highlightedRange = false
+        this.sprite = level.game.DOMConfig.sprites.towerBasic
     }
 
     select() {
@@ -82,6 +82,13 @@ export default class Tower extends Building {
 
     }
 
+    tryToShoot(enemy) {
+        if (this.timeSinceLastShot >= this.fireRate) {
+            this.timeSinceLastShot = 0
+            this.shoot(enemy)
+        }          
+    }
+
     /**
      * Update les data en fonction du temps passé
      * @param {Float} diffTimestamp 
@@ -95,7 +102,7 @@ export default class Tower extends Building {
 
         for (let j = 0; j < level.enemies.length; j++) {
             const enemy = level.enemies[j]
-            if (this.isInRange(enemy)) this.shoot(enemy)
+            if (this.isInRange(enemy)) this.tryToShoot(enemy)
         }
 
         for (let i = 0; i < this.bullets.length; i++) {
@@ -109,6 +116,11 @@ export default class Tower extends Building {
      */
     render(layer) {
         super.render(layer)
+        this.renderCannon(layer)
+    }
+
+    renderCannon(layer) {
+        
     }
 
     /**

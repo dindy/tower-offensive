@@ -86,7 +86,7 @@ export default class Level {
         this.placingBuilding = null 
         building.place(targetGridCell)
         this.towers.push(building)
-        this.renderStaticLayer()
+        // this.renderStaticLayer()
         return building
     }
     
@@ -161,9 +161,10 @@ export default class Level {
         
         this.renderBullets()
         
-        // Ranges must be on top (last call)
         this.renderTowersRanges()
 
+        this.renderTowers()
+        
     }
 
     renderEnemies() {
@@ -182,7 +183,7 @@ export default class Level {
 
     renderTowers() {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].render(this.game.scene.staticLayer)
+            this.towers[i].render(this.game.scene.dynamicLayer)
         }
     }
 
