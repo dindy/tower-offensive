@@ -1,6 +1,6 @@
 import Building from '../Building'
 import Bullet from '../Bullet'
-
+import { angle } from "../utilities"
 export default class Tower extends Building {
     
     /**
@@ -20,7 +20,9 @@ export default class Tower extends Building {
         this.timeSinceLastShot = Infinity
         this.bullets = []
         this.highlightedRange = false
+        this.currentTarget = null
         this.sprite = level.game.DOMConfig.sprites.towerBasic
+        this.cannonAngle = 0
     }
 
     select() {
@@ -89,6 +91,14 @@ export default class Tower extends Building {
         }          
     }
 
+    findTarget() {
+        for (let j = 0; j < this.level.enemies.length; j++) {
+            const enemy = this.level.enemies[j]
+            if (this.isInRange(enemy)) this.currentTarget = enemy
+        }
+        
+    }
+
     /**
      * Update les data en fonction du temps passé
      * @param {Float} diffTimestamp 
@@ -100,9 +110,26 @@ export default class Tower extends Building {
         const level = this.level
         this.timeSinceLastShot += diffTimestamp
 
-        for (let j = 0; j < level.enemies.length; j++) {
-            const enemy = level.enemies[j]
-            if (this.isInRange(enemy)) this.tryToShoot(enemy)
+        // Si plus d'ennemi dans le niveau, il n'y a plus d'ennemi courant
+        if (this.level.enemies.length === 0) this.currentTarget = null
+
+        // Si pas d'ennmi courant on essaye d'en trouver un
+        if(this.currentTarget === null) {
+            this.findTarget()
+        // Sinon 
+        } else {
+            
+            // On contrôle que l'ennmi est toujours à portée
+            if (this.isInRange(this.currentTarget) && !this.currentTarget.isDeleted) {
+                // On met à jour l'angle du canon par rapport à l'ennemi
+                const middleCoords = this.getMiddleCoords()
+                this.cannonAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
+                // On tire
+                this.tryToShoot(this.currentTarget)
+            // Si l'ennemi n'est plus à portée 
+            } else {
+                this.currentTarget = null
+            }
         }
 
         for (let i = 0; i < this.bullets.length; i++) {

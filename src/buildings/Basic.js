@@ -7,7 +7,6 @@ export default class Basic extends Tower {
     constructor(level) {
         super(level, 100, 250, 1, 0.5)
         this.sprite = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
-        this.cannonAngle = 0
     }
     
     renderBuilding(layer) {
@@ -31,8 +30,6 @@ export default class Basic extends Tower {
     }
 
     shoot(enemy) {
-        this.bullets.push(new Bullet(this, enemy, this.dammage, this.speed))
-        const middleCoords = this.getMiddleCoords()
-        this.cannonAngle = angle(middleCoords.x, middleCoords.y, enemy.x, enemy.y)
+        this.bullets.push(new Bullet(this, enemy, this.dammage, this.speed))        
     }
 }

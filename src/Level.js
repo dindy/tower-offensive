@@ -136,7 +136,8 @@ export default class Level {
         for (let i = 0; i < this.enemies.length; i++) {
             this.enemies[i].update(diffTimestamp)
         }        
-
+        
+        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
     }
 
     /**
@@ -172,8 +173,6 @@ export default class Level {
             const enemy = this.enemies[i];
             enemy.render(this.game.scene.dynamicLayer)
         }
-
-        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
     }
 
     renderPlacingBuilding() {

@@ -142,3 +142,55 @@ export function angle(cx, cy, ex, ey) {
     //if (theta < 0) theta = 360 + theta; // range [0, 360)
     return theta;
   }
+
+
+//les coords sur la spritesheet de la premiere img x:0 y:0 , width : 50 height :50 // 4 // 100ms
+/*
+const sprite = Sprite.getCurrent(difftimeStamp)
+
+                              oX  oY   oW  oH     DX      DY   DW   DH 
+layer.drawImage(this.sprite, 100, 50, 100, 50, 0 - 25, 0 - 25, 100, 50)
+layer.drawImage(this.sprite, sprite.oX, sprite.oY, sprite.oH, sprite.oW, 0 - 25, 0 - 25, 100, 50)
+
+
+{
+    timer = 0
+    offset
+
+    nbOfFrames = 4,
+    interval = 150
+    y : 0
+    width : 100,
+    height : 50
+    loop : true
+
+    (timer / interval) - (nbOfFrames * (Math.floor((timer / interval) / nbOfFrames)))
+
+    function (timer) {
+        
+    }
+
+    150 => 1 - (4 * (Math.floor(1 / 4))) => 1
+    175 => 175 / 150 - (4 * (Math.floor((175 / 150) / 4)))
+        => 1.16 - (4 * (Math.floor(1.16 / 4)))
+
+
+    getCurrent(difftimestamp){
+        this.timer += difftimestamp
+        const x = Math.floor((this.timer / this.interval) - (this.nbOfFrames * (Math.floor((this.timer / this.interval) / this.nbOfFrames)))) * this.width
+        return [
+            x, this.y, this.width, this.height, 0 - this.offset, 0 - this.offset, this.width, this.height
+        ]
+    }
+}
+
+const sprite = new Sprite(sy, offset, width, height, nbFrames, interval)
+layer.drawImage(this.sprite, ...sprite.getCurrent(ms))
+
+
+
+*/
+
+const test = (ms) => {
+    return Math.floor((ms / 150) - (4 * (Math.floor((ms / 150) / 4))) + 1)
+}
