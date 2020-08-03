@@ -97,7 +97,10 @@ export default class Tower extends Building {
     findTarget() {
         for (let j = 0; j < this.level.enemies.length; j++) {
             const enemy = this.level.enemies[j]
-            if (this.isInRange(enemy)) this.currentTarget = enemy
+            if (this.isInRange(enemy)) {
+                this.currentTarget = enemy
+                return
+            }
         }
         
     }

@@ -6,10 +6,10 @@ import Sprite from "../Sprite"
 export default class Basic extends Tower {
 
     constructor(level) {
-        super(level, 100, 250, 0, 0.5)
+        super(level, 100, 250, 1, 0.5)
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
-        this.nbFrames = 2
-        this.interval = 125
+        this.nbFrames = 3
+        this.interval = 80
         this.sprite = new Sprite(100, 50, 50, this.nbFrames, this.interval)
 
         this.cannonSpeed = 0.3 // degree / ms

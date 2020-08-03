@@ -5,7 +5,7 @@ export default class Sniper extends Tower {
 
     constructor(level) {
         
-        super(level, 250, 1500, 0, 1)
+        super(level, 250, 1500, 5, 1)
         
         this.currentEnemyPosition = null
 
@@ -16,7 +16,7 @@ export default class Sniper extends Tower {
         this.sprite = new Sprite(50, 100, 50, this.nbFrames, this.interval)
 
         this.explosionFrames = 6
-        this.explosionInterval = 128
+        this.explosionInterval = 64
         this.explosionSprite = new Sprite(250, 50, 50, this.explosionFrames, this.explosionInterval)
 
 
@@ -49,7 +49,7 @@ export default class Sniper extends Tower {
     }
 
     renderBullets(layer) {
-        
+
         if (this.currentTarget === null) return
 
         const enemyPosition = this.currentTarget.getCoords() // { x: this.currentTarget.x, y: this.currentTarget.y }
