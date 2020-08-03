@@ -21,8 +21,11 @@ export default class Tower extends Building {
         this.bullets = []
         this.highlightedRange = false
         this.currentTarget = null
-        this.sprite = level.game.DOMConfig.sprites.towerBasic
+        this.spriteSheet = level.game.DOMConfig.sprites.towerBasic
         this.cannonAngle = 0
+        this.targetAngle = null
+        // Overriden by each tower subclass
+        this.sprite = null
     }
 
     select() {
@@ -121,12 +124,30 @@ export default class Tower extends Building {
             
             // On contrôle que l'ennmi est toujours à portée
             if (this.isInRange(this.currentTarget) && !this.currentTarget.isDeleted) {
-                // On met à jour l'angle du canon par rapport à l'ennemi
+                
+                /* On met à jour l'angle du canon par rapport à l'ennemi */
+                
                 const middleCoords = this.getMiddleCoords()
-                this.cannonAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
-                // On tire
-                this.tryToShoot(this.currentTarget)
-            // Si l'ennemi n'est plus à portée 
+                this.targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
+                
+                // Différence d'angle (soit en horaire soit en anti-horaire de [0, 180])
+                let diff = 180 - Math.abs(Math.abs(this.cannonAngle - this.targetAngle) - 180)
+
+                // Direction la plus courte (horaire: 1, anti-horaire: -1) 
+                const dir = (((this.targetAngle - this.cannonAngle + 360) % 360 < 180)) ? 1 : -1  
+                
+                // Nouvel angle
+                const newAngle = this.cannonAngle + (dir * this.cannonSpeed * diffTimestamp)
+
+                // On peut tirer si la différence nous permet de nous aligner correctement
+                if (Math.abs(diff) < this.cannonSpeed * diffTimestamp) {
+                    // On met à jour l'angle
+                    this.cannonAngle = this.targetAngle
+                    // On peut essayer de tirer
+                    this.tryToShoot(this.currentTarget)
+                } else {
+                    this.cannonAngle = newAngle
+                }
             } else {
                 this.currentTarget = null
             }
@@ -135,6 +156,12 @@ export default class Tower extends Building {
         for (let i = 0; i < this.bullets.length; i++) {
             this.bullets[i].update(diffTimestamp)
         }        
+
+        if(this.timeSinceLastShot > this.nbFrames * this.interval) {
+            this.sprite.setSprite(1, 25)
+        } else {
+            this.sprite.update(diffTimestamp, 25)
+        }
     }
 
     /**

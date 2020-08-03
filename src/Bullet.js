@@ -1,4 +1,5 @@
 import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utilities'
+import Sprite from "./Sprite"
 
 export default class Bullet {
 
@@ -29,6 +30,8 @@ export default class Bullet {
 
         this.isDeleted = false
 
+        this.isInAir = true
+
         // Distance entre les coordonnées de départ et de destination en px
         this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
 
@@ -40,6 +43,11 @@ export default class Bullet {
 
         this.totalTime = tower.range / this.speed 
 
+        this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.towerBasic)
+        this.explosionFrames = 3
+        this.explosionInterval = 128
+        this.explosionSprite = new Sprite ( 300, 50, 50, this.explosionFrames, this.explosionInterval)
+        this.timeSinceExplosion = 0
     }
 
     /**
@@ -48,26 +56,35 @@ export default class Bullet {
      */
     update(diffTimestamp) {
         
-        // Track le temps passé sur le chemin
-        this.timeSpent += diffTimestamp
+        if (this.isInAir) {
+
+            // Track le temps passé sur le chemin
+            this.timeSpent += diffTimestamp
+            
+            // Rapport entre le temps écoulé et le temps total jusqu'au point de destination 
+            // ramené à la range de la tower (donc 1 / this.coef = valeur finale de t)
+            let t = (this.timeSpent / this.totalTime) / this.coef
+    
+            // Fin du cycle de vie de la balle (donc timeSpent / totalSpent = 1)
+            // Donc on n'a pas touché l'ennemi
+            if (t * this.coef >= 1) { 
+                this.isInAir = false // suppression à la prochaine frame
+                t = 1 / this.coef // On met t à sa valeur max
+            } 
+    
+            // Stock les coordonnées précédentes
+            this.previousCoords = this.coords
+    
+            // Update les coordonnées de la balle
+            this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+            
+            this.detectCollisions()
         
-        // Rapport entre le temps écoulé et le temps total jusqu'au point de destination 
-        // ramené à la range de la tower (donc 1 / this.coef = valeur finale de t)
-        let t = (this.timeSpent / this.totalTime) / this.coef
-
-        // Fin du cycle de vie de la balle (donc timeSpent / totalSpent = 1)
-        if (t * this.coef >= 1) { 
-            this.isDeleted = true // suppression à la prochaine frame
-            t = 1 / this.coef // On met t à sa valeur max
-        } 
-
-        // Stock les coordonnées précédentes
-        this.previousCoords = this.coords
-
-        // Update les coordonnées de la balle
-        this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+        } else {
         
-        this.detectCollisions()
+            this.timeSinceExplosion += diffTimestamp
+            if (this.timeSinceExplosion > this.explosionFrames * this.explosionInterval) this.isDeleted = true
+        }
     }
 
     /**
@@ -76,11 +93,16 @@ export default class Bullet {
      */
     render(layer) {
 
-        if (!this.isDeleted) {
+        if (this.isInAir) {
             layer.beginPath()
             layer.arc(this.coords.x, this.coords.y, 2, 0, 2 * Math.PI)
             layer.fillStyle = "black"
             layer.fill()
+        } else {
+            this.explosionSprite.setTimer(this.timeSinceExplosion, 25)
+            layer.translate(this.coords.x, this.coords.y)
+            layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
+            layer.setTransform(1, 0, 0, 1, 0, 0);
         }
     }
 
@@ -94,7 +116,7 @@ export default class Bullet {
             let line = [ this.coords, this.previousCoords ]
 
             if (lineIntersectsRectangle(line, enemy.getBoundingBox())) {
-                this.isDeleted = true
+                this.isInAir = false
                 enemy.hit(this.dammage)
             }
         }
