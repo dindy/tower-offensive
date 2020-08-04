@@ -91,7 +91,10 @@ export default class Tower extends Building {
         if (this.timeSinceLastShot >= this.fireRate) {
             this.timeSinceLastShot = 0
             this.shoot(enemy)
-        }          
+            this.spriteCannon.setNextState('shooting')
+        } else {
+            
+        }        
     }
 
     findTarget() {
@@ -160,11 +163,9 @@ export default class Tower extends Building {
             this.bullets[i].update(diffTimestamp)
         }        
 
-        if(this.timeSinceLastShot > this.nbFrames * this.interval) {
-            this.sprite.setSprite(1, 25)
-        } else {
-            this.sprite.update(diffTimestamp, 25)
-        }
+        this.spriteCannon.setTimerDiff(diffTimestamp)
+ 
+        this.spriteCannon.setNextState('idle')
     }
 
     /**

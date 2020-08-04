@@ -2,6 +2,7 @@ import Tower from "./Tower"
 import Bullet from "../Bullet"
 import { angle } from "../utilities" 
 import Sprite from "../Sprite"
+import SpriteNew from "../SpriteNew"
 
 export default class Basic extends Tower {
 
@@ -10,7 +11,10 @@ export default class Basic extends Tower {
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
         this.nbFrames = 3
         this.interval = 80
-        this.sprite = new Sprite(100, 50, 50, this.nbFrames, this.interval)
+        this.spriteCannon = new SpriteNew(50, 50, { 
+            idle: { sourceY: 100, nbFrames: 1, interval: 0 },
+            shooting: { sourceY: 100, nbFrames: 3, interval: 80 }
+        })
 
         this.cannonSpeed = 0.3 // degree / ms
     }
@@ -25,7 +29,7 @@ export default class Basic extends Tower {
         const coords = this.getMiddleCoords()
         layer.translate(coords.x, coords.y)
         layer.rotate(this.cannonAngle * Math.PI / 180)
-        layer.drawImage(this.spriteSheet, ...this.sprite.getCurrent())
+        layer.drawImage(this.spriteSheet, ...this.spriteCannon.getCurrent())
          
         layer.setTransform(1, 0, 0, 1, 0, 0);
     }

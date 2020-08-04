@@ -1,5 +1,6 @@
 import Tower from "./Tower"
 import Sprite from "../Sprite"
+import SpriteNew from "../SpriteNew"
 
 export default class Sniper extends Tower {
 
@@ -13,7 +14,7 @@ export default class Sniper extends Tower {
 
         this.nbFrames = 5
         this.interval = 150
-        this.sprite = new Sprite(50, 100, 50, this.nbFrames, this.interval)
+        this.sprite = new SpriteNew(50, 100, 50, this.nbFrames, this.interval)
 
         this.explosionFrames = 6
         this.explosionInterval = 64
