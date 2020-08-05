@@ -1,68 +1,53 @@
-
-
 export default class Sprite {
 
-    
-    constructor(sourceY, sourceWidth, sourceHeight, nbFrames, interval) {
-        this.sourceY = sourceY
+    constructor(sourceWidth, sourceHeight, states) {
         this.sourceWidth = sourceWidth
         this.sourceHeight = sourceHeight
-        this.nbFrames = nbFrames
-        this.interval = interval
-        
+        this.states = states
+        this.currentState = states[Object.keys(states)[0]]
+        this.nextState = this.currentState
         this.timer = 0
-
-        this.data = []
+        this.currentFrame = null
     }
 
-    setSprite(frameIndex, offset = 0) {
-        this.data = [
-            (frameIndex - 1)  * this.sourceWidth,
-            this.sourceY,
-            this.sourceWidth, 
-            this.sourceHeight, 
-            0 - offset, 
-            0 - offset, 
-            this.sourceWidth, 
-            this.sourceHeight
-        ]
+    setNextState(stateName) {
+        this.nextState = this.states[stateName]
     }
 
-    update(diffTimestamp, offset = 0) {
-        this.timer += diffTimestamp
-        const x = Math.floor((this.timer / this.interval) - (this.nbFrames * (Math.floor((this.timer / this.interval) / this.nbFrames)))) * this.sourceWidth
-        this.data = [
-            x,
-            this.sourceY, 
-            this.sourceWidth, 
-            this.sourceHeight, 
-            0 - offset, 
-            0 - offset, 
-            this.sourceWidth, 
-            this.sourceHeight
-        ]
+    setTimerDiff(diff) {        
+        this.setTimer(this.timer + diff)
+    }
+    
+    setTimer(timer) {
         
-    }    
-    
-    setTimer(timer, offset = 0){
         this.timer = timer
-        const x = Math.floor((this.timer / this.interval) - (this.nbFrames * (Math.floor((this.timer / this.interval) / this.nbFrames)))) * this.sourceWidth
-        this.data = [
-            x,
-            this.sourceY, 
-            this.sourceWidth, 
-            this.sourceHeight, 
-            0 - offset, 
-            0 - offset, 
-            this.sourceWidth, 
-            this.sourceHeight
-        ]
-    }
 
+        const stateTotalTime = this.currentState.interval * this.currentState.nbFrames
     
+        if (this.timer >= stateTotalTime) {
+            this.currentState = this.nextState
+            this.timer = 0
+            this.currentFrame = 1
+        } else {
+            this.currentFrame = this.getNewCurrentFrame()
+        }
+    }
 
     getCurrent() {
-        return this.data
-    }
+                
+        return [
+            (this.currentFrame - 1)  * this.sourceWidth,
+            this.currentState.sourceY,
+            this.sourceWidth, 
+            this.sourceHeight, 
+            0 - (this.sourceWidth / 2), 
+            0 - (this.sourceHeight / 2), 
+            this.sourceWidth, 
+            this.sourceHeight 
+        ]
+    }    
 
+    getNewCurrentFrame() {
+        return Math.floor((this.timer / this.currentState.interval) - (this.currentState.nbFrames * (Math.floor((this.timer / this.currentState.interval) / this.currentState.nbFrames)))) + 1
+    }
 }

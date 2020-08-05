@@ -1,17 +1,14 @@
 import Tower from "./Tower"
 import Bullet from "../Bullet"
-import { angle } from "../utilities" 
 import Sprite from "../Sprite"
-import SpriteNew from "../SpriteNew"
 
 export default class Basic extends Tower {
 
     constructor(level) {
         super(level, 100, 250, 1, 0.5)
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
-        this.nbFrames = 3
-        this.interval = 80
-        this.spriteCannon = new SpriteNew(50, 50, { 
+
+        this.spriteCannon = new Sprite(100, 50, { 
             idle: { sourceY: 100, nbFrames: 1, interval: 0 },
             shooting: { sourceY: 100, nbFrames: 3, interval: 80 }
         })

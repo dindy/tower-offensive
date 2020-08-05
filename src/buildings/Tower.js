@@ -102,6 +102,7 @@ export default class Tower extends Building {
             const enemy = this.level.enemies[j]
             if (this.isInRange(enemy)) {
                 this.currentTarget = enemy
+                this.currentTargetPosition = enemy.getCoords()
                 return
             }
         }
@@ -156,6 +157,7 @@ export default class Tower extends Building {
                 }
             } else {
                 this.currentTarget = null
+                this.currentTargetPosition = null
             }
         }
 

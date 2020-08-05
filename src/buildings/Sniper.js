@@ -1,6 +1,5 @@
 import Tower from "./Tower"
 import Sprite from "../Sprite"
-import SpriteNew from "../SpriteNew"
 
 export default class Sniper extends Tower {
 
@@ -8,17 +7,20 @@ export default class Sniper extends Tower {
         
         super(level, 250, 1500, 5, 1)
         
-        this.currentEnemyPosition = null
+        this.currentTargetPosition = null
 
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
 
-        this.nbFrames = 5
-        this.interval = 150
-        this.sprite = new SpriteNew(50, 100, 50, this.nbFrames, this.interval)
+        this.spriteCannon = new Sprite(100, 50, { 
+            idle: { sourceY: 50, nbFrames: 1, interval: 0 },
+            shooting: { sourceY: 50, nbFrames: 6, interval: 80 }
+        })
 
         this.explosionFrames = 6
         this.explosionInterval = 64
-        this.explosionSprite = new Sprite(250, 50, 50, this.explosionFrames, this.explosionInterval)
+        this.explosionSprite = new Sprite(100, 50, {
+            exploding: {sourceY: 250, nbFrames: 6, interval: 80 }
+        })
 
 
         this.cannonSpeed = 0.1 // degree / ms
@@ -37,7 +39,7 @@ export default class Sniper extends Tower {
         layer.translate(coords.x, coords.y)
         layer.rotate(this.cannonAngle * Math.PI / 180) // takes radians
 
-        layer.drawImage(this.spriteSheet, ...this.sprite.getCurrent())
+        layer.drawImage(this.spriteSheet, ...this.spriteCannon.getCurrent())
 
         layer.setTransform(1, 0, 0, 1, 0, 0);
     }
@@ -45,6 +47,7 @@ export default class Sniper extends Tower {
     shoot(enemy) {
         // if (Math.floor(Math.random() * 10) + 1 == 5) return false 
         const enemyPosition = enemy.getCoords()
+        this.currentTargetPosition = enemyPosition
         this.explosionPosition = { x: enemyPosition.x, y: enemyPosition.y}
         enemy.hit(this.dammage)  
     }
@@ -58,14 +61,15 @@ export default class Sniper extends Tower {
 
         layer.beginPath()
         layer.moveTo(towerPosition.x, towerPosition.y)
-        layer.lineTo(enemyPosition.x, enemyPosition.y)
+        layer.lineTo(this.currentTargetPosition.x, this.currentTargetPosition.y)
         const opacity = this.getOpacity()
         layer.strokeStyle = `rgba(255, 255, 255, ${ opacity }`
         layer.stroke()
         
         // Render explosion
         if (this.timeSinceLastShot < this.explosionFrames * this.explosionInterval) {
-            this.explosionSprite.setTimer(this.timeSinceLastShot, 25)
+            this.explosionSprite.setNextState('exploding')
+            this.explosionSprite.setTimer(this.timeSinceLastShot)
             layer.translate(this.explosionPosition.x, this.explosionPosition.y)
             layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
             layer.setTransform(1, 0, 0, 1, 0, 0);

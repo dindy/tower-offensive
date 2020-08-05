@@ -1,4 +1,5 @@
-import * as utilities from "./utilities.js"
+import * as utilities from "./utilities"
+import Sprite from './Sprite'
 
 export default class Enemy {
     
@@ -11,7 +12,7 @@ export default class Enemy {
         // Center point is the reference for enemy
         this.x = null
         this.y = null
-        this.width = 40
+        this.width = 16
         this.height = this.width
         
         this.health = 15
@@ -46,6 +47,14 @@ export default class Enemy {
 
         // Load the image of the enemy
         this.image = document.getElementById(level.game.DOMConfig.sprites.enemy)
+        this.sprite = new Sprite(50, 50, {
+            down : { sourceY: 0, nbFrames: 4, interval: 80 },
+            up : { sourceY: 50, nbFrames: 4, interval: 80 },
+            right : { sourceY: 100, nbFrames: 4, interval: 80 },
+            left : { sourceY: 150, nbFrames: 4, interval: 80 }
+        })
+        this.firstDirection = null
+        this.secondDirection = null
     }
 
     /**
@@ -72,6 +81,7 @@ export default class Enemy {
      */
     update(diffTimestamp) {
         this.updatePosition(diffTimestamp)
+        this.sprite.setTimerDiff(diffTimestamp)
     } 
 
     /**
@@ -84,18 +94,24 @@ export default class Enemy {
             
             // Get new enemy position
             // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
-            const x = this.x - (this.width / 2)
-            const y = this.y - (this.height / 2)
+            const x = this.x // - (this.width / 2)
+            const y = this.y // - (this.height / 2)
 
             // Render drawing
             // layer.beginPath()
             // layer.rect(x, y, this.width, this.height)
             // layer.fillStyle = "red"
             // layer.fill()
-
-            // Render image
-            layer.drawImage(this.image, x, y, this.width, this.height)
             
+            // Render image
+            layer.translate(x, y)
+            layer.drawImage(this.image, ...this.sprite.getCurrent())
+            layer.setTransform(1, 0, 0, 1, 0, 0);
+            
+            // const bb = this.getBoundingBox()
+            // layer.beginPath()
+            // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
+            // layer.stroke()
         }
     }
 
@@ -140,6 +156,9 @@ export default class Enemy {
 
         // Update t (la proportion de la courbe parcourue de 0 à 1)
         let t = this.pathCoordinates.time / this.pathCoordinates.totalTime
+
+        if (t < 0.5) this.sprite.setNextState(this.firstDirection)
+        else this.sprite.setNextState(this.secondDirection)
 
         // update coordinates with t
         let newCoords = null 
@@ -338,18 +357,23 @@ export default class Enemy {
 
         // Calcul des coordonnées des points de référence
         if (direction === "up") {
+            
+            this.secondDirection = "up"
 
             if (side === "left") {
+                this.firstDirection = "right"
                 endPoint.x = nextCell.coords.xMax - this.offset
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else if (side === "right") {
+                this.firstDirection = "left"
                 endPoint.x = nextCell.coords.xMin + this.offset
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else {
+                this.firstDirection = "up"
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.x = originPoint.x
@@ -358,17 +382,22 @@ export default class Enemy {
 
         } else if (direction == "down") {
 
+            this.secondDirection = "down"
+
             if (side == "left") {
+                this.firstDirection = "right"
                 endPoint.x = nextCell.coords.xMin + this.offset
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else if (side == "right") {
+                this.firstDirection = "left"
                 endPoint.x = nextCell.coords.xMax - this.offset
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = endPoint.x
                 middlePoint.y = originPoint.y
             } else {
+                this.firstDirection = "down"
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = originPoint.x
@@ -376,18 +405,23 @@ export default class Enemy {
             }
 
         } else if (direction == "left") {
-
+            
+            this.secondDirection = "left"
+            
             if (side == "up") {
+                this.firstDirection = "down"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = nextCell.coords.yMax - this.offset
                 middlePoint.y = endPoint.y
                 middlePoint.x = originPoint.x
             } else if (side == "down") {
+                this.firstDirection = "up"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.y = endPoint.y
                 middlePoint.x = originPoint.x                 
             } else {
+                this.firstDirection = "left"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = originPoint.y
                 middlePoint.x = originPoint.x - (this.level.game.scene.cellSize / 2)
@@ -395,18 +429,23 @@ export default class Enemy {
             }
 
         } else if (direction == "right") {
-            
+
+            this.secondDirection = "right"
+
             if (side == "up") { 
+                this.firstDirection = "down"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else if (side == "down") {
+                this.firstDirection = "up"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = nextCell.coords.yMax - this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else {
+                this.firstDirection = "right"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = originPoint.y
                 middlePoint.x = originPoint.x + (this.level.game.scene.cellSize / 2)

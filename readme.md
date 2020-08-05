@@ -37,8 +37,9 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ❌ ``G`` 🎨 Créer un logo pour le jeu
 1. ✔️ ``H`` ⚡️⚙️ Supprimer EaselJS
 1. ✔️ ``M`` 🌟 Implémenter le zoom 
+1. ❌ ``N`` 🎨 Séparer la flamme du canon dans les sprites 
 
-**Prochain code** : ``N``
+**Prochain code** : ``O``
 
 | Emoji | Type de tache |
 |---|---|

@@ -1,5 +1,5 @@
 import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utilities'
-import Sprite from "./Sprite"
+import SpriteNew from "./Sprite"
 
 export default class Bullet {
 
@@ -45,8 +45,10 @@ export default class Bullet {
 
         this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.towerBasic)
         this.explosionFrames = 3
-        this.explosionInterval = 128
-        this.explosionSprite = new Sprite ( 300, 50, 50, this.explosionFrames, this.explosionInterval)
+        this.explosionInterval = 80
+        this.explosionSprite = new SpriteNew (100, 50, {
+            exploding: { sourceY: 300, nbFrames: 3, interval: 120 }
+        })
         this.timeSinceExplosion = 0
     }
 
@@ -99,7 +101,8 @@ export default class Bullet {
             layer.fillStyle = "black"
             layer.fill()
         } else {
-            this.explosionSprite.setTimer(this.timeSinceExplosion, 25)
+            this.explosionSprite.setNextState("exploding")
+            this.explosionSprite.setTimer(this.timeSinceExplosion)
             layer.translate(this.coords.x, this.coords.y)
             layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
             layer.setTransform(1, 0, 0, 1, 0, 0);
