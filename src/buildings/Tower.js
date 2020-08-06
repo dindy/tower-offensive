@@ -55,6 +55,8 @@ export default class Tower extends Building {
         this.isAligned = false
 
         this.isShooting = false
+
+        this.delayRotationAfterShot = 0 // ms
     }
 
     select() {
@@ -194,7 +196,12 @@ export default class Tower extends Building {
      * @param {numeric} diffTimestamp 
      */
     updateCannonAngle(diffTimestamp) {
-    
+        
+        if (this.timeSinceLastShot < this.delayRotationAfterShot) {
+            this.isAligned = false
+            return 
+        }
+
         // On contrôle qu'on a une cible
         if (this.currentTarget != null) {
             
@@ -275,7 +282,7 @@ export default class Tower extends Building {
         
         // Essaye de tirer
         this.updateShoot(diffTimestamp)
-
+        
         // Met à jour les balles
         this.updateBullets(diffTimestamp)
     }

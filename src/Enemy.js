@@ -111,6 +111,7 @@ export default class Enemy {
             // const bb = this.getBoundingBox()
             // layer.beginPath()
             // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
+            // layer.strokeStyle = 'red'
             // layer.stroke()
         }
     }
