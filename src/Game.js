@@ -102,7 +102,7 @@ export default class Game {
         this.update(diffTimestamp)
 
         // Render all the game
-        this.render()
+        this.render(diffTimestamp)
 
         // Handle stop rendering
         if (!this.isStopped) requestAnimationFrame(this.step.bind(this))
@@ -119,8 +119,8 @@ export default class Game {
     /**
      * Rendu graphique
      */
-    render() {
-        this.scene.render()
+    render(diffTimestamp) {
+        this.scene.render(diffTimestamp)
     }
 
 }

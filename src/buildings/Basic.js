@@ -21,16 +21,6 @@ export default class Basic extends Tower {
         layer.drawImage(this.spriteSheet, 0, 0, 50, 50, coords.x, coords.y, 50, 50)
     }
     
-    renderCannon(layer) {
-
-        const coords = this.getMiddleCoords()
-        layer.translate(coords.x, coords.y)
-        layer.rotate(this.cannonAngle * Math.PI / 180)
-        layer.drawImage(this.spriteSheet, ...this.spriteCannon.getCurrent())
-         
-        layer.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
     shoot(enemy) {
         super.shoot(enemy)
         this.bullets.push(new Bullet(this, enemy, this.dammage, this.speed))        

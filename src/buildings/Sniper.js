@@ -33,17 +33,6 @@ export default class Sniper extends Tower {
         layer.drawImage(this.spriteSheet, 0, 0, 50, 50, coords.x, coords.y, 50, 50)
     }
     
-    renderCannon(layer) {
-        
-        const coords = this.getMiddleCoords()
-        layer.translate(coords.x, coords.y)
-        layer.rotate(this.cannonAngle * Math.PI / 180) // takes radians
-
-        layer.drawImage(this.spriteSheet, ...this.spriteCannon.getCurrent())
-
-        layer.setTransform(1, 0, 0, 1, 0, 0);
-    }
-
     shoot(enemy) {
         super.shoot()
         const enemyPosition = enemy.getCoords()

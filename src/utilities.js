@@ -174,8 +174,17 @@ export function angleDifference(a1, a2) {
  * Trouve le sens de rotation le plus efficace pour atteindre a2 
  * @param {numeric} a1 
  * @param {numeric} a2 
- * @return {numeric} horaire: 1 / anti-horaire: -1 
+ * @returns {numeric} horaire: 1 / anti-horaire: -1 
  */
 export function angleDirection(a1, a2) {
     return (((a2 - a1 + 360) % 360 < 180)) ? 1 : -1
+}
+
+/**
+ * Convertit un angle en degrés vers un angle en radians
+ * @param {numeric} a 
+ * @returns {numeric} Angle in radians
+ */
+export function degreesToRadians(a) {
+    return a * Math.PI / 180
 }

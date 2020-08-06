@@ -3,7 +3,8 @@ import {
     angle, 
     angleDifference, 
     angleDirection, 
-    pointIntersectsCircle 
+    pointIntersectsCircle,
+    degreesToRadians,
 } from "../utilities"
 
 export default class Tower extends Building {
@@ -43,9 +44,6 @@ export default class Tower extends Building {
 
         // Cible actuellement suivie par la tour
         this.currentTarget = null
-
-        // Feuille de sprite utilisée par la tour
-        this.spriteSheet = level.game.DOMConfig.sprites.towerBasic
         
         // Angle du canon de la tour
         this.cannonAngle = 0
@@ -55,6 +53,8 @@ export default class Tower extends Building {
 
         // Indique si le canon de la tour est aligné avec la cible courante
         this.isAligned = false
+
+        this.isShooting = false
     }
 
     select() {
@@ -110,7 +110,7 @@ export default class Tower extends Building {
      */
     shoot() {
         this.timeSinceLastShot = 0
-        this.spriteCannon.setNextState('shooting')
+        this.isShooting = true
     }
 
     /**
@@ -232,10 +232,6 @@ export default class Tower extends Building {
                 this.isAligned = false
             }
         }
-
-        this.spriteCannon.setTimerDiff(diffTimestamp)
- 
-        this.spriteCannon.setNextState('idle')
     }
 
     /**
@@ -245,6 +241,8 @@ export default class Tower extends Building {
         
         // On met à jour le timer depuis le dernier tir
         this.timeSinceLastShot += diffTimestamp
+
+        this.isShooting = false
 
         // On tire dès qu'on peut
         if (this.canShoot()) this.shoot(this.currentTarget)
@@ -286,13 +284,34 @@ export default class Tower extends Building {
      * Rendu sur le layer de la tower
      * @param {DOMElement} layer 
      */
-    render(layer) {
+    render(layer, diffTimestamp) {
         super.render(layer)
-        this.renderCannon(layer)
+        this.renderCannon(layer, diffTimestamp)
     }
 
-    renderCannon(layer) {
+    /**
+     * Rend le canon de la tour
+     * @param {Object} Canvas 2d context 
+     * @param {numeric} diffTimestamp 
+     */
+    renderCannon(layer, diffTimestamp) {
         
+        // On récupère les coordonnées du point central de la tour
+        const coords = this.getMiddleCoords()
+        // On détermine l'état du canon
+        const cannonState = this.isShooting ? 'shooting' : 'idle'
+
+        // On met à jour le sprite en fonction du temps écoulé
+        this.spriteCannon.setTimerDiff(diffTimestamp)
+        // On indique qu'à la fin de l'animation en cours on passera à l'état précédemment déterminé
+        // (possiblement le même)
+        this.spriteCannon.setNextState(cannonState)
+
+        // On dessine le canon
+        layer.translate(coords.x, coords.y)
+        layer.rotate(degreesToRadians(this.cannonAngle))
+        layer.drawImage(this.spriteSheet, ...this.spriteCannon.getCurrent())
+        layer.setTransform(1, 0, 0, 1, 0, 0);        
     }
 
     /**

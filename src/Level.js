@@ -91,7 +91,6 @@ export default class Level {
     }
     
     renderStaticLayer() {
-        this.renderTowers()
     }
 
     /**
@@ -154,7 +153,7 @@ export default class Level {
     /**
      * Main render
      */
-    render() {
+    render(diffTimestamp) {
 
         this.renderEnemies()
         
@@ -164,7 +163,7 @@ export default class Level {
         
         this.renderTowersRanges()
 
-        this.renderTowers()
+        this.renderTowers(diffTimestamp)
         
     }
 
@@ -180,9 +179,9 @@ export default class Level {
             this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     }
 
-    renderTowers() {
+    renderTowers(diffTimestamp) {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].render(this.game.scene.dynamicLayer)
+            this.towers[i].render(this.game.scene.dynamicLayer, diffTimestamp)
         }
     }
 

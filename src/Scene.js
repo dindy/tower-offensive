@@ -282,13 +282,13 @@ export default class Scene {
     /**
      * Rendu de la scène
      */
-    render() {
+    render(diffTimestamp) {
         
         // Clear all the dynamic canvas before re-render
         this.dynamicLayer.clearRect(0, 0, this.width, this.height)
 
         // Si on est sur un level, on le rend
-        if (this.game.hasCurrentLevel()) this.game.currentLevel.render()
+        if (this.game.hasCurrentLevel()) this.game.currentLevel.render(diffTimestamp)
 
     }
 
