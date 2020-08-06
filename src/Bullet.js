@@ -18,11 +18,9 @@ export default class Bullet {
         // Coordonnées de l'enemy
         this.targetPoint = enemy.getCoords()
         
-        this.speed = speed // ps/ms
+        this.speed = speed // px/ms
         
         this.dammage = dammage
-
-        this.shape = null
         
         this.coords = this.originPoint
 
@@ -93,8 +91,7 @@ export default class Bullet {
      * Met a jour le rendu
      * @param {DOMElement} layer 
      */
-    render(layer) {
-
+    render(layer, diffTimestamp) {
         if (this.isInAir) {
             layer.beginPath()
             layer.arc(this.coords.x, this.coords.y, 2, 0, 2 * Math.PI)
@@ -102,7 +99,7 @@ export default class Bullet {
             layer.fill()
         } else {
             this.explosionSprite.setNextState("exploding")
-            this.explosionSprite.setTimer(this.timeSinceExplosion)
+            this.explosionSprite.setTimerDiff(diffTimestamp)
             layer.translate(this.coords.x, this.coords.y)
             layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
             layer.setTransform(1, 0, 0, 1, 0, 0);

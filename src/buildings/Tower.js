@@ -13,7 +13,7 @@ export default class Tower extends Building {
      * 
      * @param {Instance} level - L'instance en cours de la class Level
      */
-    constructor(level, range, fireRate, dammage, speed) {
+    constructor(level, range, fireRate, dammage, cannonSpeed) {
         
         super(level)
 
@@ -31,7 +31,7 @@ export default class Tower extends Building {
         this.dammage = dammage
 
         // Vitesse de rotation en degrés / ms
-        this.speed = speed
+        this.cannonSpeed = cannonSpeed
 
         // Temps écoulé depuis le dernier tir
         this.timeSinceLastShot = Infinity
@@ -318,11 +318,11 @@ export default class Tower extends Building {
      * Rendu des balles tirées par la tower
      * @param {DOMElement} layer 
      */
-    renderBullets(layer) {
+    renderBullets(layer, diffTimestamp) {
 
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
-            bullet.render(layer)
+            bullet.render(layer, diffTimestamp)
         } 
 
         this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 

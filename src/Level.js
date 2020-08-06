@@ -159,7 +159,7 @@ export default class Level {
         
         this.renderPlacingBuilding()
         
-        this.renderBullets()
+        this.renderBullets(diffTimestamp)
         
         this.renderTowersRanges()
 
@@ -191,9 +191,9 @@ export default class Level {
         }
     }
 
-    renderBullets() {
+    renderBullets(diffTimestamp) {
         for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].renderBullets(this.game.scene.dynamicLayer)
+            this.towers[i].renderBullets(this.game.scene.dynamicLayer, diffTimestamp)
         }
     }
 

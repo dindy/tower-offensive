@@ -5,7 +5,7 @@ export default class Sniper extends Tower {
 
     constructor(level) {
         
-        super(level, 250, 1500, 5, 1)
+        super(level, 250, 1500, 5, .1)
         
         this.currentTargetPosition = null
 
@@ -21,9 +21,6 @@ export default class Sniper extends Tower {
         this.explosionSprite = new Sprite(100, 50, {
             exploding: {sourceY: 250, nbFrames: 6, interval: 80 }
         })
-
-
-        this.cannonSpeed = 0.1 // degree / ms
 
         this.explosionPosition = null
     }
