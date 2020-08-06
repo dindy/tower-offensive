@@ -45,7 +45,7 @@ export default class Sniper extends Tower {
     }
 
     shoot(enemy) {
-        // if (Math.floor(Math.random() * 10) + 1 == 5) return false 
+        super.shoot()
         const enemyPosition = enemy.getCoords()
         this.currentTargetPosition = enemyPosition
         this.explosionPosition = { x: enemyPosition.x, y: enemyPosition.y}

@@ -1,6 +1,12 @@
 import Building from '../Building'
 import Bullet from '../Bullet'
-import { angle } from "../utilities"
+import { 
+    angle, 
+    angleDifference, 
+    angleDirection, 
+    pointIntersectsCircle 
+} from "../utilities"
+
 export default class Tower extends Building {
     
     /**
@@ -24,8 +30,12 @@ export default class Tower extends Building {
         this.spriteSheet = level.game.DOMConfig.sprites.towerBasic
         this.cannonAngle = 0
         this.targetAngle = null
+
         // Overriden by each tower subclass
         this.sprite = null
+
+        // Indique si le canon de la tour est aligné avec la cible courante
+        this.isAligned = false
     }
 
     select() {
@@ -69,44 +79,166 @@ export default class Tower extends Building {
     /**
      * Check si l'enemy est dans la range de la tower
      * @param {Object} enemy 
+     * @returns {boolean}
      */
     isInRange(enemy) {
-        
-        const dist_points = (enemy.x - this.rangeShapeCoords.x) * (enemy.x - this.rangeShapeCoords.x) + (enemy.y - this.rangeShapeCoords.y) * (enemy.y - this.rangeShapeCoords.y);
-        const r = this.range * this.range
-        
-        return dist_points < r
+        return pointIntersectsCircle(enemy, this.rangeShapeCoords, this.range)
     }
 
     /**
-     * Tire sur l'enemy selectionné
+     * Tire sur l'enemy selectionné. Doit être implémenté par la classe enfant.
      * @param {Object} enemy 
      */
-    shoot(enemy) {
-        
-
+    shoot() {
+        this.timeSinceLastShot = 0
+        this.spriteCannon.setNextState('shooting')
     }
 
-    tryToShoot(enemy) {
-        if (this.timeSinceLastShot >= this.fireRate) {
-            this.timeSinceLastShot = 0
-            this.shoot(enemy)
-            this.spriteCannon.setNextState('shooting')
-        } else {
-            
-        }        
+    /**
+     * Vérifie que toutes les conditions sont remplies pour pouvoir tirer sur la cible courante
+     * @returns {boolean} Wether the tower can shoot or not
+     */
+    canShoot() {
+
+        // On peut tirer si...
+        return (this.currentTarget != null // ...on a une cible
+            && this.isAligned // ...le canon est aligné
+            && this.timeSinceLastShot >= this.fireRate // ...on a assez attendu depuis le tir précédent
+        ) ?
+        true : false
     }
 
+    /**
+     * Trouve une cible parmi les ennemis du niveau
+     */
     findTarget() {
+        
+        // Parcourt les ennemis du niveau
         for (let j = 0; j < this.level.enemies.length; j++) {
+            
             const enemy = this.level.enemies[j]
-            if (this.isInRange(enemy)) {
+            
+            // Si l'ennemi est à portée et pas supprimé 
+            if (this.isValidTarget(enemy)) {
+
+                // On met à jour les infos de l'ennemi courant
                 this.currentTarget = enemy
                 this.currentTargetPosition = enemy.getCoords()
+                
+                // Pas besoin de parcourir les autres ennemis
                 return
             }
         }
+
+        // Aucune cible trouvée
+        this.currentTarget = null
+        this.currentTargetPosition = null
+    }
+
+    /**
+     * Vérifie qu'un ennemi est valide
+     * @param {Object} Ennemi 
+     * @returns {boolean}
+     */
+    isValidTarget(target) {
+        return target !== null // Non null
+            && this.isInRange(target) // A portée
+            && !target.isDeleted // Pas supprimé
+    }
+
+    /**
+     * Met à jour la cible courante
+     * @param {numeric} diffTimestamp 
+     */
+    updateTarget(diffTimestamp) {
+
+        // Si plus d'ennemi dans le niveau, il n'y a plus d'ennemi courant
+        if (this.level.enemies.length === 0) {
+            this.currentTarget = null
+            return // Pas besoin de continuer la recherche
+        }
+
+        // Si la cible n'est plus valide
+        if (!this.isValidTarget(this.currentTarget)) {
+
+            // On supprime la cible courante
+            this.currentTarget = null
+            this.currentTargetPosition = null
+
+            // on essaye d'en trouver un autre pour le prochain tour
+            this.findTarget()
+        }
+    }
+
+    /**
+     * Met à jour l'angle du canon
+     * @param {numeric} diffTimestamp 
+     */
+    updateCannonAngle(diffTimestamp) {
+    
+        // On contrôle qu'on a une cible
+        if (this.currentTarget != null) {
+            
+            // On récupère les coordonnées de la tour 
+            const middleCoords = this.getMiddleCoords()
+
+            // On calcule l'angle de la cible par rapport aux coordonnées de la tour
+            this.targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
+            
+            // On calcule la différence d'angle entre l'angle du cannon et celui nécessaire pour atteindre la cible 
+            // sur une échelle de [0, 180]
+            let diff = angleDifference(this.cannonAngle, this.targetAngle)
+
+            // On calcule le sens de rotation optimum pour atteindre la cible
+            const dir = angleDirection(this.cannonAngle, this.targetAngle)  
+            
+            // On peut tirer si la différence d'angle et la vitesse de rotation nous laissent 
+            // le temps de nous aligner parfaitement
+            if (Math.abs(diff) < this.cannonSpeed * diffTimestamp) {
+
+                // L'angle du canon de vient celui de la cible
+                this.cannonAngle = this.targetAngle
+                
+                // On peut essayer de tirer
+                this.isAligned = true
+            
+            // Sinon on met à jour l'angle du canon...
+            } else {
+
+                // ...en fonction du temps écoulé et de la vitesse de rotation
+                const newAngle = this.cannonAngle + (dir * this.cannonSpeed * diffTimestamp)
+                this.cannonAngle = newAngle
+
+                // On ne peut plus tirer
+                this.isAligned = false
+            }
+        }
+
+        this.spriteCannon.setTimerDiff(diffTimestamp)
+ 
+        this.spriteCannon.setNextState('idle')
+    }
+
+    /**
+     * Déclenche le tir si possible
+     */
+    updateShoot(diffTimestamp) {
         
+        // On met à jour le timer depuis le dernier tir
+        this.timeSinceLastShot += diffTimestamp
+
+        // On tire dès qu'on peut
+        if (this.canShoot()) this.shoot(this.currentTarget)
+    }
+
+    /**
+     * Met à jour les balles tirées par la tour
+     * @param {numeric} diffTimestamp 
+     */
+    updateBullets(diffTimestamp) {
+        for (let i = 0; i < this.bullets.length; i++) {
+            this.bullets[i].update(diffTimestamp)
+        }        
     }
 
     /**
@@ -115,59 +247,20 @@ export default class Tower extends Building {
      */
     update(diffTimestamp) {
         
+        // On update le building
         super.update()
 
-        const level = this.level
-        this.timeSinceLastShot += diffTimestamp
+        // Met à jour la cible
+        this.updateTarget(diffTimestamp)
 
-        // Si plus d'ennemi dans le niveau, il n'y a plus d'ennemi courant
-        if (this.level.enemies.length === 0) this.currentTarget = null
+        // Met à jour l'angle du canon
+        this.updateCannonAngle(diffTimestamp)
+        
+        // Essaye de tirer
+        this.updateShoot(diffTimestamp)
 
-        // Si pas d'ennmi courant on essaye d'en trouver un
-        if(this.currentTarget === null) {
-            this.findTarget()
-        // Sinon 
-        } else {
-            
-            // On contrôle que l'ennmi est toujours à portée
-            if (this.isInRange(this.currentTarget) && !this.currentTarget.isDeleted) {
-                
-                /* On met à jour l'angle du canon par rapport à l'ennemi */
-                
-                const middleCoords = this.getMiddleCoords()
-                this.targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
-                
-                // Différence d'angle (soit en horaire soit en anti-horaire de [0, 180])
-                let diff = 180 - Math.abs(Math.abs(this.cannonAngle - this.targetAngle) - 180)
-
-                // Direction la plus courte (horaire: 1, anti-horaire: -1) 
-                const dir = (((this.targetAngle - this.cannonAngle + 360) % 360 < 180)) ? 1 : -1  
-                
-                // Nouvel angle
-                const newAngle = this.cannonAngle + (dir * this.cannonSpeed * diffTimestamp)
-
-                // On peut tirer si la différence nous permet de nous aligner correctement
-                if (Math.abs(diff) < this.cannonSpeed * diffTimestamp) {
-                    // On met à jour l'angle
-                    this.cannonAngle = this.targetAngle
-                    // On peut essayer de tirer
-                    this.tryToShoot(this.currentTarget)
-                } else {
-                    this.cannonAngle = newAngle
-                }
-            } else {
-                this.currentTarget = null
-                this.currentTargetPosition = null
-            }
-        }
-
-        for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].update(diffTimestamp)
-        }        
-
-        this.spriteCannon.setTimerDiff(diffTimestamp)
- 
-        this.spriteCannon.setNextState('idle')
+        // Met à jour les balles
+        this.updateBullets(diffTimestamp)
     }
 
     /**
