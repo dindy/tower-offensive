@@ -260,9 +260,13 @@ export default class Tower extends Building {
      * @param {numeric} diffTimestamp 
      */
     updateBullets(diffTimestamp) {
+
         for (let i = 0; i < this.bullets.length; i++) {
             this.bullets[i].update(diffTimestamp)
-        }        
+        }      
+        
+        // Supprime les balles en fin de vie
+        this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
     }
 
     /**
@@ -331,8 +335,6 @@ export default class Tower extends Building {
             const bullet = this.bullets[i];
             bullet.render(layer, diffTimestamp)
         } 
-
-        this.bullets = this.bullets.filter(bullet => !bullet.isDeleted) 
     }
 
     /**
