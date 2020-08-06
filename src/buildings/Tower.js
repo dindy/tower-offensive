@@ -1,5 +1,4 @@
 import Building from '../Building'
-import Bullet from '../Bullet'
 import { 
     angle, 
     angleDifference, 
@@ -17,19 +16,39 @@ export default class Tower extends Building {
         
         super(level)
 
+        // Portée de la tour
         this.range = range
-        this.rangeShape = null
+
+        // Coordonnées du point central de la forme représentant la portée de la tour
+        // Utile si la tour n'a pas encoré été placée et n'a donc pas de coordonnées
         this.rangeShapeCoords = null
-        this.fireRate = fireRate // temps en ms entre chaque tir
+        
+        // Temps en ms entre chaque tir
+        this.fireRate = fireRate 
+        
+        // Niveau de dommage infligé
         this.dammage = dammage
+
+        // Vitesse de rotation en degrés / ms
         this.speed = speed
+
+        // Temps écoulé depuis le dernier tir
         this.timeSinceLastShot = Infinity
+
+        // Tableau des balles tirées par la tour
         this.bullets = []
+
+        // Indique si la portée de la tour est en surbrillance
         this.highlightedRange = false
+
+        // Cible actuellement suivie par la tour
         this.currentTarget = null
+
+        // Feuille de sprite utilisée par la tour
         this.spriteSheet = level.game.DOMConfig.sprites.towerBasic
+        
+        // Angle du canon de la tour
         this.cannonAngle = 0
-        this.targetAngle = null
 
         // Overriden by each tower subclass
         this.sprite = null
@@ -183,21 +202,21 @@ export default class Tower extends Building {
             const middleCoords = this.getMiddleCoords()
 
             // On calcule l'angle de la cible par rapport aux coordonnées de la tour
-            this.targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
+            const targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
             
             // On calcule la différence d'angle entre l'angle du cannon et celui nécessaire pour atteindre la cible 
             // sur une échelle de [0, 180]
-            let diff = angleDifference(this.cannonAngle, this.targetAngle)
+            let degreesDifference = Math.abs(angleDifference(this.cannonAngle, targetAngle))
 
             // On calcule le sens de rotation optimum pour atteindre la cible
-            const dir = angleDirection(this.cannonAngle, this.targetAngle)  
+            const direction = angleDirection(this.cannonAngle, targetAngle)  
             
             // On peut tirer si la différence d'angle et la vitesse de rotation nous laissent 
             // le temps de nous aligner parfaitement
-            if (Math.abs(diff) < this.cannonSpeed * diffTimestamp) {
+            if (degreesDifference < this.cannonSpeed * diffTimestamp) {
 
                 // L'angle du canon de vient celui de la cible
-                this.cannonAngle = this.targetAngle
+                this.cannonAngle = targetAngle
                 
                 // On peut essayer de tirer
                 this.isAligned = true
@@ -206,7 +225,7 @@ export default class Tower extends Building {
             } else {
 
                 // ...en fonction du temps écoulé et de la vitesse de rotation
-                const newAngle = this.cannonAngle + (dir * this.cannonSpeed * diffTimestamp)
+                const newAngle = this.cannonAngle + (direction * this.cannonSpeed * diffTimestamp)
                 this.cannonAngle = newAngle
 
                 // On ne peut plus tirer
