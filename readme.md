@@ -27,7 +27,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``A`` 🐞 Les cellules occupées devraient refuser le drag and drop de nouveaux batiments
 1. ✔️ ``B`` ⚡️⚙️ Déplacer la création des layers de la classe `Level` vers la classe `Game`
 1. ✔️ ``C`` 🐞 Les projectiles ne devraient pas être masqués par les batiments
-1. ❌ ``I`` 🌟 Créer un nouveau type de tour "sniper"
+1. ✔️ ``I`` 🌟 Créer un nouveau type de tour "sniper"
 1. ❌ ``J`` 🌟 Créer un nouveau type de tour "mortier"
 1. ❌ ``K`` 🌟 Créer un nouveau type de tour "balles téléguidées"
 1. ❌ ``L`` 🌟 Enchainer les vagues du level
