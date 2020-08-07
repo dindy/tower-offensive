@@ -155,7 +155,7 @@ export default class Level {
      */
     render(diffTimestamp) {
 
-        this.renderEnemies()
+        this.renderEnemies(diffTimestamp)
         
         this.renderPlacingBuilding()
         
@@ -167,10 +167,10 @@ export default class Level {
         
     }
 
-    renderEnemies() {
+    renderEnemies(diffTimestamp) {
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            enemy.render(this.game.scene.dynamicLayer)
+            enemy.render(this.game.scene.dynamicLayer, diffTimestamp)
         }
     }
 

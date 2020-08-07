@@ -22,7 +22,7 @@ export default class Enemy {
         
         // Object de l'enemy contenant les 3 points qui définissent le chemin 
         // qu'il est en train de suivre
-        this.pathCoordinates = null
+        this.path = null
 
         // Offset en px par rapport à l'origine de la cellule (x ou y)
         this.offset = 0
@@ -53,8 +53,9 @@ export default class Enemy {
             right : { sourceY: 100, nbFrames: 4, interval: 80 },
             left : { sourceY: 150, nbFrames: 4, interval: 80 }
         })
-        this.firstDirection = null
-        this.secondDirection = null
+
+        // Indique l'orientation de l'ennemi pour rendre le bon sprite
+        this.currentDirection = null
     }
 
     /**
@@ -81,33 +82,35 @@ export default class Enemy {
      */
     update(diffTimestamp) {
         this.updatePosition(diffTimestamp)
-        this.sprite.setTimerDiff(diffTimestamp)
     } 
 
     /**
      * Gère le rendu de l'enemy
      * @param {Layer} layer sur lequel on rend l'enemy  
      */
-    render(layer) {
+    render(layer, diffTimestamp) {
         
         if (!this.isDeleted) {
             
             // Get new enemy position
             // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
-            const x = this.x // - (this.width / 2)
-            const y = this.y // - (this.height / 2)
+            const x = Math.round(this.x)
+            const y = Math.round(this.y)
 
-            // Render drawing
+            // Render image   
+            this.sprite.setNextState(this.currentDirection)
+            this.sprite.setTimerDiff(diffTimestamp)
+            layer.translate(x, y)
+            layer.drawImage(this.image, ...this.sprite.getCurrent())
+            layer.setTransform(1, 0, 0, 1, 0, 0);
+
+            // Render simple drawing
             // layer.beginPath()
             // layer.rect(x, y, this.width, this.height)
             // layer.fillStyle = "red"
             // layer.fill()
-            
-            // Render image
-            layer.translate(x, y)
-            layer.drawImage(this.image, ...this.sprite.getCurrent())
-            layer.setTransform(1, 0, 0, 1, 0, 0);
-            
+
+            // Debug bounding box
             // const bb = this.getBoundingBox()
             // layer.beginPath()
             // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
@@ -150,22 +153,24 @@ export default class Enemy {
     moveAlongPath(diffTimestamp) {
 
         // Update time passed in a cell
-        this.pathCoordinates.time += diffTimestamp
+        this.path.time += diffTimestamp
 
         // Calculate target time to passed in a cell
-        this.pathCoordinates.totalTime = this.level.game.scene.cellSize / this.speed
+        this.path.totalTime = this.level.game.scene.cellSize / this.speed
 
         // Update t (la proportion de la courbe parcourue de 0 à 1)
-        let t = this.pathCoordinates.time / this.pathCoordinates.totalTime
+        let t = this.path.time / this.path.totalTime
 
-        if (t < 0.5) this.sprite.setNextState(this.firstDirection)
-        else this.sprite.setNextState(this.secondDirection)
+        // Save the current direction
+        this.currentDirection = t < 0.5 ? 
+            this.path.firstDirection : 
+            this.path.secondDirection
 
         // update coordinates with t
         let newCoords = null 
-        const p1 = this.pathCoordinates.originPoint
-        const p2 = this.pathCoordinates.middlePoint 
-        const p3 = this.pathCoordinates.endPoint
+        const p1 = this.path.originPoint
+        const p2 = this.path.middlePoint 
+        const p3 = this.path.endPoint
         
         // Si on a parcouru toute la courbe, on s'assure d'être exactment 
         // sur le dernier point et on met à jour les propriétés de l'enemy
@@ -269,6 +274,9 @@ export default class Enemy {
      */
     updateTurningPathCoordinates(cell, previousCell) {
         
+        let firstDirection = null 
+        let secondDirection = null
+        
         // Côté par lequel on arrive 
         const side = cell.getDirection(previousCell)  
 
@@ -279,21 +287,29 @@ export default class Enemy {
 
         // Calcul des coordonnées des points de référence
         if (side == "up") {
+            firstDirection = "down"
+            secondDirection = "up"
             middlePoint.x = endPoint.x
             middlePoint.y = originPoint.y + (this.level.game.scene.cellSize)
         } else if (side == "down") {
+            firstDirection = "up"
+            secondDirection = "down"            
             middlePoint.x = endPoint.x
             middlePoint.y = originPoint.y - (this.level.game.scene.cellSize)
         } else if (side == "left") {
+            firstDirection = "right"
+            secondDirection = "left"            
             middlePoint.x = endPoint.x + (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
+            firstDirection = "left"
+            secondDirection = "right"
             middlePoint.x = endPoint.x - (this.level.game.scene.cellSize)
             middlePoint.y = originPoint.y 
         }
 
         // On met à jour les coordonnées
-        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0 }        
+        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }        
     }
 
     /**
@@ -302,6 +318,9 @@ export default class Enemy {
      * @param {Cell} previousCell 
      */
     updateExitingPathCoordinates(cell, previousCell) {
+
+        let firstDirection = null 
+        let secondDirection = null
 
         // Côté par lequel on arrive
         const side = cell.getDirection(previousCell)  
@@ -313,25 +332,33 @@ export default class Enemy {
 
         // Calcul des coordonnées des points de référence
         if (side == "up") {
+            firstDirection = "down"
+            secondDirection = "down"            
             endPoint.y += this.level.game.scene.cellSize
             middlePoint.x = endPoint.x
             middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2)
         } else if (side == "down") {
+            firstDirection = "up"
+            secondDirection = "up"             
             endPoint.y = 0
             middlePoint.x = endPoint.x
             middlePoint.y = this.level.game.scene.cellSize / 2
         } else if (side == "left") {
+            firstDirection = "right"
+            secondDirection = "right"             
             endPoint.x += this.level.game.scene.cellSize
             middlePoint.x = endPoint.x + (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         } else if (side == "right") {
+            firstDirection = "left"
+            secondDirection = "left"             
             endPoint.x -= this.level.game.scene.cellSize
             middlePoint.x = endPoint.x - (this.level.game.scene.cellSize / 2)
             middlePoint.y = originPoint.y 
         }
 
         // On met à jour les coordonnées
-        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0 }        
+        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }        
     }
 
     /**
@@ -342,6 +369,9 @@ export default class Enemy {
      */
     updateNormalPathCoordinates(cell, nextCell, previousCell) {
 
+        let firstDirection = null
+        let secondDirection = null
+        
         // Direction entre la cellule courante et la prochaine
         const direction = cell.getDirection(nextCell)
 
@@ -359,22 +389,22 @@ export default class Enemy {
         // Calcul des coordonnées des points de référence
         if (direction === "up") {
             
-            this.secondDirection = "up"
+            secondDirection = "up"
 
             if (side === "left") {
-                this.firstDirection = "right"
+                firstDirection = "right"
                 endPoint.x = nextCell.coords.xMax - this.offset
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else if (side === "right") {
-                this.firstDirection = "left"
+                firstDirection = "left"
                 endPoint.x = nextCell.coords.xMin + this.offset
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else {
-                this.firstDirection = "up"
+                firstDirection = "up"
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMax
                 middlePoint.x = originPoint.x
@@ -383,22 +413,22 @@ export default class Enemy {
 
         } else if (direction == "down") {
 
-            this.secondDirection = "down"
+            secondDirection = "down"
 
             if (side == "left") {
-                this.firstDirection = "right"
+                firstDirection = "right"
                 endPoint.x = nextCell.coords.xMin + this.offset
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.y = originPoint.y
                 middlePoint.x = endPoint.x
             } else if (side == "right") {
-                this.firstDirection = "left"
+                firstDirection = "left"
                 endPoint.x = nextCell.coords.xMax - this.offset
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = endPoint.x
                 middlePoint.y = originPoint.y
             } else {
-                this.firstDirection = "down"
+                firstDirection = "down"
                 endPoint.x = originPoint.x
                 endPoint.y = nextCell.coords.yMin
                 middlePoint.x = originPoint.x
@@ -407,22 +437,22 @@ export default class Enemy {
 
         } else if (direction == "left") {
             
-            this.secondDirection = "left"
+            secondDirection = "left"
             
             if (side == "up") {
-                this.firstDirection = "down"
+                firstDirection = "down"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = nextCell.coords.yMax - this.offset
                 middlePoint.y = endPoint.y
                 middlePoint.x = originPoint.x
             } else if (side == "down") {
-                this.firstDirection = "up"
+                firstDirection = "up"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.y = endPoint.y
                 middlePoint.x = originPoint.x                 
             } else {
-                this.firstDirection = "left"
+                firstDirection = "left"
                 endPoint.x = nextCell.coords.xMax
                 endPoint.y = originPoint.y
                 middlePoint.x = originPoint.x - (this.level.game.scene.cellSize / 2)
@@ -431,22 +461,22 @@ export default class Enemy {
 
         } else if (direction == "right") {
 
-            this.secondDirection = "right"
+            secondDirection = "right"
 
             if (side == "up") { 
-                this.firstDirection = "down"
+                firstDirection = "down"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = nextCell.coords.yMin + this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else if (side == "down") {
-                this.firstDirection = "up"
+                firstDirection = "up"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = nextCell.coords.yMax - this.offset
                 middlePoint.x = originPoint.x
                 middlePoint.y = endPoint.y
             } else {
-                this.firstDirection = "right"
+                firstDirection = "right"
                 endPoint.x = nextCell.coords.xMin
                 endPoint.y = originPoint.y
                 middlePoint.x = originPoint.x + (this.level.game.scene.cellSize / 2)
@@ -455,21 +485,21 @@ export default class Enemy {
         }
         
         // On met à jour les coordonnées
-        this.pathCoordinates = { originPoint, middlePoint, endPoint, time: 0}    
+        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }    
     }
 
     /**
      * Met a null les coordonnées enregistrées
      */
     removeCurrentPathCoordinates() {
-        return this.pathCoordinates = null
+        return this.path = null
     }
 
     /**
      * Retourn True si les coordonnées ne sont pas définies
      */
     hasCurrentPath() {
-        return this.pathCoordinates !== null
+        return this.path !== null
     }
 
     /**
@@ -501,7 +531,6 @@ export default class Enemy {
      */
     hit(damage) {
         this.health -= damage
-        console.log('touché !!!');
         if (this.health <= 0) {
             this.isDeleted = true
         }
