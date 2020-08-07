@@ -213,7 +213,7 @@ export default class Tower extends Building {
             
             // On calcule la différence d'angle entre l'angle du cannon et celui nécessaire pour atteindre la cible 
             // sur une échelle de [0, 180]
-            let degreesDifference = Math.abs(angleDifference(this.cannonAngle, targetAngle))
+            let degreesDifference = angleDifference(this.cannonAngle, targetAngle)
 
             // On calcule le sens de rotation optimum pour atteindre la cible
             const direction = angleDirection(this.cannonAngle, targetAngle)  
