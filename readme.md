@@ -30,7 +30,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``I`` 🌟 Créer un nouveau type de tour "sniper"
 1. ❌ ``J`` 🌟 Créer un nouveau type de tour "mortier"
 1. ❌ ``K`` 🌟 Créer un nouveau type de tour "balles téléguidées"
-1. ❌ ``L`` 🌟 Enchainer les vagues du level
+1. ✔️ ``L`` 🌟 Enchainer les vagues du level
 1. ✔️ ``D`` 🌟 Rendre les tours sélectionnables pour afficher leur portée sur la map
 1. ❌ ``E`` 📖 Trouver un meilleur nom au jeu
 1. 🔨 ``F`` 📢 Rédiger une courte présentation du jeu
@@ -38,8 +38,11 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``H`` ⚡️⚙️ Supprimer EaselJS
 1. ✔️ ``M`` 🌟 Implémenter le zoom 
 1. ❌ ``N`` 🎨 Séparer la flamme du canon dans les sprites 
+1. ❌ ``O`` 🌟 Les ennemis peuvent voler de la valeur 0
 
-**Prochain code** : ``O``
+
+
+**Prochain code** : ``P``
 
 | Emoji | Type de tache |
 |---|---|
@@ -61,3 +64,18 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 | ✔️ | Done |
 
 ---
+
+## Idées gameplay
+
+- Laisser un délai entre 2 vagues
+- Possibilité d'appeler la prochaine vague avec un bouton avant que la courante soit terminée
+- Comment gagner un niveau ? Quand certaines technos (progrès social) sont débloquées -> possibilité de passer au niveau suivant sur la même carte (on garde les batiments).
+- chaque carte = 1 boss qui tente de voler un village antiK
+- Tuer des ennemis = expérience = dépense dans les technos = changement d'acte = augmentation de la difficulté
+- PIB permet de construire des tours. Le joueur peut utiliser une fraction de la valeur.
+- Valoriser le fait d'avoir protéger la valeur d'un acte (ou vague) à l'autre 
+- Vocabulaire :
+    - vague = plusieurs ennemis 
+    - acte = niveau dans la map
+    - scène = map 
+- On perd quand il n'y a plus de valeur économique

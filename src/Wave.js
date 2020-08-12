@@ -2,22 +2,26 @@ import Enemy from './Enemy'
 
 export default class Wave {
 
-    spawningFrequency = 750 // ms
+    spawningFrequency = 500 // ms
 
     timeSinceLastSpawn = null
 
     spawnedEnemiesCount = 0
+
+    initialDelay = 5000 // ms
+    
+    initialTimer = 0    
 
     /**
      * Constuctor
      * @param {JSON} config 
      * @param {Object} level 
      */
-    constructor(config, level) {
-
-        this.config = config
+    constructor(level, difficulty) {
+        this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
+        this.nbEnemies = this.difficulty * 5 
     }
 
     /**
@@ -26,34 +30,40 @@ export default class Wave {
      */
     getSpawningEnemies = (diffTimestamp) => {
         
-        // If not all enemies have spawn
-        if (this.config.nbEnemies > this.spawnedEnemiesCount) {
+        this.initialTimer += diffTimestamp
         
-            // If no enemies has spawn
-            if (this.timeSinceLastSpawn === null) {
-                
-                // Update timer
-                this.timeSinceLastSpawn = diffTimestamp
-                this.spawnedEnemiesCount++
-                
-                return [this.createEnemy()]
-                
-            } else {
-
-                this.timeSinceLastSpawn += diffTimestamp
-                
-                // If we've wait long enough since last spawn
-                if (this.timeSinceLastSpawn >= this.spawningFrequency) {
-
+        if (this.initialTimer >= this.initialDelay) {
+        
+            // If not all enemies have spawn
+            if (this.nbEnemies > this.spawnedEnemiesCount) {
+            
+                // If no enemies has spawn
+                if (this.timeSinceLastSpawn === null) {
+                    
                     // Update timer
-                    this.timeSinceLastSpawn = 0
+                    this.timeSinceLastSpawn = diffTimestamp
                     this.spawnedEnemiesCount++
                     
-                    return [this.createEnemy()]    
-                }     
-            }
-        }
+                    return [this.createEnemy()]
+                    
+                } else {
 
+                    this.timeSinceLastSpawn += diffTimestamp
+                    
+                    // If we've wait long enough since last spawn
+                    if (this.timeSinceLastSpawn >= this.spawningFrequency) {
+
+                        // Update timer
+                        this.timeSinceLastSpawn = 0
+                        this.spawnedEnemiesCount++
+                        
+                        return [this.createEnemy()]    
+                    }     
+                }
+            }
+        
+        }
+        
         return []
     }
 
@@ -80,5 +90,9 @@ export default class Wave {
         }
 
         return enemy
+    }
+
+    isFinished() {
+        return this.spawnedEnemiesCount === this.nbEnemies
     }
 }

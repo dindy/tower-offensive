@@ -4,14 +4,14 @@ import Sniper from './buildings/Sniper'
 
 export default class Level {
     
-    waves = [] 
     enemies = []
     towers = []
     bullets = []
     currentWave = null
     placingBuilding = null
     selectedBuilding = null
-
+    waveCounter = 0
+        
     /**
      * Constructor
      * @param {Object} game 
@@ -20,7 +20,7 @@ export default class Level {
     constructor(game, levelConfig) {
         this.game = game
         this.config = levelConfig
-        this.loadWaves()
+        this.updateWave()
         this.availableBuildings = {
             'Basic': Basic,
             'Sniper': Sniper,
@@ -96,17 +96,12 @@ export default class Level {
     /**
      * Créer la vague en fonction de la config
      */
-    loadWaves() {
+    updateWave(diffTimestamp) {
         
-        // Create waves
-        this.config.waves.forEach(waveConfig => {
-            const wave = new Wave(waveConfig, this)            
-            this.waves.push(wave)
-        })        
-
-        // Select the first wave
-        this.currentWave = this.waves[0]
-        
+        if (this.currentWave === null || this.currentWave.isFinished() && this.enemies.length === 0) {
+            this.currentWave = new Wave(this, this.waveCounter)
+            this.waveCounter ++ 
+        }
     } 
     
     /**
@@ -114,6 +109,8 @@ export default class Level {
      * @param {Float} diffTimestamp 
      */
     update(diffTimestamp) {
+
+        this.updateWave(diffTimestamp)
 
         this.updateEnemies(diffTimestamp)
 
