@@ -38,9 +38,7 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``H`` ⚡️⚙️ Supprimer EaselJS
 1. ✔️ ``M`` 🌟 Implémenter le zoom 
 1. ❌ ``N`` 🎨 Séparer la flamme du canon dans les sprites 
-1. ❌ ``O`` 🌟 Les ennemis peuvent voler de la valeur 0
-
-
+1. ✔️ ``O`` 🌟 Les ennemis peuvent voler de la valeur 0
 
 **Prochain code** : ``P``
 
@@ -79,3 +77,4 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
     - acte = niveau dans la map
     - scène = map 
 - On perd quand il n'y a plus de valeur économique
+- La valeur éco grandit à chaque vague (acte ?)

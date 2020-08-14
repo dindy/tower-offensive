@@ -11,6 +11,11 @@ export default class Level {
     placingBuilding = null
     selectedBuilding = null
     waveCounter = 0
+    
+    value = 2500
+    growthFactor = 20
+
+    
         
     /**
      * Constructor
@@ -90,7 +95,19 @@ export default class Level {
         return building
     }
     
+    stealValue(value) {
+        this.value -= value
+    }
+
+    takeBackValue(value) {
+        this.value += value
+    }
+
     renderStaticLayer() {
+    }
+
+    gameOver() { 
+        console.log(" GAME OVER :'( ")
     }
 
     /**
@@ -99,8 +116,10 @@ export default class Level {
     updateWave(diffTimestamp) {
         
         if (this.currentWave === null || this.currentWave.isFinished() && this.enemies.length === 0) {
+            if (this.value < 0) return this.gameOver()
             this.currentWave = new Wave(this, this.waveCounter)
             this.waveCounter ++ 
+            if (this.currentWave !== null) this.updateValue()
         }
     } 
     
@@ -146,6 +165,10 @@ export default class Level {
             this.towers[i].update(diffTimestamp)
         }        
     }    
+
+    updateValue(diffTimestamp) {
+        this.value += this.growthFactor
+    }
 
     /**
      * Main render

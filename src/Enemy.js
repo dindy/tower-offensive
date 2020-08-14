@@ -45,6 +45,15 @@ export default class Enemy {
         // L'enemy est en train de parcourir la dernière cellule du retour du chemin
         this.isExiting = false    
 
+        // Profondeur des poches d'un enemy
+        this.pocketCapacity = 80
+        
+        // Valeur volée par l'enemy
+        this.pocket = 0
+
+        // Ratio de valeur rendue si l'enemy meurt
+        this.penalty = 0.8
+
         // Load the image of the enemy
         this.image = document.getElementById(level.game.DOMConfig.sprites.enemy)
         this.sprite = new Sprite(50, 50, {
@@ -82,7 +91,16 @@ export default class Enemy {
      */
     update(diffTimestamp) {
         this.updatePosition(diffTimestamp)
+        this.updatePocket()
     } 
+
+    updatePocket() {
+        if (this.isTurning && this.pocket === 0) {
+            this.level.stealValue(this.pocketCapacity)
+            this.pocket = this.pocketCapacity
+            console.log(this.level.value);
+        }
+    }
 
     /**
      * Gère le rendu de l'enemy
@@ -171,7 +189,7 @@ export default class Enemy {
         const p1 = this.path.originPoint
         const p2 = this.path.middlePoint 
         const p3 = this.path.endPoint
-        
+
         // Si on a parcouru toute la courbe, on s'assure d'être exactment 
         // sur le dernier point et on met à jour les propriétés de l'enemy
         if (t >= 1) {
@@ -188,6 +206,9 @@ export default class Enemy {
                 this.isTurning = false
             }            
         }
+
+        // Update t in enemy's path
+        this.path.t = t
 
         // On calcule les nouvelles coordonnées en fonction de t
         newCoords = utilities.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
@@ -533,6 +554,8 @@ export default class Enemy {
         this.health -= damage
         if (this.health <= 0) {
             this.isDeleted = true
+            this.level.takeBackValue(this.pocket * this.penalty)
+            console.log(this.level.value);
         }
     }
 }
