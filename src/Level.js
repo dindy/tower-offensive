@@ -11,12 +11,11 @@ export default class Level {
     placingBuilding = null
     selectedBuilding = null
     waveCounter = 0
-    
     value = 2500
     growthFactor = 20
-
+    buildingPoints = 0
+    isNewWave = false
     
-        
     /**
      * Constructor
      * @param {Object} game 
@@ -25,7 +24,8 @@ export default class Level {
     constructor(game, levelConfig) {
         this.game = game
         this.config = levelConfig
-        this.updateWave()
+        
+        
         this.availableBuildings = {
             'Basic': Basic,
             'Sniper': Sniper,
@@ -114,12 +114,14 @@ export default class Level {
      * Créer la vague en fonction de la config
      */
     updateWave(diffTimestamp) {
-        
+        this.isNewWave = false
         if (this.currentWave === null || this.currentWave.isFinished() && this.enemies.length === 0) {
             if (this.value < 0) return this.gameOver()
-            this.currentWave = new Wave(this, this.waveCounter)
+
+
             this.waveCounter ++ 
-            if (this.currentWave !== null) this.updateValue()
+            this.currentWave = new Wave(this, this.waveCounter)
+            this.isNewWave = true
         }
     } 
     
@@ -131,9 +133,12 @@ export default class Level {
 
         this.updateWave(diffTimestamp)
 
+        this.updateScore()
+
         this.updateEnemies(diffTimestamp)
 
         this.updateTowers(diffTimestamp)
+
     }
 
     /**
@@ -170,6 +175,17 @@ export default class Level {
         this.value += this.growthFactor
     }
 
+
+    updateBuildingPoints() {
+        this.buildingPoints += Math.floor(this.value / 100)
+    }
+
+    updateScore() {
+        if (this.isNewWave) {
+            this.updateBuildingPoints()
+            if (this.waveCounter > 1) this.updateValue()
+        }
+    }
     /**
      * Main render
      */

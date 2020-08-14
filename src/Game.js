@@ -1,5 +1,6 @@
 import Level from './Level'
-import BuildMenu from './BuildMenu'
+import BuildMenu_UI from './ui/BuildMenu'
+import LevelData_UI from './ui/LevelData'
 import Scene from './Scene'
 
 export default class Game {
@@ -25,9 +26,11 @@ export default class Game {
         this.loadLevels()    
         this.scene = new Scene(this) 
 
-        this.buildMenu = new BuildMenu(DOMConfig)
-        this.buildMenu.setLevel(this.currentLevel)
+        this.buildMenu_UI = new BuildMenu_UI(DOMConfig)
+        this.buildMenu_UI.setLevel(this.currentLevel)
         
+        this.levelData_UI = new LevelData_UI(this)
+
         document.addEventListener("wheel", this.scene.zoomHandler.bind(this.scene), false)
         document.addEventListener('mousedown', this.scene.touchstartHandler.bind(this.scene), false)
         document.addEventListener('mousemove', this.scene.touchmoveHandler.bind(this.scene), false)
@@ -50,7 +53,7 @@ export default class Game {
             event.preventDefault()
             return false
         } else {
-            this.buildMenu.dragStartHandler(event)
+            this.buildMenu_UI.dragStartHandler(event)
         }
     }
 
@@ -115,11 +118,12 @@ export default class Game {
     update(diffTimestamp) {
         this.scene.update(diffTimestamp)
     }
-
+    
     /**
      * Rendu graphique
      */
     render(diffTimestamp) {
+        this.levelData_UI.render()
         this.scene.render(diffTimestamp)
     }
 

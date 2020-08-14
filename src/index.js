@@ -42,6 +42,12 @@ const DOMConfig = {
         towerBasic: 'tower-basic-icon',
         towerRocket: 'tower-rocket-icon',
         towerSniper: 'tower-sniper-icon',
+    },
+    value: {
+        id: "value"
+    },
+    buildingPoints : {
+        id: "buildingPoints"
     }
 }
 

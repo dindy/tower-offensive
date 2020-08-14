@@ -1,4 +1,4 @@
-export default class BuildMenu {
+export default class BuildMenu_UI {
 
     /**
      * Constructor
