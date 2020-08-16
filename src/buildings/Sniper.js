@@ -2,6 +2,8 @@ import Tower from "./Tower"
 import Sprite from "../Sprite"
 
 export default class Sniper extends Tower {
+    
+    static price = 10
 
     constructor(level) {
         

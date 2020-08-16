@@ -1,11 +1,13 @@
 export default class Building {
     
+    static price = 0
+    
     /**
      * Constructor
      * @param {Object} level 
      */
     constructor(level)  {
-
+        
         this.level = level
         this.shape = null
         this.isPlaced = false

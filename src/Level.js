@@ -87,7 +87,10 @@ export default class Level {
      * @param {Object} GridCell 
      */
     placeBuilding(targetGridCell) {
+        
         const building = this.placingBuilding
+
+        this.buildingPoints -= building.constructor.price
         this.placingBuilding = null 
         building.place(targetGridCell)
         this.towers.push(building)

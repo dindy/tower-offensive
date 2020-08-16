@@ -32,7 +32,10 @@ const DOMConfig = {
         id: 'right-menu'
     },
     buildMenuItem: {
-        class: 'right-menu__item'
+        class: 'right-menu__item',
+        modifiers: {
+            unavailable: '--unavailable'
+        }
     },
     sprites: {
         enemy: 'enemy',

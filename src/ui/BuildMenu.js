@@ -1,35 +1,40 @@
+import Basic from '../buildings/Basic'
+import Sniper from '../buildings/Sniper'
+
 export default class BuildMenu_UI {
+
+    buildingsClasses = [Basic, Sniper]
+    buildings = []
 
     /**
      * Constructor
      * @param {JSON} DOMConfig 
      */
-    constructor(DOMConfig) {
-        this.DOMConfig = DOMConfig
-        this.DOMMenu = document.getElementById(DOMConfig.buildMenu.id)
-        this.addBuilding('Basic', document.getElementById(DOMConfig.icons.towerBasic))
-        this.addBuilding('Sniper', document.getElementById(DOMConfig.icons.towerSniper))
+    constructor(game) {
+        this.DOMConfig = game.DOMConfig
+        this.DOMMenu = document.getElementById(this.DOMConfig.buildMenu.id)
+        this.buldings = this.buildingsClasses.forEach(buildingClass => this.addBuilding(buildingClass))
+        this.game = game
     }
 
-    /**
-     * Ajoute le level en cours au propriétés
-     * @param {Object} level 
-     */
-    setLevel(level) {
-        this.level = level
-    }
-
+  
     /**
      * Ajoute le building au menu
      */
-    addBuilding(name, DOMImg) {
-        const element = document.createElement('img')
-        element.src = DOMImg.src
-        element.classList.add(this.DOMConfig.buildMenuItem.class)
-        element.setAttribute("draggable", true)
-        element.dataset.name = name
-        this.DOMMenu.appendChild(element)
-        element.addEventListener("dragend", this.dragEndHandler.bind(this))
+    addBuilding(buildingClass) {
+        
+        const name = buildingClass.name
+        const DOMImage = document.getElementById(this.DOMConfig.icons['tower' + name])
+        const DOMElement = document.createElement('img')
+        
+        DOMElement.src = DOMImage.src
+        DOMElement.classList.add(this.DOMConfig.buildMenuItem.class)
+        DOMElement.setAttribute("draggable", true)
+        DOMElement.dataset.name = name
+        this.DOMMenu.appendChild(DOMElement)
+        DOMElement.addEventListener("dragend", this.dragEndHandler.bind(this))
+        
+        this.buildings.push({ DOMImage, name, DOMElement, class: buildingClass })
     }
 
     /**
@@ -37,9 +42,23 @@ export default class BuildMenu_UI {
      * @param {Event} event 
      */
     dragStartHandler(event) {
+        
         const name = event.target.dataset.name
-        this.level.unselectBuilding()
-        this.level.startPlacingBuilding(name)
+
+        // Annule si pas assez de points
+        if (this.getBuildingPriceFromName(name) > this.game.currentLevel.buildingPoints) {
+            event.preventDefault()
+            return false
+        }
+        this.game.currentLevel.unselectBuilding()
+        this.game.currentLevel.startPlacingBuilding(name)
+    }
+
+    getBuildingPriceFromName(name) {
+        return this.buildingsClasses
+            .filter(buildingClass => buildingClass.name == name)
+            .map(buildingClass => buildingClass.price)
+            [0]
     }
 
     /**
@@ -48,7 +67,7 @@ export default class BuildMenu_UI {
      */
     dragEndHandler(event) {
         if (event.dataTransfer.dropEffect === 'none') {
-            this.level.endPlacingBuilding()
+            this.game.currentLevel.endPlacingBuilding()
         }
     }
 
@@ -57,4 +76,21 @@ export default class BuildMenu_UI {
      */
     dragOverHandler() {}
 
+    /**
+     * RENDER
+     */
+    render() {
+        for (let index = 0; index < this.buildings.length; index++) {
+            const building = this.buildings[index]
+            const price = building.class.price
+            const buildingPoints = this.game.currentLevel.buildingPoints
+            const modifier = this.DOMConfig.buildMenuItem.modifiers.unavailable
+            const cssClass = this.DOMConfig.buildMenuItem.class
+            if (price > buildingPoints) {
+                building.DOMElement.classList.add(cssClass + modifier)
+            } else {
+                building.DOMElement.classList.remove(cssClass + modifier)
+            } 
+        }
+    }
 }

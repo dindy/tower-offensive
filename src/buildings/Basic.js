@@ -4,6 +4,8 @@ import Sprite from "../Sprite"
 
 export default class Basic extends Tower {
 
+    static price = 4
+
     constructor(level) {
         
         super(level, 100, 250, 1, 0.5)
@@ -16,6 +18,8 @@ export default class Basic extends Tower {
         })
 
         this.bulletSpeed = 0.3 
+
+        this.price = 2
     }
     
     renderBuilding(layer) {

@@ -26,8 +26,7 @@ export default class Game {
         this.loadLevels()    
         this.scene = new Scene(this) 
 
-        this.buildMenu_UI = new BuildMenu_UI(DOMConfig)
-        this.buildMenu_UI.setLevel(this.currentLevel)
+        this.buildMenu_UI = new BuildMenu_UI(this)
         
         this.levelData_UI = new LevelData_UI(this)
 
@@ -124,6 +123,7 @@ export default class Game {
      */
     render(diffTimestamp) {
         this.levelData_UI.render()
+        this.buildMenu_UI.render()
         this.scene.render(diffTimestamp)
     }
 
