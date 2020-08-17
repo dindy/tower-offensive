@@ -69,6 +69,8 @@ export default class Game {
             this.contextualMenu_UI.hide()
             this.buildMenu_UI.show()
         }        
+        
+        this.render(0)
     }
 
     /**
