@@ -1,5 +1,6 @@
 import Level from './Level'
 import BuildMenu_UI from './ui/BuildMenu'
+import ContextualMenu_UI from './ui/ContextualMenu'
 import LevelData_UI from './ui/LevelData'
 import Scene from './Scene'
 
@@ -28,6 +29,7 @@ export default class Game {
 
         this.buildMenu_UI = new BuildMenu_UI(this)        
         this.levelData_UI = new LevelData_UI(this)
+        this.contextualMenu_UI = new ContextualMenu_UI(this)
 
         document.addEventListener("wheel", this.scene.zoomHandler.bind(this.scene), false)
         document.addEventListener('mousedown', this.scene.touchstartHandler.bind(this.scene), false)
@@ -53,6 +55,20 @@ export default class Game {
         } else {
             this.buildMenu_UI.dragStartHandler(event)
         }
+    }
+
+    handleSceneClick(cell) {
+        
+        this.currentLevel.unselectBuilding()
+
+        if (cell.hasBuilding()) {
+            this.currentLevel.selectBuilding(cell.building)
+            this.contextualMenu_UI.show(cell.building)
+            this.buildMenu_UI.hide()
+        } else {
+            this.contextualMenu_UI.hide()
+            this.buildMenu_UI.show()
+        }        
     }
 
     /**
@@ -123,7 +139,7 @@ export default class Game {
 
         // Handle pause rendering
         if (this.isPaused) return
-                
+
         requestAnimationFrame(this.step.bind(this))
     }
 

@@ -135,10 +135,7 @@ export default class GridCell {
      */
     handleClick(e) {
         console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords, building: this.building })
-        this.scene.game.currentLevel.unselectBuilding()
-        if (this.hasBuilding()) {
-            this.scene.game.currentLevel.selectBuilding(this.building)
-        }
+        this.scene.game.handleSceneClick(this)
     }
 
    /**

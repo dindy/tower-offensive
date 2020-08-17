@@ -124,14 +124,18 @@
         flex-direction: column;
     }
 
-    .right-menu__item {
+    .right-menu--hidden {
+        display: none;
+    }
+
+    .building-menu__item {
         width: 50px;
         height: 50px;
         margin: 10px;
         user-select: none;
     }
 
-    .right-menu__item--unavailable {
+    .building-menu__item--unavailable {
         filter: blur(4px);
     }
 
@@ -154,7 +158,8 @@
             </div>
         </div>  
 
-        <div id="right-menu" class="right-menu"></div>
+        <div id="building-menu" class="building-menu right-menu"></div>
+        <div id="contextual-menu" class="contextual-menu right-menu right-menu--hidden"></div>
 
     </div>
 

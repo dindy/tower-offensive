@@ -29,14 +29,25 @@ const DOMConfig = {
         }
     },
     buildMenu : {
-        id: 'right-menu'
+        id: 'building-menu',
+        class: 'right-menu',
+        modifiers: {
+            hidden: '--hidden'
+        }
     },
     buildMenuItem: {
-        class: 'right-menu__item',
+        class: 'building-menu__item',
         modifiers: {
             unavailable: '--unavailable'
         }
     },
+    contextualMenu : {
+        id: 'contextual-menu',
+        class: 'right-menu',
+        modifiers: {
+            hidden: '--hidden'
+        }
+    },    
     sprites: {
         enemy: 'enemy',
         towerBasic: 'tower-basic',

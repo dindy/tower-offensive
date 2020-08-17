@@ -10,12 +10,23 @@ export default class BuildMenu_UI {
      */
     constructor(game) {
         this.DOMConfig = game.DOMConfig
-        this.DOMMenu = document.getElementById(this.DOMConfig.buildMenu.id)
         this.game = game
+
+        this.DOMElement = document.getElementById(this.DOMConfig.buildMenu.id)
+        this.hiddenModifier = this.game.DOMConfig.buildMenu.modifiers.hidden
+        this.cssClass = this.game.DOMConfig.buildMenu.class        
+        
         this.createBuildingsInventory()
     }
     
-    
+    show() {
+        this.DOMElement.classList.remove(this.cssClass + this.hiddenModifier)
+    }
+
+    hide() {
+        this.DOMElement.classList.add(this.cssClass + this.hiddenModifier)
+    }
+
     /**
      * Ajoute le building au menu
      */
@@ -33,7 +44,7 @@ export default class BuildMenu_UI {
             DOMElement.classList.add(this.DOMConfig.buildMenuItem.class)
             DOMElement.setAttribute("draggable", true)
             DOMElement.dataset.name = name
-            this.DOMMenu.appendChild(DOMElement)
+            this.DOMElement.appendChild(DOMElement)
             DOMElement.addEventListener("dragend", this.dragEndHandler.bind(this))
             
             this.buildingsInventory.push({ DOMImage, name, DOMElement, class: buildingClass })
@@ -90,7 +101,6 @@ export default class BuildMenu_UI {
             const modifier = this.DOMConfig.buildMenuItem.modifiers.unavailable
             const cssClass = this.DOMConfig.buildMenuItem.class
             if (price > buildingPoints || this.game.isPaused) {
-                console.log('paused')
                 building.DOMElement.classList.add(cssClass + modifier)
             } else {
                 building.DOMElement.classList.remove(cssClass + modifier)
