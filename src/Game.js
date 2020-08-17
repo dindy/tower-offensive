@@ -143,8 +143,6 @@ export default class Game {
      */
     step(timestamp) {
         
-        timestamp = timestamp
-
         // First iteration
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
         
