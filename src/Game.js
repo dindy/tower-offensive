@@ -26,8 +26,7 @@ export default class Game {
         this.loadLevels()    
         this.scene = new Scene(this) 
 
-        this.buildMenu_UI = new BuildMenu_UI(this)
-        
+        this.buildMenu_UI = new BuildMenu_UI(this)        
         this.levelData_UI = new LevelData_UI(this)
 
         document.addEventListener("wheel", this.scene.zoomHandler.bind(this.scene), false)
@@ -109,9 +108,6 @@ export default class Game {
      */
     step(timestamp) {
 
-        // Handle pause rendering
-        if (this.isPaused) return
-
         // First iteration
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
         
@@ -125,6 +121,9 @@ export default class Game {
         // Render all the game
         this.render(diffTimestamp)
 
+        // Handle pause rendering
+        if (this.isPaused) return
+                
         requestAnimationFrame(this.step.bind(this))
     }
 

@@ -49,7 +49,7 @@ export default class BuildMenu_UI {
         const name = event.target.dataset.name
 
         // Annule si pas assez de points
-        if (this.getBuildingPriceFromName(name) > this.game.currentLevel.buildingPoints) {
+        if (this.getBuildingPriceFromName(name) > this.game.currentLevel.buildingPoints || this.game.isPaused) {
             event.preventDefault()
             return false
         }
@@ -89,7 +89,8 @@ export default class BuildMenu_UI {
             const buildingPoints = this.game.currentLevel.buildingPoints
             const modifier = this.DOMConfig.buildMenuItem.modifiers.unavailable
             const cssClass = this.DOMConfig.buildMenuItem.class
-            if (price > buildingPoints) {
+            if (price > buildingPoints || this.game.isPaused) {
+                console.log('paused')
                 building.DOMElement.classList.add(cssClass + modifier)
             } else {
                 building.DOMElement.classList.remove(cssClass + modifier)
