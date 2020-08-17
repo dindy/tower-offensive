@@ -77,3 +77,11 @@ game.start()
 document.getElementById('stop').addEventListener('mouseup', e => {
     game.togglePause()
 })
+
+document.getElementById('reset-speed').addEventListener('mouseup', e => {
+    game.resetSpeed()
+})
+
+document.getElementById('increase-speed').addEventListener('mouseup', e => {
+    game.increaseSpeed()
+})

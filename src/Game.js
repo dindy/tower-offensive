@@ -14,6 +14,10 @@ export default class Game {
 
     isPaused = false
 
+    speedFactor = 1
+
+    speedFactorStep = .5
+
     /**
      * Constructor
      * @param {JSON} config 
@@ -119,18 +123,33 @@ export default class Game {
         requestAnimationFrame(this.step.bind(this))
     }
 
+    /**
+     * Reset speed factor
+     */
+    resetSpeed() {
+        this.speedFactor = 1
+    }
+    
+    /**
+     * Increase speed factor
+     */
+    increaseSpeed() {
+        this.speedFactor += this.speedFactorStep
+    }    
 
     /**
      * Gère le rafraichissement avec un appel recursif via requestAnimationFrame
      * @param {Float} timestamp 
      */
     step(timestamp) {
+        
+        timestamp = timestamp
 
         // First iteration
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
         
         // Update timestamp
-        const diffTimestamp = timestamp - this.lastTimestamp
+        const diffTimestamp = (timestamp - this.lastTimestamp) * this.speedFactor
         this.lastTimestamp = timestamp
 
         // Update
