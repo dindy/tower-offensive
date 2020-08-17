@@ -1,6 +1,5 @@
 import Wave from './Wave'
-import Basic from './buildings/Basic'
-import Sniper from './buildings/Sniper'
+import { getAvailableBuildingInstanceByName } from './buildings/availableBuildings'
 
 export default class Level {
     
@@ -22,14 +21,9 @@ export default class Level {
      * @param {JSON} levelConfig 
      */
     constructor(game, levelConfig) {
+        
         this.game = game
         this.config = levelConfig
-        
-        
-        this.availableBuildings = {
-            'Basic': Basic,
-            'Sniper': Sniper,
-        }
     }
     
     selectBuilding(building) {
@@ -49,7 +43,7 @@ export default class Level {
      */
     startPlacingBuilding(name) {
         
-        this.placingBuilding = new this.availableBuildings[name](this)
+        this.placingBuilding = getAvailableBuildingInstanceByName(name, this)
     }
 
     /**
@@ -87,7 +81,7 @@ export default class Level {
      * @param {Object} GridCell 
      */
     placeBuilding(targetGridCell) {
-        
+
         const building = this.placingBuilding
 
         this.buildingPoints -= building.constructor.price
@@ -180,7 +174,7 @@ export default class Level {
 
 
     updateBuildingPoints() {
-        this.buildingPoints += Math.floor(this.value / 100)
+        this.buildingPoints += Math.floor(this.value / 180)
     }
 
     updateScore() {
@@ -189,6 +183,7 @@ export default class Level {
             if (this.waveCounter > 1) this.updateValue()
         }
     }
+
     /**
      * Main render
      */

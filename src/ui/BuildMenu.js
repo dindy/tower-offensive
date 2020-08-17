@@ -1,10 +1,8 @@
-import Basic from '../buildings/Basic'
-import Sniper from '../buildings/Sniper'
+import { getAllAvailableBuildingsClasses } from '../buildings/availableBuildings'
 
 export default class BuildMenu_UI {
 
-    buildingsClasses = [Basic, Sniper]
-    buildings = []
+    buildingsInventory = []
 
     /**
      * Constructor
@@ -13,28 +11,33 @@ export default class BuildMenu_UI {
     constructor(game) {
         this.DOMConfig = game.DOMConfig
         this.DOMMenu = document.getElementById(this.DOMConfig.buildMenu.id)
-        this.buldings = this.buildingsClasses.forEach(buildingClass => this.addBuilding(buildingClass))
         this.game = game
+        this.createBuildingsInventory()
     }
-
-  
+    
+    
     /**
      * Ajoute le building au menu
      */
-    addBuilding(buildingClass) {
+    createBuildingsInventory() {
         
-        const name = buildingClass.name
-        const DOMImage = document.getElementById(this.DOMConfig.icons['tower' + name])
-        const DOMElement = document.createElement('img')
-        
-        DOMElement.src = DOMImage.src
-        DOMElement.classList.add(this.DOMConfig.buildMenuItem.class)
-        DOMElement.setAttribute("draggable", true)
-        DOMElement.dataset.name = name
-        this.DOMMenu.appendChild(DOMElement)
-        DOMElement.addEventListener("dragend", this.dragEndHandler.bind(this))
-        
-        this.buildings.push({ DOMImage, name, DOMElement, class: buildingClass })
+        const availableClasses = getAllAvailableBuildingsClasses()
+
+        availableClasses.forEach(buildingClass => {
+
+            const name = buildingClass.name
+            const DOMImage = document.getElementById(this.DOMConfig.icons['tower' + name])
+            const DOMElement = document.createElement('img')
+            
+            DOMElement.src = DOMImage.src
+            DOMElement.classList.add(this.DOMConfig.buildMenuItem.class)
+            DOMElement.setAttribute("draggable", true)
+            DOMElement.dataset.name = name
+            this.DOMMenu.appendChild(DOMElement)
+            DOMElement.addEventListener("dragend", this.dragEndHandler.bind(this))
+            
+            this.buildingsInventory.push({ DOMImage, name, DOMElement, class: buildingClass })
+        })
     }
 
     /**
@@ -55,9 +58,9 @@ export default class BuildMenu_UI {
     }
 
     getBuildingPriceFromName(name) {
-        return this.buildingsClasses
-            .filter(buildingClass => buildingClass.name == name)
-            .map(buildingClass => buildingClass.price)
+        return this.buildingsInventory
+            .filter(buildingData => buildingData.name == name)
+            .map(buildingData => buildingData.class.price)
             [0]
     }
 
@@ -80,8 +83,8 @@ export default class BuildMenu_UI {
      * RENDER
      */
     render() {
-        for (let index = 0; index < this.buildings.length; index++) {
-            const building = this.buildings[index]
+        for (let index = 0; index < this.buildingsInventory.length; index++) {
+            const building = this.buildingsInventory[index]
             const price = building.class.price
             const buildingPoints = this.game.currentLevel.buildingPoints
             const modifier = this.DOMConfig.buildMenuItem.modifiers.unavailable
