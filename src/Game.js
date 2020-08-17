@@ -11,7 +11,7 @@ export default class Game {
 
     currentLevel = null
 
-    isStopped = false
+    isPaused = false
 
     /**
      * Constructor
@@ -57,10 +57,27 @@ export default class Game {
     }
 
     /**
-     * Stop le game
+     * Pause le game
      */
-    stop() {
-        this.isStopped = true
+    pause() {
+        this.isPaused = true
+    }
+
+    /**
+     * Reprend le game
+     */
+    resume() {
+        this.isPaused = false
+        this.lastTimestamp = null
+        this.start()
+    }
+
+    /**
+     * Pause / reprend le game
+     */
+    togglePause() {
+        if (this.isPaused) this.resume() 
+        else this.pause()
     }
 
     /**
@@ -76,7 +93,6 @@ export default class Game {
 
         // Set current level
         this.currentLevel = this.levels[0] 
-        
     }
 
     /**
@@ -93,6 +109,9 @@ export default class Game {
      */
     step(timestamp) {
 
+        // Handle pause rendering
+        if (this.isPaused) return
+
         // First iteration
         if (this.lastTimestamp === null) this.lastTimestamp = timestamp
         
@@ -106,8 +125,7 @@ export default class Game {
         // Render all the game
         this.render(diffTimestamp)
 
-        // Handle stop rendering
-        if (!this.isStopped) requestAnimationFrame(this.step.bind(this))
+        requestAnimationFrame(this.step.bind(this))
     }
 
     /**

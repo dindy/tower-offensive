@@ -64,5 +64,5 @@ game.start()
 
 //Bouton stop pour debug
 document.getElementById('stop').addEventListener('mouseup', e => {
-    game.stop()
+    game.togglePause()
 })
