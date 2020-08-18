@@ -18,7 +18,7 @@
     /* Top level container */
     .game {
         display: flex;
-        justify-content: center;
+        justify-content: flex-start;
         margin: 0;
         padding: 0;
     }
@@ -28,8 +28,7 @@
         position: absolute; 
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
+        
         /* Transformation origin point for CSS transformations */
         transform-origin: 0 0 0; 
         /* Transition applied when zooming */
@@ -49,8 +48,6 @@
         position: relative;
         /* Make sure to hide scene overflow */ 
         overflow: hidden;  
-        width: 500px;
-        height: 500px;        
     }
     
     /* Container for all canvases */
@@ -115,7 +112,7 @@
 
     .right-menu {
         width: 200px;
-        max-height: 500px;
+        max-height: 750px;
         background: grey;
         padding: 10px;
         margin-left: 15px;
@@ -149,10 +146,17 @@
   <body>
 
     <div class="game">
-         
+         <div>
+            <button id="stop">Pause</button>
+            <button id="increase-speed">Faster</button>
+            <button id="decrease-speed">Slower</button>
+            <button id="reset-speed">Reset speed</button>
+            <h4 id="value">VALEUR: 00000</h1>
+            <h4 id="buildingPoints">BUILDING POINTS : 00</h1>
+         </div>
         <div class="wrapper" id="wrapper">
             <div class="scene" id="scene">
-                <img id="background" class="background" src="proto-map.png" alt="">
+                <img id="background" class="background" src="assets/images/bckg-2.png" alt="">
                 <div id="grid" class="grid"></div>
                 <div id="canvas-container" class="canvas-container"></div>
             </div>
@@ -163,11 +167,7 @@
 
     </div>
 
-    <button id="stop">Pause</button>
-    <button id="increase-speed">Faster</button>
-    <button id="reset-speed">Reset speed</button>
-    <h1 id="value">VALEUR: 00000</h1>
-    <h1 id="buildingPoints">BUILDING POINTS : 00</h1>
+    
 
     <!--Loaded images-->
     <div class="cache-images">

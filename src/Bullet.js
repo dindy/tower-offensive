@@ -1,4 +1,4 @@
-import { getDistance, getPositionOnLine, lineIntersectsRectangle } from './utilities'
+import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from './utilities'
 import SpriteNew from "./Sprite"
 
 export default class Bullet {
@@ -22,6 +22,8 @@ export default class Bullet {
         
         this.dammage = dammage
         
+        this.radius = 2
+
         this.coords = this.originPoint
 
         this.previousCoords = this.originPoint
@@ -94,7 +96,7 @@ export default class Bullet {
     render(layer, diffTimestamp) {
         if (this.isInAir) {
             layer.beginPath()
-            layer.arc(this.coords.x, this.coords.y, 2, 0, 2 * Math.PI)
+            layer.arc(this.coords.x, this.coords.y, this.radius, 0, 2 * Math.PI)
             layer.fillStyle = "black"
             layer.fill()
         } else {
@@ -106,6 +108,15 @@ export default class Bullet {
         }
     }
 
+    getBoundingBox() {
+        return {
+            xMin: this.coords.x - this.radius,
+            xMax: this.coords.x + this.radius,
+            yMin: this.coords.y - this.radius,
+            yMax: this.coords.y + this.radius,
+        }
+    }
+
     /**
      * Parcours les enemy et détect si il y a une collision, si True : appelle la methode HIT() de enemy
      */
@@ -113,9 +124,9 @@ export default class Bullet {
 
         for (let i = 0; i < this.level.enemies.length; i++){
             let enemy = this.level.enemies[i]
-            let line = [ this.coords, this.previousCoords ]
+            // let line = [ this.coords, this.previousCoords ]
 
-            if (lineIntersectsRectangle(line, enemy.getBoundingBox())) {
+            if (rectangleIntersectsRectangle(this.getBoundingBox(), enemy.getBoundingBox())) {
                 this.isInAir = false
                 enemy.hit(this.dammage)
             }

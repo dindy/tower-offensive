@@ -129,6 +129,31 @@ export function lineIntersectsRectangle(line, rect) {
     return (left || right || top || down)
 }
 
+
+/**
+ * Check si 2 rectangles se superposent au moins partiellement
+ * @param {Object} rect Contient toutes les coordonnées des point formant les 4 côtés du rectangle
+ * @param {Object} rect Contient toutes les coordonnées des point formant les 4 côtés du rectangle
+ */
+export function rectangleIntersectsRectangle(rect1, rect2) {
+
+    const rect1Lines = getRectangleLines(rect1)
+    const rect2Lines = getRectangleLines(rect2)
+
+    for (let i = 0; i < rect1Lines.length; i++) {
+        
+
+        for( let j = 0; j < rect2Lines.length; j++) {
+        
+           const isIntersect = lineIntersectsLine(rect1Lines[i][0], rect1Lines[i][1], rect2Lines[j][0], rect2Lines[j][1])
+            
+            if (isIntersect) return true
+        }
+        
+    }
+
+}
+
 /**
  * Check qu'un point est dans le rayon d'un cercle
  * @param {Object} point 

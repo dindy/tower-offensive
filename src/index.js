@@ -85,3 +85,7 @@ document.getElementById('reset-speed').addEventListener('mouseup', e => {
 document.getElementById('increase-speed').addEventListener('mouseup', e => {
     game.increaseSpeed()
 })
+
+document.getElementById('decrease-speed').addEventListener('mouseup', e => {
+    game.decreaseSpeed()
+})

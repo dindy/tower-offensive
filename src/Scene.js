@@ -56,12 +56,15 @@ export default class Scene {
 
         // On récupère la config des cellules de base du jeu
         this.cellSize = game.config.cellSize 
-        this.nbCells = game.config.nbCells
-
+        this.nbRows = game.config.nbRows
+        this.nbColumns = game.config.nbColumns
+        
         // On calcule la taille de la scène (sans zoom, c'est-à-dire les dimensions de la zone visualisable de la scène)
-        this.width = this.cellSize * this.nbCells
-        this.height = this.cellSize * this.nbCells
-
+        this.width = this.cellSize * this.nbColumns
+        this.height = this.cellSize * this.nbRows
+        
+        this.setSceneSize()
+        
         // On crée les layers de rendu nécessaires
         this.createCellsGridLayer()
         this.createStaticLayer()
@@ -71,6 +74,14 @@ export default class Scene {
         this.position = this.DOMScene.getBoundingClientRect()
     }
 
+    setSceneSize() {
+        this.DOMWrapper.style.width = this.width + 'px'
+        this.DOMWrapper.style.height = this.height + 'px'
+        this.DOMScene.style.width = this.width + 'px'
+        this.DOMScene.style.height = this.height + 'px'
+    }
+
+    
     /**
      * Gère le clic qui déclenche un déplacement de la scène
      * @param {Event} event 
@@ -193,6 +204,8 @@ export default class Scene {
         // On vérifie que le scroll a lieu sur la grid
         if (!event.target.classList.contains(this.game.DOMConfig.gridCell.class)) return
 
+        event.preventDefault()
+        
         // 
         const zoomDelta = event.deltaY > 0 ? -1 : 1
         const newZoom = this.zoom + zoomDelta
@@ -297,12 +310,12 @@ export default class Scene {
      */
     createCellsGridLayer() {
 
-        this.DOMGrid.style.width = this.nbCells * this.cellSize + 'px' 
-        this.DOMGrid.style.height = this.nbCells * this.cellSize + 'px' 
+        this.DOMGrid.style.width = this.nbColumns * this.cellSize + 'px' 
+        this.DOMGrid.style.height = this.nbRows * this.cellSize + 'px' 
 
-        for (let y = 0; y < this.nbCells; y++) {
+        for (let y = 0; y < this.nbRows; y++) {
 
-            for (let x = 0; x < this.nbCells; x++) {
+            for (let x = 0; x < this.nbColumns; x++) {
 
                 let cell = new GridCell(x, y, this)
                 cell.isPath = this.game.currentLevel.config.map.path.includes(cell.id)

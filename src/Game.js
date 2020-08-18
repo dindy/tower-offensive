@@ -134,7 +134,14 @@ export default class Game {
      * Increase speed factor
      */
     increaseSpeed() {
-        this.speedFactor += this.speedFactorStep
+        this.speedFactor = this.speedFactor / this.speedFactorStep
+    }  
+
+    /**
+     * Decrease speed factor
+     */
+    decreaseSpeed() {
+        this.speedFactor = this.speedFactor * this.speedFactorStep
     }    
 
     /**
