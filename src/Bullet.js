@@ -26,6 +26,8 @@ export default class Bullet {
 
         this.coords = this.originPoint
 
+        this.lastCoordsArray = []
+
         this.previousCoords = this.originPoint
 
         this.isDeleted = false
@@ -50,6 +52,34 @@ export default class Bullet {
             exploding: { sourceY: 300, nbFrames: 3, interval: 120 }
         })
         this.timeSinceExplosion = 0
+    }   
+
+    updateInAir(diffTimestamp) {
+        
+        // Track le temps passé sur le chemin
+        this.timeSpent += diffTimestamp
+        
+        // Rapport entre le temps écoulé et le temps total jusqu'au point de destination 
+        // ramené à la range de la tower (donc 1 / this.coef = valeur finale de t)
+        let t = (this.timeSpent / this.totalTime) / this.coef
+
+        // Fin du cycle de vie de la balle (donc timeSpent / totalSpent = 1)
+        // Donc on n'a pas touché l'ennemi
+        if (t * this.coef >= 1) { 
+            this.isInAir = false // suppression à la prochaine frame
+            t = 1 / this.coef // On met t à sa valeur max
+        } 
+
+        // Stock les coordonnées précédentes
+        // this.previousCoords = this.coords
+
+        // Update les coordonnées de la balle
+        const lastCoords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+        
+        this.coords = lastCoords
+        this.lastCoordsArray.push(this.getBoundingBox())
+        
+            
     }
 
     /**
@@ -60,28 +90,19 @@ export default class Bullet {
         
         if (this.isInAir) {
 
-            // Track le temps passé sur le chemin
-            this.timeSpent += diffTimestamp
+            const treshold = 16 // ms
+            const steps = Math.floor(diffTimestamp / treshold)
+            const left = diffTimestamp % treshold
+            this.lastCoordsArray = []
             
-            // Rapport entre le temps écoulé et le temps total jusqu'au point de destination 
-            // ramené à la range de la tower (donc 1 / this.coef = valeur finale de t)
-            let t = (this.timeSpent / this.totalTime) / this.coef
-    
-            // Fin du cycle de vie de la balle (donc timeSpent / totalSpent = 1)
-            // Donc on n'a pas touché l'ennemi
-            if (t * this.coef >= 1) { 
-                this.isInAir = false // suppression à la prochaine frame
-                t = 1 / this.coef // On met t à sa valeur max
-            } 
-    
-            // Stock les coordonnées précédentes
-            this.previousCoords = this.coords
-    
-            // Update les coordonnées de la balle
-            this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+            for (let i = 1; i <= steps; i++) {
+                this.updateInAir(treshold)
+            }
             
-            this.detectCollisions()
-        
+            this.updateInAir(left)
+            
+            this.detectCollisions()    
+            
         } else {
         
             this.timeSinceExplosion += diffTimestamp
@@ -125,10 +146,14 @@ export default class Bullet {
         for (let i = 0; i < this.level.enemies.length; i++){
             let enemy = this.level.enemies[i]
             // let line = [ this.coords, this.previousCoords ]
-
-            if (rectangleIntersectsRectangle(this.getBoundingBox(), enemy.getBoundingBox())) {
-                this.isInAir = false
-                enemy.hit(this.dammage)
+            for(let i = 0; i < this.lastCoordsArray.length; i++){
+                const enemyBoundingBox = enemy.lastCoordsArray[i]
+                const bulletBoundingBox = this.lastCoordsArray[i]
+                if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox)) {
+                    this.isInAir = false
+                    enemy.hit(this.dammage)
+                    return
+                }
             }
         }
     }

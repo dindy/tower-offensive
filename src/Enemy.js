@@ -12,6 +12,9 @@ export default class Enemy {
         // Center point is the reference for enemy
         this.x = null
         this.y = null
+
+        this.lastCoordsArray = []
+
         this.width = 16
         this.height = this.width
         
@@ -67,12 +70,8 @@ export default class Enemy {
         this.currentDirection = null
     }
 
-    /**
-     * Gère la position de l'enemy
-     * @param {number} diffTimestamp 
-     */
-    updatePosition(diffTimestamp) {
-        
+    updatePathAndMove(diffTimestamp) {
+
         // S'il n'y a pas de chemin calculé 
         // (si c'est le 1er appel ou si le précédent chemin a été entièrement parcouru)
         if (!this.hasCurrentPath()) {
@@ -83,6 +82,25 @@ export default class Enemy {
 
         // On se déplace le long du chemin
         this.moveAlongPath(diffTimestamp)
+    }
+
+    /**
+     * Gère la position de l'enemy
+     * @param {number} diffTimestamp 
+     */
+    updatePosition(diffTimestamp) {
+        
+        const treshold = 16 // ms
+        const steps = Math.floor(diffTimestamp / treshold)
+        const left = diffTimestamp % treshold
+
+        this.lastCoordsArray = []
+        
+        for (let i = 1; i <= steps; i++) {
+            if (!this.isDeleted) this.updatePathAndMove(treshold)
+        }
+        
+        if (!this.isDeleted) this.updatePathAndMove(left)
     }
 
     /**
@@ -98,7 +116,7 @@ export default class Enemy {
         if (this.isTurning && this.pocket === 0) {
             this.level.stealValue(this.pocketCapacity)
             this.pocket = this.pocketCapacity
-            console.log(this.level.value);
+            
         }
     }
 
@@ -162,6 +180,8 @@ export default class Enemy {
 
         // Other cells
         } else this.updateNormalPathCoordinates(cell, nextCell, previousCell) 
+
+        
     }
 
     /**
@@ -216,9 +236,10 @@ export default class Enemy {
         // Update le x et y de l'enemy
         this.x = newCoords.x
         this.y = newCoords.y
-
+        
+        this.lastCoordsArray.push(this.getBoundingBox())           
         // On efface le chemin courant si on est au bout
-        if (t === 1) this.removeCurrentPathCoordinates()            
+        if (t === 1) this.removeCurrentPathCoordinates() 
     }
 
     /**
@@ -555,7 +576,7 @@ export default class Enemy {
         if (this.health <= 0) {
             this.isDeleted = true
             this.level.takeBackValue(this.pocket * this.penalty)
-            console.log(this.level.value);
+            
         }
     }
 }

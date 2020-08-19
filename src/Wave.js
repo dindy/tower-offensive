@@ -21,7 +21,7 @@ export default class Wave {
         this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = this.difficulty * 5 
+        this.nbEnemies = 20 //this.difficulty * 5 
         
     }
 
@@ -80,7 +80,7 @@ export default class Wave {
         const secondCell = this.level.game.scene.gridCells[this.level.config.map.path[1]]
 
         // Déterminer une position aléatoire de départ
-        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
+        enemy.offset = 25//(Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
         
         if(firstCell.column === secondCell.column) {
             enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin

@@ -12,7 +12,7 @@ export default class Level {
     waveCounter = 0
     value = 2500
     growthFactor = 20
-    buildingPoints = 0
+    buildingPoints = 10000
     isNewWave = false
     
     /**
