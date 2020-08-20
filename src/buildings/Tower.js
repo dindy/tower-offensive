@@ -262,6 +262,7 @@ export default class Tower extends Building {
     updateBullets(diffTimestamp) {
 
         for (let i = 0; i < this.bullets.length; i++) {
+           
             this.bullets[i].update(diffTimestamp)
         }      
         

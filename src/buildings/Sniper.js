@@ -11,7 +11,7 @@ export default class Sniper extends Tower {
         super(level, 250, 1500, 5, .09)
 
         // Spritesheet du sniper
-        this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
+        this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerSniper)
 
         // Sprite du canon du sniper
         this.spriteCannon = new Sprite(100, 50, { 

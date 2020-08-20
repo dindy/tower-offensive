@@ -51,11 +51,14 @@ const DOMConfig = {
     sprites: {
         enemy: 'enemy',
         towerBasic: 'tower-basic',
+        towerSniper: 'tower-basic',
+        towerSeeker: 'tower-basic',
     },
     icons: {
         towerBasic: 'tower-basic-icon',
         towerRocket: 'tower-rocket-icon',
         towerSniper: 'tower-sniper-icon',
+        towerSeeker: 'tower-seeker-icon',
     },
     value: {
         id: "value"

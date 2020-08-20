@@ -18,8 +18,6 @@ export default class Basic extends Tower {
         })
 
         this.bulletSpeed = 0.3 
-
-        this.price = 2
     }
     
     renderBuilding(layer) {
@@ -29,7 +27,6 @@ export default class Basic extends Tower {
 
     shoot(enemy) {
         super.shoot(enemy)
-        console.log("bullets")
         this.bullets.push(new Bullet(this, enemy, this.dammage, this.bulletSpeed))        
     }
 }
