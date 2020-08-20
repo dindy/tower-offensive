@@ -2,7 +2,7 @@ import Enemy from './Enemy'
 
 export default class Wave {
 
-    spawningFrequency = 500 // ms
+    spawningFrequency = 1500 // ms
 
     timeSinceLastSpawn = null
 
@@ -21,7 +21,7 @@ export default class Wave {
         this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = 20 //this.difficulty * 5 
+        this.nbEnemies = 100 //this.difficulty * 5 
         
     }
 

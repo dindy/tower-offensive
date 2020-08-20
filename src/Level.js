@@ -14,6 +14,7 @@ export default class Level {
     growthFactor = 20
     buildingPoints = 10000
     isNewWave = false
+    report = 0
     
     /**
      * Constructor
@@ -126,13 +127,24 @@ export default class Level {
      */
     update(diffTimestamp) {
 
-        this.updateWave(diffTimestamp)
+        diffTimestamp += this.report
+        
+        const treshold = 25 // ms
+        const steps = Math.floor(diffTimestamp / treshold)
+        const left = diffTimestamp % treshold
 
-        this.updateScore()
-
-        this.updateEnemies(diffTimestamp)
-
-        this.updateTowers(diffTimestamp)
+        for (let i = 1; i <= steps; i++) {
+            
+            this.updateWave(treshold)
+    
+            this.updateScore()
+    
+            this.updateEnemies(treshold)
+    
+            this.updateTowers(treshold)
+        }
+        
+        this.report = left
 
     }
 

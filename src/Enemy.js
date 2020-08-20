@@ -13,8 +13,6 @@ export default class Enemy {
         this.x = null
         this.y = null
 
-        this.lastCoordsArray = []
-
         this.width = 16
         this.height = this.width
         
@@ -90,17 +88,7 @@ export default class Enemy {
      */
     updatePosition(diffTimestamp) {
         
-        const treshold = 16 // ms
-        const steps = Math.floor(diffTimestamp / treshold)
-        const left = diffTimestamp % treshold
-
-        this.lastCoordsArray = []
-        
-        for (let i = 1; i <= steps; i++) {
-            if (!this.isDeleted) this.updatePathAndMove(treshold)
-        }
-        
-        if (!this.isDeleted) this.updatePathAndMove(left)
+        this.updatePathAndMove(diffTimestamp)
     }
 
     /**
@@ -237,7 +225,6 @@ export default class Enemy {
         this.x = newCoords.x
         this.y = newCoords.y
         
-        this.lastCoordsArray.push(this.getBoundingBox())           
         // On efface le chemin courant si on est au bout
         if (t === 1) this.removeCurrentPathCoordinates() 
     }

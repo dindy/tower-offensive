@@ -26,8 +26,6 @@ export default class Bullet {
 
         this.coords = this.originPoint
 
-        this.lastCoordsArray = []
-
         this.previousCoords = this.originPoint
 
         this.isDeleted = false
@@ -77,9 +75,6 @@ export default class Bullet {
         const lastCoords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
         
         this.coords = lastCoords
-        this.lastCoordsArray.push(this.getBoundingBox())
-        
-            
     }
 
     /**
@@ -90,16 +85,7 @@ export default class Bullet {
         
         if (this.isInAir) {
 
-            const treshold = 16 // ms
-            const steps = Math.floor(diffTimestamp / treshold)
-            const left = diffTimestamp % treshold
-            this.lastCoordsArray = []
-            
-            for (let i = 1; i <= steps; i++) {
-                this.updateInAir(treshold)
-            }
-            
-            this.updateInAir(left)
+            this.updateInAir(diffTimestamp)
             
             this.detectCollisions()    
             
@@ -144,17 +130,17 @@ export default class Bullet {
     detectCollisions() {
 
         for (let i = 0; i < this.level.enemies.length; i++){
+
             let enemy = this.level.enemies[i]
-            // let line = [ this.coords, this.previousCoords ]
-            for(let i = 0; i < this.lastCoordsArray.length; i++){
-                const enemyBoundingBox = enemy.lastCoordsArray[i]
-                const bulletBoundingBox = this.lastCoordsArray[i]
-                if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox)) {
-                    this.isInAir = false
-                    enemy.hit(this.dammage)
-                    return
-                }
+            const enemyBoundingBox = enemy.getBoundingBox()
+            const bulletBoundingBox = this.getBoundingBox()
+
+            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox)) {
+                this.isInAir = false
+                enemy.hit(this.dammage)
+                return
             }
+
         }
     }
 
