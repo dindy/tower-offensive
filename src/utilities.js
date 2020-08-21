@@ -213,3 +213,21 @@ export function angleDirection(a1, a2) {
 export function degreesToRadians(a) {
     return a * Math.PI / 180
 }
+
+/**
+ * Returns a pseudo random integer between min and max
+ * @param {Numeric} min 
+ * @param {Numeric} max 
+ * @returns {Numeric}
+ */
+export function randomBetween (min, max) {
+    return min + Math.random() * (max - min)
+} 
+
+/**
+ * Returns a pseudo random sign
+ * @returns {Numeric} 1 or -1
+ */
+export function randomSign() {
+    return Math.random() < 0.5 ? -1 : 1
+} 

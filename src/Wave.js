@@ -1,8 +1,13 @@
 import Enemy from './Enemy'
+import { randomBetween, randomSign } from './utilities'
 
 export default class Wave {
 
+    // Average delay between two enemies
     spawningFrequency = 1500 // ms
+
+    // Randomized delay between two enemies (recalcualte for each enemy)
+    randomSpawningFrequency = this.spawningFrequency
 
     timeSinceLastSpawn = null
 
@@ -45,26 +50,36 @@ export default class Wave {
                     this.timeSinceLastSpawn = diffTimestamp
                     this.spawnedEnemiesCount++
                     
+                    // Return new enemy
                     return [this.createEnemy()]
                     
                 } else {
 
+                    // Update timer
                     this.timeSinceLastSpawn += diffTimestamp
                     
                     // If we've wait long enough since last spawn
-                    if (this.timeSinceLastSpawn >= this.spawningFrequency) {
-
+                    if (this.timeSinceLastSpawn >= this.randomSpawningFrequency) {
+                        
                         // Update timer
                         this.timeSinceLastSpawn = 0
                         this.spawnedEnemiesCount++
                         
+                        // Set the new random spawning frequency
+                        // A random part of average spawning frequency 
+                        const randomFrequencyPart = randomBetween(.1, .6) * this.spawningFrequency                        
+                        // Save the average spawning frequency more or less a random percentage of that frequency 
+                        // that will be used to delay the next enemy
+                        this.randomSpawningFrequency = this.spawningFrequency + randomSign() * randomFrequencyPart
+                        
+                        // returns new enemies
                         return [this.createEnemy()]    
                     }     
                 }
             }
-        
         }
         
+        // Else no enemy has spawn
         return []
     }
 
@@ -80,7 +95,7 @@ export default class Wave {
         const secondCell = this.level.game.scene.gridCells[this.level.config.map.path[1]]
 
         // Déterminer une position aléatoire de départ
-        enemy.offset = 25//(Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
+        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
         
         if(firstCell.column === secondCell.column) {
             enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
