@@ -231,3 +231,16 @@ export function randomBetween (min, max) {
 export function randomSign() {
     return Math.random() < 0.5 ? -1 : 1
 } 
+
+/**
+ * Retourne la différence entre les coordonnées actuelles et les prochaines, en fonction de l'angle et de la distance parcourue
+ * @param {Numeric} pixels Pixels parcouruent 
+ * @param {Numeric} angle  Angle effectué
+ * @returns {Object} Coordonnées du prochain point
+ */
+export function getProjectionPoint(distance, angle) {
+    return {
+        x: distance * Math.cos(degreesToRadians(angle)),
+        y: distance * Math.sin(degreesToRadians(angle))
+    }
+}

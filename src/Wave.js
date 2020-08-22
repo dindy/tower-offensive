@@ -26,7 +26,7 @@ export default class Wave {
         this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = this.difficulty * 10 
+        this.nbEnemies = this.difficulty * 20 
         
     }
 

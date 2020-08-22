@@ -8,7 +8,7 @@ export default class Seeker extends Tower {
 
     constructor(level) {
         
-        super(level, 500, 1250, 20, 0.2)
+        super(level, 500, 2500, 20, 0.2)
 
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerSeeker)
 

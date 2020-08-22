@@ -6,6 +6,9 @@ import {
   getBezierPoint,  
   angle,
   degreesToRadians, 
+  angleDifference,
+  angleDirection,
+  getProjectionPoint
 } from './utilities'
 
 export default class Missile {
@@ -20,26 +23,11 @@ export default class Missile {
         this.coords = tower.getMiddleCoords()
 
         this.targetPoint = null
-        // this.distance = null
-        // this.targetPoint = this.enemy.getCoords()
-        
-        // this.originPoint = tower.getMiddleCoords()
-
-        // // Distance entre les coordonnées de départ et de destination en px
-        // this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
-
-        // Rapport entre les coordonnées de depart et destination et la range de le tower
-        // this.coef = this.distance / tower.range
-
-        // Temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
-        // this.timeSpent = 0 
-
-
-        // this.totalTime = tower.range / this.speed 
 
         this.dammage = dammage
         this.aoeRadius = 10
-        
+        this.rotationSpeed = 0.1
+
         this.isInAir = true
         
         this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.towerSeeker)
@@ -58,17 +46,30 @@ export default class Missile {
 
     updatePosition(diffTimestamp) {
         
-        const trajectoryProjection = getPositionOnLine(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y, 1)
+        const rotationMax = this.rotationSpeed * diffTimestamp
+        
+        // On calcule l'angle de la cible par rapport aux coordonnées du missile
+        const targetAngle = angle(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y)        
 
-        // Distance entre les coordonnées de départ et de destination en px
-        const distance = getDistance(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y) 
+        // On calcule la différence d'angle entre l'angle du missile et celui nécessaire pour atteindre la cible 
+        // sur une échelle de [0, 180]
+        let degreesDifference = angleDifference(this.angle, targetAngle)
 
-        const totalTime = distance / this.speed // t = 1
-
-        const t = diffTimestamp / totalTime
-
-        this.coords = getBezierPoint(this.coords.x, this.coords.y, trajectoryProjection.x, trajectoryProjection.y, this.targetPoint.x, this.targetPoint.y, t)
-
+        // On calcule le sens de rotation optimum pour atteindre la cible
+        const direction = angleDirection(this.angle, targetAngle)  
+        
+        if (degreesDifference > rotationMax) this.angle = this.angle + (rotationMax * direction)
+        else this.angle = targetAngle
+        
+        const distance = this.speed * diffTimestamp
+        
+        const newCoords = getProjectionPoint(distance, this.angle)
+        
+        console.log(newCoords)
+        this.coords = {
+            x: this.coords.x + newCoords.x,
+            y: this.coords.y + newCoords.y,
+        }
     }
     
     updateDestination(diffTimestamp) {
@@ -87,7 +88,6 @@ export default class Missile {
                 this.isInAir = Math.random() <= (1/20) ? false : true
                 
             } else {
-                console.log("pass")
                 this.targetPoint = closerEnemy.getCoords() 
             }
 
@@ -107,24 +107,13 @@ export default class Missile {
             
             if (this.isInAir) this.updatePosition(diffTimestamp)
             
-            if (this.isInAir) {
-                this.updateAngle(diffTimestamp)
-                this.detectCollisions()    
-            }
+            if (this.isInAir) this.detectCollisions()                
 
         } else {
             this.timeSinceExplosion += diffTimestamp
             //FIX CHELOU A CHANGER - diffTimestamp pour s'assurer qu'on ne revienne pas sur la 1ere frame de l'animation
             if (this.timeSinceExplosion >= this.explosionFrames * this.explosionInterval - diffTimestamp) this.isDeleted = true
         }
-    }
-
-    updateAngle(diffTimestamp) {
-
-          // On calcule l'angle de la cible par rapport aux coordonnées du missile
-          const targetAngle = angle(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y)
-          
-          this.angle = targetAngle
     }
 
     render(layer, diffTimestamp) {
