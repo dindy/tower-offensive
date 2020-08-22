@@ -1,5 +1,6 @@
 import Wave from './Wave'
 import { getAvailableBuildingInstanceByName } from './buildings/availableBuildings'
+import { getDistance } from './utilities'
 
 export default class Level {
     
@@ -121,6 +122,24 @@ export default class Level {
         }
     } 
     
+    getCloserEnemy(coords) {
+        
+        let closerDistance = null, closerEnemy = null
+        
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i];
+            const distance = getDistance(coords.x, coords.y, enemy.x, enemy.y)
+            
+            if (closerDistance === null || distance < closerDistance) {
+                closerDistance = distance  
+                closerEnemy = enemy
+            } 
+        }
+
+        return closerEnemy
+
+    }
+
     /**
      * Call all updates
      * @param {Float} diffTimestamp 

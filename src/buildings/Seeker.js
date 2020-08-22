@@ -8,7 +8,7 @@ export default class Seeker extends Tower {
 
     constructor(level) {
         
-        super(level, 250, 1250, 20, 0.2)
+        super(level, 500, 1250, 20, 0.2)
 
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerSeeker)
 
@@ -17,7 +17,7 @@ export default class Seeker extends Tower {
             shooting: { sourceY: 200, nbFrames: 3, interval: 80 }
         })
 
-        this.bulletSpeed = 0.3 
+        this.bulletSpeed = 0.1 
     }
     
     renderBuilding(layer) {

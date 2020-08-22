@@ -4,7 +4,7 @@ import { randomBetween, randomSign } from './utilities'
 export default class Wave {
 
     // Average delay between two enemies
-    spawningFrequency = 1500 // ms
+    spawningFrequency = 800 // ms
 
     // Randomized delay between two enemies (recalcualte for each enemy)
     randomSpawningFrequency = this.spawningFrequency
@@ -26,7 +26,7 @@ export default class Wave {
         this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = 100 //this.difficulty * 5 
+        this.nbEnemies = this.difficulty * 10 
         
     }
 

@@ -1,31 +1,41 @@
 import Sprite from './Sprite.js'
-import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from './utilities'
+import { 
+  getDistance, 
+  getPositionOnLine, 
+  rectangleIntersectsRectangle, 
+  getBezierPoint,  
+  angle,
+  degreesToRadians, 
+} from './utilities'
 
 export default class Missile {
     
     constructor(tower, enemy, dammage, speed) {
         
+        this.tower = tower
         this.level = tower.level
         this.enemy = enemy
-
+        this.speed = speed
+        this.angle = this.tower.cannonAngle
         this.coords = tower.getMiddleCoords()
 
-        this.targetPoint = this.enemy.getCoords()
+        this.targetPoint = null
+        // this.distance = null
+        // this.targetPoint = this.enemy.getCoords()
         
-        this.originPoint = tower.getMiddleCoords()
+        // this.originPoint = tower.getMiddleCoords()
 
-        // Distance entre les coordonnées de départ et de destination en px
-        this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
+        // // Distance entre les coordonnées de départ et de destination en px
+        // this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
 
         // Rapport entre les coordonnées de depart et destination et la range de le tower
-        this.coef = this.distance / tower.range
+        // this.coef = this.distance / tower.range
 
         // Temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
-        this.timeSpent = 0 
+        // this.timeSpent = 0 
 
-        this.speed = speed
 
-        this.totalTime = tower.range / this.speed 
+        // this.totalTime = tower.range / this.speed 
 
         this.dammage = dammage
         this.aoeRadius = 10
@@ -46,33 +56,75 @@ export default class Missile {
         this.isDeleted = false
     }
 
-    updateInAir(diffTimestamp) {
-        this.originPoint = this.coords
-        this.targetPoint = this.enemy.getCoords()
+    updatePosition(diffTimestamp) {
         
+        const trajectoryProjection = getPositionOnLine(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y, 1)
+
         // Distance entre les coordonnées de départ et de destination en px
-        this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
+        const distance = getDistance(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y) 
+
+        const totalTime = distance / this.speed // t = 1
+
+        const t = diffTimestamp / totalTime
+
+        this.coords = getBezierPoint(this.coords.x, this.coords.y, trajectoryProjection.x, trajectoryProjection.y, this.targetPoint.x, this.targetPoint.y, t)
+
+    }
+    
+    updateDestination(diffTimestamp) {
         
-        let totalTime = this.distance / this.speed // t = 1
+        // Si pas d'ennemi en cours
+        if (this.enemy === null || this.enemy.isDeleted) {
+            
+            const closerEnemy = this.level.getCloserEnemy(this.coords) // {x,y}
+            
+            // Si il n'y a plus d'enemy sur la map, on explose
+            if (closerEnemy === null) {
+                
+                this.targetPoint = getPositionOnLine(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y, 10)
 
-        let t = diffTimestamp / totalTime
+                //Random Explosion
+                this.isInAir = Math.random() <= (1/20) ? false : true
+                
+            } else {
+                console.log("pass")
+                this.targetPoint = closerEnemy.getCoords() 
+            }
 
-        this.coords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
-
-  }
-
+            //Update la target du missile
+            this.enemy = closerEnemy
+            
+        } else {
+            this.targetPoint = this.enemy.getCoords()
+        }     
+    }
+    
     update(diffTimestamp) {
-      if (this.isInAir) {
 
-        this.updateInAir(diffTimestamp)
-        
-        this.detectCollisions()    
-        
-      } else {
-        //FIX CHELOU A CHANGER
-        this.timeSinceExplosion += diffTimestamp
-        if (this.timeSinceExplosion >= this.explosionFrames * this.explosionInterval - diffTimestamp) this.isDeleted = true
-      }
+        if (this.isInAir) {
+
+            this.updateDestination(diffTimestamp)
+            
+            if (this.isInAir) this.updatePosition(diffTimestamp)
+            
+            if (this.isInAir) {
+                this.updateAngle(diffTimestamp)
+                this.detectCollisions()    
+            }
+
+        } else {
+            this.timeSinceExplosion += diffTimestamp
+            //FIX CHELOU A CHANGER - diffTimestamp pour s'assurer qu'on ne revienne pas sur la 1ere frame de l'animation
+            if (this.timeSinceExplosion >= this.explosionFrames * this.explosionInterval - diffTimestamp) this.isDeleted = true
+        }
+    }
+
+    updateAngle(diffTimestamp) {
+
+          // On calcule l'angle de la cible par rapport aux coordonnées du missile
+          const targetAngle = angle(this.coords.x, this.coords.y, this.targetPoint.x, this.targetPoint.y)
+          
+          this.angle = targetAngle
     }
 
     render(layer, diffTimestamp) {
@@ -81,6 +133,7 @@ export default class Missile {
           this.missileSprite.setNextState("idle")
           this.missileSprite.setTimerDiff(diffTimestamp)
           layer.translate(this.coords.x, this.coords.y)
+          layer.rotate(degreesToRadians(this.angle))
           layer.drawImage(this.spriteSheet, ...this.missileSprite.getCurrent())
           layer.setTransform(1, 0, 0, 1, 0, 0);
         } else {
@@ -90,7 +143,6 @@ export default class Missile {
           layer.translate(this.coords.x, this.coords.y)
           layer.drawImage(this.spriteSheet, ...this.missileSprite.getCurrent())
           layer.setTransform(1, 0, 0, 1, 0, 0);
-          console.log(this.missileSprite.currentFrame, this.isDeleted)
         }
       }
 
