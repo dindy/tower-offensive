@@ -100,7 +100,7 @@ export default class Level {
 
     takeBackValue(value) {
         this.value += value
-     }
+    }
 
     renderStaticLayer() {
     }
@@ -138,6 +138,13 @@ export default class Level {
 
         return closerEnemy
 
+    }
+
+    removeBuilding(building) {
+        building.isDeleted = true
+        building.cell.building = null
+        this.game.buildMenu_UI.show()
+        this.towers = this.towers.filter(building => building.isDeleted === false ) 
     }
 
     /**

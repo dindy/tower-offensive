@@ -46,6 +46,14 @@ const DOMConfig = {
         class: 'right-menu',
         modifiers: {
             hidden: '--hidden'
+        },
+        elements: {
+            removeBtn: {
+                id: 'contextual-menu-remove-btn'  
+            },
+            title: {
+                id: 'contextual-menu-building-name'
+            }          
         }
     },    
     sprites: {

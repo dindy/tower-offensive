@@ -13,6 +13,7 @@ export default class Building {
         this.isPlaced = false
         this.cell = null
         this.isSelected = false
+        this.isDeleted = false
     }
 
     renderBuilding(layer) {
