@@ -66,6 +66,8 @@ export default class Enemy {
 
         // Indique l'orientation de l'ennemi pour rendre le bon sprite
         this.currentDirection = null
+
+        this.isHighlighted = false
     }
 
     updatePathAndMove(diffTimestamp) {
@@ -135,11 +137,14 @@ export default class Enemy {
             // layer.fill()
 
             // Debug bounding box
-            // const bb = this.getBoundingBox()
-            // layer.beginPath()
-            // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
-            // layer.strokeStyle = 'red'
-            // layer.stroke()
+            if (this.isHighlighted) {
+                const bb = this.getBoundingBox()
+                layer.beginPath()
+                layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
+                layer.strokeStyle = 'red'
+                layer.stroke()
+
+            }
         }
     }
 

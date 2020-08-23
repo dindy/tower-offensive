@@ -17,7 +17,7 @@ export default class Seeker extends Tower {
             shooting: { sourceY: 200, nbFrames: 3, interval: 80 }
         })
 
-        this.bulletSpeed = 0.1 
+        this.bulletSpeed = 0.2 
     }
     
     renderBuilding(layer) {

@@ -100,7 +100,7 @@ export default class Level {
 
     takeBackValue(value) {
         this.value += value
-    }
+     }
 
     renderStaticLayer() {
     }
@@ -115,7 +115,7 @@ export default class Level {
     updateWave(diffTimestamp) {
         this.isNewWave = false
         if (this.currentWave === null || this.currentWave.isFinished() && this.enemies.length === 0) {
-            if (this.value < 0) return this.gameOver()
+            // if (this.value < 0) return this.gameOver()
             this.waveCounter ++ 
             this.currentWave = new Wave(this, this.waveCounter)
             this.isNewWave = true
