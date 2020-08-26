@@ -1,5 +1,6 @@
 import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from './utilities'
 import SpriteNew from "./Sprite"
+import SmallExplosion from './explosions/SmallExplosion'
 
 export default class Bullet {
 
@@ -42,14 +43,6 @@ export default class Bullet {
         this.timeSpent = 0 
 
         this.totalTime = tower.range / this.speed 
-
-        this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.towerBasic)
-        this.explosionFrames = 3
-        this.explosionInterval = 80
-        this.explosionSprite = new SpriteNew (100, 50, {
-            exploding: { sourceY: 300, nbFrames: 3, interval: 120 }
-        })
-        this.timeSinceExplosion = 0
     }   
 
     updateInAir(diffTimestamp) {
@@ -67,9 +60,6 @@ export default class Bullet {
             this.isInAir = false // suppression à la prochaine frame
             t = 1 / this.coef // On met t à sa valeur max
         } 
-
-        // Stock les coordonnées précédentes
-        // this.previousCoords = this.coords
 
         // Update les coordonnées de la balle
         const lastCoords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
@@ -90,9 +80,12 @@ export default class Bullet {
             this.detectCollisions()    
             
         } else {
-        
-            this.timeSinceExplosion += diffTimestamp
-            if (this.timeSinceExplosion > this.explosionFrames * this.explosionInterval) this.isDeleted = true
+            
+            const explosion = new SmallExplosion(this.level, this.coords)
+                
+            this.level.addExplosion(explosion)
+
+            this.isDeleted = true
         }
     }
 
@@ -106,12 +99,6 @@ export default class Bullet {
             layer.arc(this.coords.x, this.coords.y, this.radius, 0, 2 * Math.PI)
             layer.fillStyle = "black"
             layer.fill()
-        } else {
-            this.explosionSprite.setNextState("exploding")
-            this.explosionSprite.setTimerDiff(diffTimestamp)
-            layer.translate(this.coords.x, this.coords.y)
-            layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
-            layer.setTransform(1, 0, 0, 1, 0, 0);
         }
     }
 

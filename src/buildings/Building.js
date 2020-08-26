@@ -2,6 +2,8 @@ export default class Building {
     
     static price = 0
     
+    spriteBuilding = null
+    
     /**
      * Constructor
      * @param {Object} level 
@@ -17,11 +19,20 @@ export default class Building {
     }
 
     renderBuilding(layer) {
-        const coords = this.getTopLeftCoords()
-        layer.beginPath()
-        layer.rect(coords.x, coords.y, 50, 50)
-        layer.fillStyle = "blue"
-        layer.fill()
+
+        const coords = this.getMiddleCoords()
+
+        if (this.spriteBuilding === null) {
+            layer.beginPath()
+            layer.rect(coords.x, coords.y, 50, 50)
+            layer.fillStyle = "blue"
+            layer.fill()
+        } else {
+            this.spriteBuilding.setTimerDiff(1)
+            layer.translate(coords.x, coords.y)
+            layer.drawImage(this.spriteSheet, ...this.spriteBuilding.getCurrent())
+            layer.setTransform(1, 0, 0, 1, 0, 0)
+        }
     }
 
     select() {
@@ -40,6 +51,7 @@ export default class Building {
         this.cell = cell
         this.isPlaced = true
     }
+ 
 
     /**
      * Rendu

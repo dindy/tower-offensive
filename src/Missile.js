@@ -1,9 +1,8 @@
 import Sprite from './Sprite.js'
+import BigExplosion from './explosions/BigExplosion.js'
 import { 
-    getDistance, 
     getPositionOnLine, 
     rectangleIntersectsRectangle, 
-    getBezierPoint,  
     angle,
     degreesToRadians, 
     angleDifference,
@@ -30,15 +29,10 @@ export default class Missile {
         
         this.isInAir = true
         
-        this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.towerSeeker)
-        
-        this.explosionFrames = 6
-        this.explosionInterval = 80
-        this.timeSinceExplosion = 0
-        
+        this.spriteSheet = document.getElementById(this.level.game.DOMConfig.sprites.missilePlaceHolder)
+
         this.missileSprite = new Sprite(100, 50, {
             idle: { sourceY: 150, nbFrames: 3, interval: 80 },
-            exploding: {sourceY: 250, nbFrames: this.explosionFrames, interval: this.explosionInterval }
         })    
         
         this.isDeleted = false
@@ -131,9 +125,10 @@ export default class Missile {
             if (this.isInAir) this.detectCollisions()                
             
         } else {
-            this.timeSinceExplosion += diffTimestamp
-            //FIX CHELOU A CHANGER - diffTimestamp pour s'assurer qu'on ne revienne pas sur la 1ere frame de l'animation
-            if (this.timeSinceExplosion >= this.explosionFrames * this.explosionInterval - diffTimestamp) this.isDeleted = true
+            const explosion = new BigExplosion(this.level, this.coords)
+            
+            this.level.addExplosion(explosion)
+            this.isDeleted = true
         }
     }
     
@@ -146,14 +141,7 @@ export default class Missile {
             layer.rotate(degreesToRadians(this.angle))
             layer.drawImage(this.spriteSheet, ...this.missileSprite.getCurrent())
             layer.setTransform(1, 0, 0, 1, 0, 0);
-        } else {
-            if(this.missileSprite.getCurrentStateName() === 'idle') this.missileSprite.setState("exploding")
-            
-            this.missileSprite.setTimerDiff(diffTimestamp)
-            layer.translate(this.coords.x, this.coords.y)
-            layer.drawImage(this.spriteSheet, ...this.missileSprite.getCurrent())
-            layer.setTransform(1, 0, 0, 1, 0, 0);
-        }
+        } 
     }
     
     getBoundingBox() {

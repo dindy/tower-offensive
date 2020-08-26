@@ -1,5 +1,6 @@
 import Tower from "./Tower"
 import Sprite from "../Sprite"
+import MediumExplosion from '../explosions/MediumExplosion'
 
 export default class Sniper extends Tower {
     
@@ -13,19 +14,14 @@ export default class Sniper extends Tower {
         // Spritesheet du sniper
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerSniper)
 
-        // Sprite du canon du sniper
-        this.spriteCannon = new Sprite(100, 50, { 
-            idle: { sourceY: 50, nbFrames: 1, interval: 0 },
-            shooting: { sourceY: 50, nbFrames: 6, interval: 80 }
-        })
-
+        // this.explosionsSheet = document.getElementById(this.level.game.DOMConfig.sprites.explosions)
         // Explosion spécifique au sniper (pas de bullet créée)
-        this.explosionFrames = 6
-        this.explosionInterval = 64
-        this.explosionSprite = new Sprite(100, 50, {
-            exploding: {sourceY: 250, nbFrames: 6, interval: 80 }
-        })
-        this.explosionPosition = null
+        // this.explosionFrames = 6
+        // this.explosionInterval = 64
+        // this.explosionSprite = new Sprite(100, 50, {
+        //     exploding: {sourceY: 0, nbFrames: 5, interval: 80 }
+        // })
+        // this.explosionPosition = null
 
         // Garde en mémoire les positions de l'ennemi lors du tir afin d'éviter 
         // que la ligne du tir ne change de destination pendant son animation.
@@ -37,15 +33,15 @@ export default class Sniper extends Tower {
 
         // Empeche la rotation pendant un certain temps après avoir tiré
         this.delayRotationAfterShot = 600 // ms
+
+        // Sprite du canon du sniper
+        this.spriteCannon = new Sprite(100, 50, { 
+            idle: { sourceY: 50, nbFrames: 1, interval: 0 },
+            shooting: { sourceY: 100, nbFrames: 5, interval: 80 }
+        })
     }
 
-    renderBuilding(layer) {
-        
-        const coords = this.getTopLeftCoords()
-        
-        layer.drawImage(this.spriteSheet, 0, 0, 50, 50, coords.x, coords.y, 50, 50)
-    }
-    
+   
     shoot(enemy) {
 
         super.shoot()
@@ -53,7 +49,9 @@ export default class Sniper extends Tower {
         const enemyPosition = enemy.getCoords()
 
         this.lastShotTargetPosition = enemyPosition
-        this.explosionPosition = { x: enemyPosition.x, y: enemyPosition.y }
+
+        this.level.addExplosion(new MediumExplosion(this.level, enemyPosition))
+        // this.explosionPosition = { x: enemyPosition.x, y: enemyPosition.y }
 
         enemy.hit(this.dammage)  
     }
@@ -78,9 +76,9 @@ export default class Sniper extends Tower {
             layer.stroke()
             
             // Render explosion
-            if (this.getTimeSinceAnimationBeginning() < this.getTotalAnimationTime()) {
-                this.renderExplosion(layer)
-            }   
+            // if (this.getTimeSinceAnimationBeginning() < this.getTotalAnimationTime()) {
+            //     this.renderExplosion(layer)
+            // }   
         }
     }
 
@@ -88,17 +86,17 @@ export default class Sniper extends Tower {
         return this.timeSinceLastShot - this.animationDelay
     }
 
-    getTotalAnimationTime() {
-        return this.explosionFrames * this.explosionInterval
-    }
+    // getTotalAnimationTime() {
+    //     return this.explosionFrames * this.explosionInterval
+    // }
 
-    renderExplosion(layer) {
-        this.explosionSprite.setNextState('exploding')
-        this.explosionSprite.setTimer(this.getTimeSinceAnimationBeginning())
-        layer.translate(this.explosionPosition.x, this.explosionPosition.y)
-        layer.drawImage(this.spriteSheet, ...this.explosionSprite.getCurrent())
-        layer.setTransform(1, 0, 0, 1, 0, 0);
-    }
+    // renderExplosion(layer) {
+    //     this.explosionSprite.setNextState('exploding')
+    //     this.explosionSprite.setTimer(this.getTimeSinceAnimationBeginning())
+    //     layer.translate(this.explosionPosition.x, this.explosionPosition.y)
+    //     layer.drawImage(this.explosionsSheet, ...this.explosionSprite.getCurrent())
+    //     layer.setTransform(1, 0, 0, 1, 0, 0)
+    // }
 
     getOpacity(){
         const opacity = 1 - (this.getTimeSinceAnimationBeginning() / 100)

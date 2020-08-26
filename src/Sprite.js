@@ -11,13 +11,17 @@ export default class Sprite {
         this.timer = 0
         this.currentFrame = null
         this.force = false
+        this.loop = true
+        this.isEnded = false
     }
 
+    // definit la prochaine state de l'animation
     setNextState(stateName) {
         this.nextStateName = stateName
         this.nextState = this.states[stateName]
     }
 
+    // Changer de state sans attendre la fin de l'animation en cours
     setState(stateName) {
         this.setNextState(stateName)
         this.force = true
@@ -32,7 +36,10 @@ export default class Sprite {
         this.timer = timer
 
         const stateTotalTime = this.currentState.interval * this.currentState.nbFrames
-    
+        
+        if (this.timer >= stateTotalTime && !this.loop) return this.isEnded = true
+
+        // Quand on est sur la derniere frame de l'animation ou que force est true
         if (this.timer >= stateTotalTime || this.force) {
             this.currentState = this.nextState
             this.currentStateName = this.nextStateName
@@ -40,7 +47,9 @@ export default class Sprite {
             this.currentFrame = 1
             this.force = false
         } else {
+            
             this.currentFrame = this.getNewCurrentFrame()
+            
         }
 
     }
@@ -50,7 +59,21 @@ export default class Sprite {
     }
 
     getCurrent() {
-                
+        
+        const stateTotalTime = this.currentState.interval * this.currentState.nbFrames
+        
+        if (this.isEnded) return [
+            this.currentFrame * this.sourceWidth,
+            this.currentState.sourceY,
+            this.sourceWidth, 
+            this.sourceHeight, 
+            0 - (this.sourceWidth / 2), 
+            0 - (this.sourceHeight / 2), 
+            this.sourceWidth, 
+            this.sourceHeight             
+        ]
+
+        // Mode loop activé
         return [
             (this.currentFrame - 1)  * this.sourceWidth,
             this.currentState.sourceY,

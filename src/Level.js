@@ -7,6 +7,7 @@ export default class Level {
     enemies = []
     towers = []
     bullets = []
+    explosions = []
     currentWave = null
     placingBuilding = null
     selectedBuilding = null
@@ -168,6 +169,8 @@ export default class Level {
             this.updateEnemies(treshold)
     
             this.updateTowers(treshold)
+
+            this.updateExplosions(treshold)
         }
         
         this.report = left
@@ -220,6 +223,16 @@ export default class Level {
         }
     }
 
+    updateExplosions(diffTimestamp) {
+        
+        for (let i = 0; i < this.explosions.length; i++) {
+            this.explosions[i].update(diffTimestamp)
+        }      
+
+        this.explosions = this.explosions.filter(explosion => !explosion.isDeleted)
+         
+    } 
+
     /**
      * Main render
      */
@@ -234,7 +247,16 @@ export default class Level {
         this.renderTowersRanges()
 
         this.renderTowers(diffTimestamp)
+
+        this.renderExplosions(diffTimestamp)
         
+    }
+
+    renderExplosions(diffTimestamp) {
+        for (let i = 0; i < this.explosions.length; i++) {
+            const explosion = this.explosions[i];
+            explosion.render(this.game.scene.dynamicLayer, diffTimestamp)
+        }        
     }
 
     renderEnemies(diffTimestamp) {
@@ -267,4 +289,7 @@ export default class Level {
         }
     }
 
+    addExplosion(explosion) {
+        this.explosions.push(explosion)
+    }
 }

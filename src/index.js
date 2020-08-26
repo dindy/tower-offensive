@@ -57,16 +57,18 @@ const DOMConfig = {
         }
     },    
     sprites: {
-        enemy: 'enemy',
-        towerBasic: 'tower-basic',
-        towerSniper: 'tower-basic',
-        towerSeeker: 'tower-basic',
+        missilePlaceHolder: 'missile-place-holder',
+        enemy: 'sprite-enemy',
+        towerBasic: 'sprite-tower-basic',
+        towerSniper: 'sprite-tower-sniper',
+        towerSeeker: 'sprite-tower-seeker',
+        explosions: 'sprite-explosions'
     },
     icons: {
-        towerBasic: 'tower-basic-icon',
-        towerRocket: 'tower-rocket-icon',
-        towerSniper: 'tower-sniper-icon',
-        towerSeeker: 'tower-seeker-icon',
+        towerBasic: 'sprite-tower-basic-icon',
+        towerRocket: 'sprite-tower-rocket-icon',
+        towerSniper: 'sprite-tower-sniper-icon',
+        towerSeeker: 'sprite-tower-seeker-icon',
     },
     value: {
         id: "value"

@@ -1,4 +1,5 @@
-import Building from '../Building'
+import Building from './Building'
+import Sprite from '../Sprite'
 import { 
     angle, 
     angleDifference, 
@@ -57,6 +58,16 @@ export default class Tower extends Building {
         this.isShooting = false
 
         this.delayRotationAfterShot = 0 // ms
+
+        // SpriteSheets interactions
+
+        // Sprite de la base
+        this.spriteBuilding = new Sprite(50, 50, {
+            idle: { sourceY: 0, nbFrames: 1, interval: 0  }
+        }) 
+
+        
+
     }
 
     select() {
