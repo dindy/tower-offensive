@@ -6,7 +6,6 @@ export default class Level {
     
     enemies = []
     towers = []
-    // bullets = []
     explosions = []
     currentWave = null
     placingBuilding = null
@@ -123,6 +122,40 @@ export default class Level {
         }
     } 
     
+    getCloserEnemyInRange(range, coords) {
+        let enemy = this.getCloserEnemy(coords)
+        if(enemy === null) return null
+        let distance = getDistance(coords.x, coords.y, enemy.x, enemy.y)
+        return (distance <= range) ? enemy : null
+    }
+
+    getCloserEnemyFromEnemy(enemies) {
+
+        const originEnemy = enemies[enemies.length - 1]
+
+        const enemiesIds = enemies.map(enemy => enemy.id)
+        
+        let closerDistance = null, closerEnemy = null
+        
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i];
+            
+            if (enemiesIds.includes(enemy.id)) continue
+
+            const distance = getDistance(originEnemy.x, originEnemy.y, enemy.x, enemy.y)
+            
+            if (closerDistance === null || distance < closerDistance) {
+                closerDistance = distance  
+                closerEnemy = enemy
+            } 
+        }
+        
+        return closerEnemy
+    }
+
+
+    
+
     getCloserEnemy(coords) {
         
         let closerDistance = null, closerEnemy = null
@@ -136,9 +169,8 @@ export default class Level {
                 closerEnemy = enemy
             } 
         }
-
+        
         return closerEnemy
-
     }
 
     removeBuilding(building) {
@@ -242,8 +274,6 @@ export default class Level {
         
         this.renderPlacingBuilding()
         
-        // this.renderBullets(diffTimestamp)
-        
         this.renderTowersRanges()
 
         this.renderTowers(diffTimestamp)
@@ -282,12 +312,6 @@ export default class Level {
             this.towers[i].renderRangeHighlight(this.game.scene.dynamicLayer)
         }
     }
-
-    // renderBullets(diffTimestamp) {
-    //     for (let i = 0; i < this.towers.length; i++) {
-    //         this.towers[i].renderBullets(this.game.scene.dynamicLayer, diffTimestamp)
-    //     }
-    // }
 
     addExplosion(explosion) {
         this.explosions.push(explosion)

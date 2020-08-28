@@ -2,6 +2,8 @@ import * as utilities from "./utilities"
 import Sprite from './Sprite'
 
 export default class Enemy {
+
+    static id = 0
     
     /**
      * Enemy constructor
@@ -9,6 +11,10 @@ export default class Enemy {
      */
     constructor(level) {
         
+        Enemy.id++
+
+        this.id = Enemy.id
+
         // Center point is the reference for enemy
         this.x = null
         this.y = null
