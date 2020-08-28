@@ -1,8 +1,8 @@
-import Tower from "./Tower"
+import TowerCannon from "./TowerCannon"
 import Sprite from "../Sprite"
 import MediumExplosion from '../explosions/MediumExplosion'
 
-export default class Sniper extends Tower {
+export default class Sniper extends TowerCannon {
     
     static price = 10
 
@@ -13,15 +13,6 @@ export default class Sniper extends Tower {
 
         // Spritesheet du sniper
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerSniper)
-
-        // this.explosionsSheet = document.getElementById(this.level.game.DOMConfig.sprites.explosions)
-        // Explosion spécifique au sniper (pas de bullet créée)
-        // this.explosionFrames = 6
-        // this.explosionInterval = 64
-        // this.explosionSprite = new Sprite(100, 50, {
-        //     exploding: {sourceY: 0, nbFrames: 5, interval: 80 }
-        // })
-        // this.explosionPosition = null
 
         // Garde en mémoire les positions de l'ennemi lors du tir afin d'éviter 
         // que la ligne du tir ne change de destination pendant son animation.
@@ -56,7 +47,9 @@ export default class Sniper extends Tower {
         enemy.hit(this.dammage)  
     }
 
-    renderBullets(layer, diffTimestamp) {
+    render(layer, diffTimestamp) {
+
+        super.render(layer, diffTimestamp)
 
         // Si pas de cible visée, il n'y a rien à animer
         if (this.lastShotTargetPosition === null) return
@@ -73,6 +66,7 @@ export default class Sniper extends Tower {
             // On change l'opacité de la ligne pour qu'elle disparaisse
             const opacity = this.getOpacity()
             layer.strokeStyle = `rgba(255, 255, 255, ${ opacity }`
+            layer.lineWidth = 2
             layer.stroke()
             
             // Render explosion

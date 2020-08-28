@@ -1,8 +1,8 @@
-import Tower from "./Tower"
+import TowerCannon from "./TowerCannon"
 import Bullet from "../Bullet"
 import Sprite from "../Sprite"
 
-export default class Basic extends Tower {
+export default class Basic extends TowerCannon {
 
     static price = 4
 

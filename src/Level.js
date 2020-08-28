@@ -6,7 +6,7 @@ export default class Level {
     
     enemies = []
     towers = []
-    bullets = []
+    // bullets = []
     explosions = []
     currentWave = null
     placingBuilding = null
@@ -242,7 +242,7 @@ export default class Level {
         
         this.renderPlacingBuilding()
         
-        this.renderBullets(diffTimestamp)
+        // this.renderBullets(diffTimestamp)
         
         this.renderTowersRanges()
 
@@ -283,11 +283,11 @@ export default class Level {
         }
     }
 
-    renderBullets(diffTimestamp) {
-        for (let i = 0; i < this.towers.length; i++) {
-            this.towers[i].renderBullets(this.game.scene.dynamicLayer, diffTimestamp)
-        }
-    }
+    // renderBullets(diffTimestamp) {
+    //     for (let i = 0; i < this.towers.length; i++) {
+    //         this.towers[i].renderBullets(this.game.scene.dynamicLayer, diffTimestamp)
+    //     }
+    // }
 
     addExplosion(explosion) {
         this.explosions.push(explosion)

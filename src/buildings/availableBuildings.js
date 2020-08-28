@@ -1,8 +1,9 @@
 import Basic from './Basic'
 import Sniper from './Sniper'
 import Seeker from './Seeker'
+import Tesla from './Tesla'
 
-const buildingClasses = [Basic, Sniper, Seeker]
+const buildingClasses = [Basic, Sniper, Seeker, Tesla]
 
 const getAllAvailableBuildingsClasses = () => buildingClasses
 

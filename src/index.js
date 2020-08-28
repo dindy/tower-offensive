@@ -62,6 +62,7 @@ const DOMConfig = {
         towerBasic: 'sprite-tower-basic',
         towerSniper: 'sprite-tower-sniper',
         towerSeeker: 'sprite-tower-seeker',
+        towerTesla: 'sprite-tower-tesla-icon',
         explosions: 'sprite-explosions'
     },
     icons: {
@@ -69,6 +70,7 @@ const DOMConfig = {
         towerRocket: 'sprite-tower-rocket-icon',
         towerSniper: 'sprite-tower-sniper-icon',
         towerSeeker: 'sprite-tower-seeker-icon',
+        towerTesla: 'sprite-tower-tesla-icon',
     },
     value: {
         id: "value"
