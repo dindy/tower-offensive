@@ -34,7 +34,8 @@ export default class Enemy {
         // Offset en px par rapport à l'origine de la cellule (x ou y)
         this.offset = 0
 
-        // Px / ms parcourus par l'enemyi
+        // Px / ms parcourus par l'enemy
+        this.defaultSpeed = 0.07
         this.speed = 0.07
 
         // Index de la cellule sur laquelle est l'enemy
@@ -99,6 +100,10 @@ export default class Enemy {
         this.updatePathAndMove(diffTimestamp)
     }
 
+    updateSpeed() {
+        this.speed = this.defaultSpeed
+    }
+
     /**
      * Actualise l'état de l'enemy
      * @param {number} diffTimestamp 
@@ -106,6 +111,7 @@ export default class Enemy {
     update(diffTimestamp) {
         this.updatePosition(diffTimestamp)
         this.updatePocket()
+        this.updateSpeed()
     } 
 
     updatePocket() {
@@ -197,7 +203,6 @@ export default class Enemy {
 
         // Update t (la proportion de la courbe parcourue de 0 à 1)
         let t = this.path.time / this.path.totalTime
-
         // Save the current direction
         this.currentDirection = t < 0.5 ? 
             this.path.firstDirection : 
@@ -576,5 +581,9 @@ export default class Enemy {
             this.level.takeBackValue(this.pocket * this.penalty)
             
         }
+    }
+
+    slow(factor){
+        this.speed = this.speed - (this.speed * factor)
     }
 }

@@ -43,6 +43,7 @@ export default class Tesla extends Tower {
 
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
             
+            // enemy.slow(.2)
             this.currentTargets.push(enemy)
             
         }
