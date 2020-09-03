@@ -57,7 +57,7 @@ export default class Tesla extends Tower {
     update(diffTimestamp) {
         super.update(diffTimestamp)
         this.updateTargets()
-        const targetsCoords = this.currentTargets.map(target => target.getCoords())
+        const targetsCoords = this.currentTargets.map(target => ({ coords: target.getCoords(), id: target.id }))
         this.lightning.update(targetsCoords, diffTimestamp)
     }
 }

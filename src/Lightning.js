@@ -20,7 +20,7 @@ export default class Lightning {
         this.level = level
         this.originPoint = originPoint
         this.arcs = []
-        this.nbPaths = 2
+        this.nbPaths = 1
         this.defaultSegmentLength = 5 // px
     }
 
@@ -32,7 +32,7 @@ export default class Lightning {
             
             let segmentOriginPoint
             let segmentTargetPoint
-            const randomAngleVariation = randomBetween(-40, 40)
+            const randomAngleVariation = randomBetween(-30, 30)
             const projectionDistance = 500
             
             const addToPoint = (p1, p2) => ({ 
@@ -78,13 +78,13 @@ export default class Lightning {
         return path
     }
 
-    createArc(arcOriginCoords, arcTargetCoords) {
+    createArc(arcOrigin, arcTarget) {
 
         const arc = []
 
         for (let j = 0; j < this.nbPaths; j++) {
             
-            const arcDistance = getDistance(arcOriginCoords.x, arcOriginCoords.y, arcTargetCoords.x, arcTargetCoords.y)
+            const arcDistance = getDistance(arcOrigin.coords.x, arcOrigin.coords.y, arcTarget.coords.x, arcTarget.coords.y)
 
             const rawSegmentNb = arcDistance / this.defaultSegmentLength
             
@@ -92,14 +92,21 @@ export default class Lightning {
             
             const segmentLength = arcDistance / segmentNb
 
-            const arcAngle = angle(arcOriginCoords.x, arcOriginCoords.y, arcTargetCoords.x, arcTargetCoords.y)
+            const arcAngle = angle(arcOrigin.coords.x, arcOrigin.coords.y, arcTarget.coords.x, arcTarget.coords.y)
             
-            const path = this.createPath(arcOriginCoords, arcTargetCoords, arcAngle, segmentLength, segmentNb)
+            const path =  this.createPath(arcOrigin.coords, arcTarget.coords, arcAngle, segmentLength, segmentNb)
 
             arc.push(path)    
         }
 
-        return arc
+        return {
+            originId: arcOrigin.id,
+            targetId: arcTarget.id,
+            originCoords: arcOrigin.coords,
+            targetCoords: arcTarget.coords,
+            paths: arc,
+            timer: 0
+        }
     }
 
     createArcs(targets) {
@@ -109,18 +116,46 @@ export default class Lightning {
         // Pour chaque ennemy on construit un arc
         for (let i = 0; i < targets.length; i++) {
             
-            const arcOriginCoords = (i === 0) ? this.originPoint : targets[i-1]
-            const arcTargetCoords  = targets[i]
+            const arcTarget = targets[i]
+            let arcOrigin = null
             
-            const arc = this.createArc(arcOriginCoords, arcTargetCoords)
+            if (i === 0) arcOrigin = { coords: this.originPoint, id: 0 }
+            else arcOrigin = targets[i-1]
             
+            const existingPair = this.arcs.filter(arc => arc.originId == arcOrigin.id && arc.targetId == arcTarget.id)
+            
+            let arc = null
+            if (existingPair.length === 0) {
+                arc = this.createArc(arcOrigin, arcTarget)
+            } else if (existingPair[0].timer < 100 ) {
+                arc = this.updateArcExtremities(existingPair[0], arcOrigin, arcTarget)
+            } else {
+                arc = this.createArc(arcOrigin, arcTarget)
+            }
+
             arcs.push(arc)
         }   
         
         return arcs
     }
     
-    updateArcs(targets) {
+    updateArcExtremities(arc, arcOrigin, arcTarget) {
+
+        for (let i = 0; i < arc.paths.length; i++) {
+            arc.paths[i][0].segmentOriginPoint = arcOrigin.coords
+            arc.paths[i][arc.paths[i].length - 1].segmentTargetPoint = arcTarget.coords
+        }
+        arc.originCoords = arcOrigin.coords
+        arc.targetCoords = arcTarget.coords
+
+        return arc
+    }
+
+    updateArcs(targets, diffTimestamp) {
+
+        for (let i = 0; i < this.arcs.length; i++) {
+            this.arcs[i].timer += diffTimestamp
+        }
 
         // Arcs électriques de l'éclair
         this.arcs = this.createArcs(targets)
@@ -133,7 +168,7 @@ export default class Lightning {
      */
     update(targets, diffTimestamp) {
 
-        this.updateArcs(targets)
+        this.updateArcs(targets, diffTimestamp)
     }
 
     renderSegment(layer, segment, lineWidth, rgbaColor) {
@@ -144,6 +179,18 @@ export default class Lightning {
         layer.lineWidth = lineWidth
         layer.stroke() 
     }
+    
+    renderHalo(layer, arc){
+        layer.beginPath()
+        layer.arc(arc.targetCoords.x, arc.targetCoords.y, 10, 0, 2 * Math.PI)
+        layer.fillStyle = "rgba(202, 225, 252, .3)"
+        layer.fill()
+
+        layer.beginPath()
+        layer.arc(arc.targetCoords.x, arc.targetCoords.y, 5, 0, 2 * Math.PI)
+        layer.fillStyle = "rgba(255, 255, 255, .5)"
+        layer.fill()
+    }
 
     render(layer, diffTimestamp) {
         
@@ -152,8 +199,8 @@ export default class Lightning {
             const arc = this.arcs[i]
             let rdmLineWidthVariation = randomBetween(-1, 2)
 
-            for (let j = 0; j < arc.length; j++) {
-                const path = arc[j]
+            for (let j = 0; j < arc.paths.length; j++) {
+                const path = arc.paths[j]
 
                 for (let k=0; k < path.length; k++){
                     const segment = path[k]
@@ -165,10 +212,10 @@ export default class Lightning {
                     this.renderSegment(layer , segment, 3 + rdmLineWidthVariation,  "rgba(148, 196, 255, .2)")     
                     
                     //Core du segment
-                    this.renderSegment(layer , segment, 1 + rdmLineWidthVariation,  "rgba(255, 255, 255, 1)")                    
-
-                }
+                    this.renderSegment(layer , segment, 1 + rdmLineWidthVariation,  "rgba(255, 255, 255, 1)")
+                }  
             }
+            this.renderHalo(layer, arc)    
         }
     }
 }
