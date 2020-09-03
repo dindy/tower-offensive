@@ -14,7 +14,14 @@ export default class Tesla extends Tower {
         
         this.currentTargets = []
         this.nbTargetsMax = 5
-        
+
+        this.lightningTimer = 0
+        this.coolingTimer = 0
+        this.isLightning = false
+
+        this.lightningDuration = 250
+        this.coolingDuration = 100
+
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerTesla)
         
         
@@ -22,13 +29,17 @@ export default class Tesla extends Tower {
     
     place(cell) {
         super.place(cell)
-        
         this.lightning = new Lightning(this.level, this.getMiddleCoords())
     }
 
     updateTargets() {
-
-        this.currentTargets = []
+        
+        if (!this.isLightning) {
+            this.currentTargets = []
+            return
+        } else if(this.currentTargets.length > 0) {
+            return
+        }
         
         for (let i = 0; i < this.nbTargetsMax; i++) {
             
@@ -47,6 +58,7 @@ export default class Tesla extends Tower {
             this.currentTargets.push(enemy)
             
         }
+        // this.currentTargets = currentTargets
     }
 
     render(layer, diffTimestamp) {
@@ -56,8 +68,28 @@ export default class Tesla extends Tower {
 
     update(diffTimestamp) {
         super.update(diffTimestamp)
+        
+        this.updateTimer(diffTimestamp)
         this.updateTargets()
         const targetsCoords = this.currentTargets.map(target => ({ coords: target.getCoords(), id: target.id }))
         this.lightning.update(targetsCoords, diffTimestamp)
+    }
+
+    updateTimer(diffTimestamp) {
+        
+        if (this.isLightning) {
+            this.lightningTimer += diffTimestamp
+            this.coolingTimer = 0
+        } else {
+            this.coolingTimer += diffTimestamp
+            this.lightningTimer = 0
+        }
+
+        if (this.isLightning && this.lightningTimer >= this.lightningDuration) {
+            this.isLightning = false
+        } else if (!this.isLightning && this.coolingTimer >= this.coolingDuration) {
+            this.isLightning = true
+        }
+
     }
 }

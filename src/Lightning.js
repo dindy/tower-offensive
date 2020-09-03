@@ -20,8 +20,8 @@ export default class Lightning {
         this.level = level
         this.originPoint = originPoint
         this.arcs = []
-        this.nbPaths = 1
-        this.defaultSegmentLength = 5 // px
+        this.nbPaths = 2
+        this.defaultSegmentLength = 10 // px
     }
 
     createPath(arcOriginCoords, arcTargetCoords, arcAngle, segmentLength, segmentNb) {
@@ -86,8 +86,11 @@ export default class Lightning {
             
             const arcDistance = getDistance(arcOrigin.coords.x, arcOrigin.coords.y, arcTarget.coords.x, arcTarget.coords.y)
 
-            const rawSegmentNb = arcDistance / this.defaultSegmentLength
+            let rawSegmentNb 
             
+            if(j === 0)  rawSegmentNb = arcDistance / this.defaultSegmentLength
+            else  rawSegmentNb = arcDistance / (this.defaultSegmentLength / 1.5)
+
             const segmentNb = Math.floor(rawSegmentNb)
             
             const segmentLength = arcDistance / segmentNb
@@ -127,7 +130,7 @@ export default class Lightning {
             let arc = null
             if (existingPair.length === 0) {
                 arc = this.createArc(arcOrigin, arcTarget)
-            } else if (existingPair[0].timer < 100 ) {
+            } else if (existingPair[0].timer < 50 ) {
                 arc = this.updateArcExtremities(existingPair[0], arcOrigin, arcTarget)
             } else {
                 arc = this.createArc(arcOrigin, arcTarget)
@@ -172,12 +175,15 @@ export default class Lightning {
     }
 
     renderSegment(layer, segment, lineWidth, rgbaColor) {
+        
         layer.beginPath()
         layer.moveTo(segment.segmentOriginPoint.x, segment.segmentOriginPoint.y)
         layer.lineTo(segment.segmentTargetPoint.x, segment.segmentTargetPoint.y)
         layer.strokeStyle =  rgbaColor
         layer.lineWidth = lineWidth
+        // layer.lineJoin  = "round"
         layer.stroke() 
+        
     }
     
     renderHalo(layer, arc){
@@ -193,29 +199,34 @@ export default class Lightning {
     }
 
     render(layer, diffTimestamp) {
-        
         for (let i = 0; i < this.arcs.length; i++) {
             
             const arc = this.arcs[i]
-            let rdmLineWidthVariation = randomBetween(-1, 2)
+            let rdmLineWidthVariation = randomBetween(0, 3)
 
-            for (let j = 0; j < arc.paths.length; j++) {
+            for (let j = arc.paths.length - 1; j >= 0; j--) {
                 const path = arc.paths[j]
-
+                
                 for (let k=0; k < path.length; k++){
                     const segment = path[k]
-
-                    //Large glow du segment
-                    this.renderSegment(layer , segment, 5 + rdmLineWidthVariation,  "rgba(202, 225, 252, .5)") 
-                    
-                    //Small glow du segment
-                    this.renderSegment(layer , segment, 3 + rdmLineWidthVariation,  "rgba(148, 196, 255, .2)")     
-                    
-                    //Core du segment
-                    this.renderSegment(layer , segment, 1 + rdmLineWidthVariation,  "rgba(255, 255, 255, 1)")
+                        if(j === 0){
+                            //Large glow du segment
+                            //this.renderSegment(layer , segment, 20,  "rgba(255, 239, 176, .3)") 
+                            this.renderSegment(layer , segment, 5 + rdmLineWidthVariation,  "rgba(202, 225, 252, .5)") 
+                            
+                            //Small glow du segment
+                            this.renderSegment(layer , segment, 3 + rdmLineWidthVariation,  "rgba(148, 196, 255, .2)")     
+                            
+                            //Core du segment
+                            this.renderSegment(layer , segment, 1 + rdmLineWidthVariation,  "rgba(255, 255, 255, 1)")
+                        } else {
+                            this.renderSegment(layer , segment, .7 ,  "#fff")
+                        }
                 }  
+                
             }
             this.renderHalo(layer, arc)    
         }
     }
 }
+
