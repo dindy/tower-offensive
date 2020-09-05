@@ -128,12 +128,11 @@ export default class Lightning {
             const existingPair = this.arcs.filter(arc => arc.originId == arcOrigin.id && arc.targetId == arcTarget.id)
             
             let arc = null
-            if (existingPair.length === 0) {
-                arc = this.createArc(arcOrigin, arcTarget)
-            } else if (existingPair[0].timer < 50 ) {
+
+            if (existingPair.length !== 0 && existingPair[0].timer < 50) {
                 arc = this.updateArcExtremities(existingPair[0], arcOrigin, arcTarget)
             } else {
-                arc = this.createArc(arcOrigin, arcTarget)
+                arc = this.createArc(arcOrigin, arcTarget)                
             }
 
             arcs.push(arc)
@@ -173,60 +172,69 @@ export default class Lightning {
 
         this.updateArcs(targets, diffTimestamp)
     }
-
-    renderSegment(layer, segment, lineWidth, rgbaColor) {
-        
-        layer.beginPath()
-        layer.moveTo(segment.segmentOriginPoint.x, segment.segmentOriginPoint.y)
-        layer.lineTo(segment.segmentTargetPoint.x, segment.segmentTargetPoint.y)
-        layer.strokeStyle =  rgbaColor
-        layer.lineWidth = lineWidth
-        // layer.lineJoin  = "round"
-        layer.stroke() 
-        
-    }
     
-    renderHalo(layer, arc){
+    renderHalos(layer, arcs){
+        for (let i = 0; i < arcs.length; i++) {
+            const arc = arcs[i]
+            layer.beginPath()
+            layer.arc(arc.targetCoords.x, arc.targetCoords.y, 10, 0, 2 * Math.PI)
+            layer.fillStyle = "rgba(202, 225, 252, .3)"
+            layer.fill()
+    
+            layer.beginPath()
+            layer.arc(arc.targetCoords.x, arc.targetCoords.y, 5, 0, 2 * Math.PI)
+            layer.fillStyle = "rgba(255, 255, 255, .5)"
+            layer.fill()
+        }
+
         layer.beginPath()
-        layer.arc(arc.targetCoords.x, arc.targetCoords.y, 10, 0, 2 * Math.PI)
+        layer.arc(arcs[0].originCoords.x, arcs[0].originCoords.y, 10, 0, 2 * Math.PI)
         layer.fillStyle = "rgba(202, 225, 252, .3)"
         layer.fill()
 
         layer.beginPath()
-        layer.arc(arc.targetCoords.x, arc.targetCoords.y, 5, 0, 2 * Math.PI)
+        layer.arc(arcs[0].originCoords.x, arcs[0].originCoords.y, 5, 0, 2 * Math.PI)
         layer.fillStyle = "rgba(255, 255, 255, .5)"
         layer.fill()
+        
+    }
+
+    renderSegments(layer, segments){ 
+        
+        layer.moveTo(segments[0].segmentOriginPoint.x, segments[0].segmentOriginPoint.y)
+        
+        for (let k=0; k < segments.length; k++){
+            const segment = segments[k]
+            layer.lineTo(segment.segmentTargetPoint.x, segment.segmentTargetPoint.y)
+        }  
+    }
+
+    renderArcs(layer, arcs, lineColor, lineWidth, pathIndex){
+        
+        layer.beginPath()
+        layer.strokeStyle =  lineColor
+        layer.lineWidth = lineWidth
+
+        // Pour chaque arc 
+        for(let i=0; i < arcs.length; i++) {
+            const arc = arcs[i]
+            const path = arc.paths[pathIndex]
+            // On rend les segments 
+            this.renderSegments(layer,path)
+        }
+        layer.stroke()
     }
 
     render(layer, diffTimestamp) {
-        for (let i = 0; i < this.arcs.length; i++) {
-            
-            const arc = this.arcs[i]
-            let rdmLineWidthVariation = randomBetween(0, 3)
+        let rdmLineWidthVariation = randomBetween(0, 3)
+        layer.lineJoin  = "round"
+        this.renderArcs(layer, this.arcs, "#FFF", .8, 1)
+        this.renderArcs(layer, this.arcs, "rgba(255, 232, 158, .2)", 15 + rdmLineWidthVariation, 0)
+        this.renderArcs(layer, this.arcs, "rgba(202, 225, 252, .5)", 5 + rdmLineWidthVariation, 0)
+        this.renderArcs(layer, this.arcs, "rgba(148, 196, 255, .2)", 3 + rdmLineWidthVariation, 0)
+        this.renderArcs(layer, this.arcs, "#FFF", 1 + randomBetween(0, 2), 0)
+        this.renderHalos(layer, this.arcs)    
 
-            for (let j = arc.paths.length - 1; j >= 0; j--) {
-                const path = arc.paths[j]
-                
-                for (let k=0; k < path.length; k++){
-                    const segment = path[k]
-                        if(j === 0){
-                            //Large glow du segment
-                            //this.renderSegment(layer , segment, 20,  "rgba(255, 239, 176, .3)") 
-                            this.renderSegment(layer , segment, 5 + rdmLineWidthVariation,  "rgba(202, 225, 252, .5)") 
-                            
-                            //Small glow du segment
-                            this.renderSegment(layer , segment, 3 + rdmLineWidthVariation,  "rgba(148, 196, 255, .2)")     
-                            
-                            //Core du segment
-                            this.renderSegment(layer , segment, 1 + rdmLineWidthVariation,  "rgba(255, 255, 255, 1)")
-                        } else {
-                            this.renderSegment(layer , segment, .7 ,  "#fff")
-                        }
-                }  
-                
-            }
-            this.renderHalo(layer, arc)    
-        }
     }
 }
 

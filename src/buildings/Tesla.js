@@ -17,7 +17,7 @@ export default class Tesla extends Tower {
 
         this.lightningTimer = 0
         this.coolingTimer = 0
-        this.isLightning = false
+        this.canLight = false
 
         this.lightningDuration = 250
         this.coolingDuration = 100
@@ -34,7 +34,7 @@ export default class Tesla extends Tower {
 
     updateTargets() {
         
-        if (!this.isLightning) {
+        if (!this.canLight) {
             this.currentTargets = []
             return
         } else if(this.currentTargets.length > 0) {
@@ -63,7 +63,9 @@ export default class Tesla extends Tower {
 
     render(layer, diffTimestamp) {
         super.render(layer, diffTimestamp)
-        this.lightning.render(layer, diffTimestamp)
+        
+        if(this.canLight && this.currentTargets.length > 0) this.lightning.render(layer, diffTimestamp)
+        
     }
 
     update(diffTimestamp) {
@@ -77,7 +79,7 @@ export default class Tesla extends Tower {
 
     updateTimer(diffTimestamp) {
         
-        if (this.isLightning) {
+        if (this.canLight) {
             this.lightningTimer += diffTimestamp
             this.coolingTimer = 0
         } else {
@@ -85,10 +87,10 @@ export default class Tesla extends Tower {
             this.lightningTimer = 0
         }
 
-        if (this.isLightning && this.lightningTimer >= this.lightningDuration) {
-            this.isLightning = false
-        } else if (!this.isLightning && this.coolingTimer >= this.coolingDuration) {
-            this.isLightning = true
+        if (this.canLight && this.lightningTimer >= this.lightningDuration) {
+            this.canLight = false
+        } else if (!this.canLight && this.coolingTimer >= this.coolingDuration) {
+            this.canLight = true
         }
 
     }
