@@ -39,8 +39,9 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``M`` 🌟 Implémenter le zoom 
 1. ❌ ``N`` 🎨 Séparer la flamme du canon dans les sprites 
 1. ✔️ ``O`` 🌟 Les ennemis peuvent voler de la valeur 0
+1. ✔️ ``P`` 🌟 Les eclairs secondaires ne peuvent pas s'éloigner trop de l'éclair principale
 
-**Prochain code** : ``P``
+**Prochain code** : ``Q``
 
 | Emoji | Type de tache |
 |---|---|

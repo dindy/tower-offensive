@@ -1,6 +1,26 @@
 import * as utilities from "./utilities"
 import Sprite from './Sprite'
 
+/*
+1- generer le tracé du path + radius
+2- Velocity
+3- une force qui l'empeche de sortir du radius
+4- Une force qui l'empeche de s'approcher des enemy
+
+
+enemy => coords actuelle
+      => vitesse
+      => angle
+
+On veut savoir les prochaine coordonnées
+verifier quelles sont toujours dans le radius
+si oui continue
+si non :
+    
+
+
+*/
+
 export default class Enemy {
 
     static id = 0

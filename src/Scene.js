@@ -36,6 +36,10 @@ export default class Scene {
     // Valeur y du dernier clic à l'origine d'un déplacement
     startY = null
 
+    pathPoints = []
+
+    pathRadius = null
+
     /**
      * 
      * @param {Game} game 
@@ -72,6 +76,39 @@ export default class Scene {
         
         // On stocke la position de la scène par rapport au document
         this.position = this.DOMScene.getBoundingClientRect()
+
+        this.setPathPoints()
+        this.setPathRadius()
+        console.log(this.pathPoints);
+    }
+
+    setPathRadius() {
+        this.pathRadius = this.game.config.cellSize / 2
+    }
+
+    setPathPoints() {
+        const { path, from, to } = this.game.currentLevel.config.map 
+        
+        this.pathPoints = path
+            .map(cellIndex => this.gridCells[cellIndex])
+            .reduce((allPoints, cell, cellIndex )=> {
+                const cellCoords = cell.getCenterPoint()
+                if (cellIndex === 0) {
+                    if (from === "top") return [{ ...cellCoords, y: 0}]
+                    if (from === "bottom") return [{ ...cellCoords, y: this.height}]
+                    if (from === "left") return [{ ...cellCoords, x: 0}]
+                    if (from === "right") return [{ ...cellCoords, x: this.width}]
+                } else if (cellIndex === path.length - 1) {
+                    if (to === "top") return [...allPoints, { ...cellCoords, y: cell.coords.yMin}]
+                    if (to === "bottom") return [...allPoints, { ...cellCoords, y: cell.coords.yMax}]
+                    if (to === "left") return [...allPoints, { ...cellCoords, x: cell.coords.xMin}]
+                    if (to === "right") return [...allPoints, { ...cellCoords, x: cell.coords.xMax}]                    
+                }
+
+                const previous = allPoints[allPoints.length - 1]
+                if (previous.x === cellCoords.x || previous.y === cellCoords.y) return allPoints
+                return [...allPoints, cellCoords] 
+            }, [])
     }
 
     setSceneSize() {

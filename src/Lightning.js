@@ -20,7 +20,7 @@ export default class Lightning {
         this.level = level
         this.originPoint = originPoint
         this.arcs = []
-        this.nbPaths = 2
+        this.nbPaths = 3
         this.defaultSegmentLength = 10 // px
     }
 

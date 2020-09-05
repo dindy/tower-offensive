@@ -27,7 +27,7 @@ export default class Level {
         this.game = game
         this.config = levelConfig
     }
-    
+
     selectBuilding(building) {
         this.selectedBuilding = building
         building.select()
