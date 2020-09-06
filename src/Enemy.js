@@ -1,5 +1,6 @@
-import * as utilities from "./utilities"
+import * as util from "./utilities"
 import Sprite from './Sprite'
+import Victor from "victor"
 
 /*
 1- generer le tracé du path + radius
@@ -17,7 +18,14 @@ verifier quelles sont toujours dans le radius
 si oui continue
 si non :
     
-
+PVector scalarProjection(PVector p, PVector a, PVector b) {
+  PVector ap = PVector.sub(p, a);
+  PVector ab = PVector.sub(b, a);
+  ab.normalize(); // Normalize the line
+  ab.mult(ap.dot(ab));
+  PVector normalPoint = PVector.add(a, ab);
+  return normalPoint;
+}
 
 */
 
@@ -49,7 +57,17 @@ export default class Enemy {
         
         // Object de l'enemy contenant les 3 points qui définissent le chemin 
         // qu'il est en train de suivre
-        this.path = null
+        const pathPoints = level.game.scene.pathPoints
+        this.pathSegments = pathPoints.reduce((pathSegments, pathPoint, index)=>{
+            if(index === 0) return []
+            return [...pathSegments, [
+                {x: pathPoints[index-1].x, y: pathPoints[index-1].y}, {x : pathPoint.x, y : pathPoint.y} 
+            ]]
+        }, [])
+
+        // @TODO : find right angle
+        const from = level.config.map.from
+        this.angle = from == 'top' ? 90 : from == 'bottom' ? 270 : from == 'left' ? 180 : 0
 
         // Offset en px par rapport à l'origine de la cellule (x ou y)
         this.offset = 0
@@ -95,6 +113,8 @@ export default class Enemy {
         this.currentDirection = null
 
         this.isHighlighted = false
+        this.currentSegmentIndex = 0
+        console.log(pathPoints)
     }
 
     updatePathAndMove(diffTimestamp) {
@@ -117,7 +137,111 @@ export default class Enemy {
      */
     updatePosition(diffTimestamp) {
         
-        this.updatePathAndMove(diffTimestamp)
+        Victor.prototype.projectOnto = function(v2) {
+
+            var coeff = ( (this.x * v2.x) + (this.y * v2.y) ) / ( (v2.x * v2.x) + (v2.y * v2.y) )
+            this.x = coeff * v2.x
+            this.y = coeff * v2.y
+            return this
+        } 
+
+        const getScalarProjectionPoint = (ao,po,bo) => {
+
+            //Point d'origine du segment
+            const a = new Victor(ao.x, ao.y)
+            //Point de destination du segment
+            const b = new Victor(bo.x, bo.y)
+            //Projection de la position de l'enemy
+            const p = new Victor(po.x, po.y).subtract(a)
+            
+            //Vecteur representant le segment
+            let ab = b.clone().subtract(a)
+            
+            // {x:?? + a.x, y: ?? + a.y}
+            return p.clone().projectOnto(ab).add(a).toObject()
+        }
+
+        // const pathRadius = this.level.game.scene.pathRadius
+        const pathRadius = this.level.game.scene.pathRadius
+
+        // Projection du vecteur de l'enemy
+        const pp = util.getProjectionPoint(50, this.angle)
+        const p = util.addToPoint(this.getCoords(), pp)
+        // console.log('p', p, pp);
+        this.p = p
+        
+        let matchingSegmentIndex = null
+        let segmentDistance = null
+        
+        //Trouve le segment qui match
+        // for (let i = 0; i < this.pathSegments.length; i++) {
+        // for (let i = 0; i < 1; i++) {
+            
+            //OriginPoint du segment
+            
+            //DestinationPoint du segment
+            const ao1 = this.pathSegments[this.currentSegmentIndex][0]
+            const bo1 = this.pathSegments[this.currentSegmentIndex][1];
+            const sp1 = getScalarProjectionPoint(ao1, p, bo1)
+            const d1 = util.getDistance(p.x, p.y, sp1.x, sp1.y)
+            
+            const ao2 = this.pathSegments[this.currentSegmentIndex + 1][0]
+            const bo2 = this.pathSegments[this.currentSegmentIndex + 1][1]
+            const sp2 = getScalarProjectionPoint(ao2, p, bo2)
+            const d2 = util.getDistance(p.x, p.y, sp2.x, sp2.y)
+            
+            
+            if (d2 <= d1) {
+                this.currentSegmentIndex++
+                segmentDistance = d2
+                this.sp = sp2
+            } else {
+                segmentDistance = d1
+                this.sp = sp1
+            }
+            // //Projection scalaire sur le segment
+            // //Trouve la distance entre le point de projection de l'enemy et la projection scalaire sur le segment
+            // const currentDistance = util.getDistance(p.x, p.y, sp.x, sp.y)
+            // //Sauvegarde le segment qui match et la distance entre SP et P
+            // if (segmentDistance === null || currentDistance < segmentDistance) {
+                
+            //     if (matchingSegmentIndex === this.currentSegmentIndex || matchingSegmentIndex === this.currentSegmentIndex + 1) this.currentSegmentIndex++
+            //     this.sp = sp 
+            //     segmentDistance = currentDistance
+            //     matchingSegmentIndex = i
+            // }
+        // }
+        // console.log('-------------------');
+        
+        const projAngle = util.angle(
+            this.pathSegments[this.currentSegmentIndex][0].x, 
+            this.pathSegments[this.currentSegmentIndex][0].y, 
+            this.pathSegments[this.currentSegmentIndex][1].x,
+            this.pathSegments[this.currentSegmentIndex][1].y
+         )
+         const projPoint = util.getProjectionPoint(25, projAngle)
+         const spProj = util.addToPoint(this.sp, projPoint)
+         this.spProj = spProj
+         
+        //Check si l'enemy reste dans le radius
+        if (segmentDistance < pathRadius) {
+            const newAngle = util.angle(this.x, this.y, p.x, p.y)
+            const distance = this.speed * diffTimestamp
+            const newPosition = util.getProjectionPoint(distance, newAngle)
+            this.x += newPosition.x
+            this.y += newPosition.y
+            this.angle = newAngle
+        } else {
+            const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
+            const distance = this.speed * diffTimestamp
+            const newPosition = util.getProjectionPoint(distance, newAngle)
+            this.x += newPosition.x
+            this.y += newPosition.y
+            this.angle = newAngle
+        }
+        //this.updatePathAndMove(diffTimestamp)
+
+        
     }
 
     updateSpeed() {
@@ -156,11 +280,11 @@ export default class Enemy {
             const y = Math.round(this.y)
 
             // Render image   
-            this.sprite.setNextState(this.currentDirection)
-            this.sprite.setTimerDiff(diffTimestamp)
-            layer.translate(x, y)
-            layer.drawImage(this.image, ...this.sprite.getCurrent())
-            layer.setTransform(1, 0, 0, 1, 0, 0);
+            // this.sprite.setNextState(this.currentDirection)
+            // this.sprite.setTimerDiff(diffTimestamp)
+            // layer.translate(x, y)
+            // layer.drawImage(this.image, ...this.sprite.getCurrent())
+            // layer.setTransform(1, 0, 0, 1, 0, 0);
 
             // Render simple drawing
             // layer.beginPath()
@@ -170,13 +294,31 @@ export default class Enemy {
 
             // Debug bounding box
             // if (this.isHighlighted) {
-            //     const bb = this.getBoundingBox()
-            //     layer.beginPath()
-            //     layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
-            //     layer.strokeStyle = 'red'
-            //     layer.stroke()
+                const bb = this.getBoundingBox()
+                layer.beginPath()
+                layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
+                layer.strokeStyle = 'red'
+                layer.stroke()
 
             // }
+            layer.beginPath()
+            layer.moveTo(this.pathSegments[this.currentSegmentIndex][0].x, this.pathSegments[this.currentSegmentIndex][0].y)
+            layer.lineTo(this.pathSegments[this.currentSegmentIndex][1].x, this.pathSegments[this.currentSegmentIndex][1].y)
+            layer.stroke()
+            
+            layer.beginPath()
+            layer.arc(this.p.x, this.p.y, 3, 0, 2 * Math.PI)
+            layer.fillStyle = "black"
+            layer.fill()
+            layer.beginPath()
+            layer.arc(this.sp.x, this.sp.y, 3, 0, 2 * Math.PI)
+            layer.fillStyle = "red"
+            layer.fill()
+
+            layer.beginPath()
+            layer.arc(this.spProj.x, this.spProj.y, 3, 0, 2 * Math.PI)
+            layer.fillStyle = "blue"
+            layer.fill()
         }
     }
 
@@ -255,7 +397,7 @@ export default class Enemy {
         this.path.t = t
 
         // On calcule les nouvelles coordonnées en fonction de t
-        newCoords = utilities.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
+        newCoords = util.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
         
         // Update le x et y de l'enemy
         this.x = newCoords.x

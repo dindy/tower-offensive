@@ -79,7 +79,6 @@ export default class Scene {
 
         this.setPathPoints()
         this.setPathRadius()
-        console.log(this.pathPoints);
     }
 
     setPathRadius() {
@@ -104,10 +103,12 @@ export default class Scene {
                     if (to === "left") return [...allPoints, { ...cellCoords, x: cell.coords.xMin}]
                     if (to === "right") return [...allPoints, { ...cellCoords, x: cell.coords.xMax}]                    
                 }
+                const previousCellCoords = this.gridCells[path[cellIndex - 1]].getCenterPoint()
 
                 const previous = allPoints[allPoints.length - 1]
+                
                 if (previous.x === cellCoords.x || previous.y === cellCoords.y) return allPoints
-                return [...allPoints, cellCoords] 
+                return [...allPoints, previousCellCoords] 
             }, [])
     }
 
