@@ -88,7 +88,7 @@ export default class Scene {
     setPathPoints() {
         const { path, from, to } = this.game.currentLevel.config.map 
         
-        this.pathPoints = path
+        const pathPoints = path
             .map(cellIndex => this.gridCells[cellIndex])
             .reduce((allPoints, cell, cellIndex )=> {
                 const cellCoords = cell.getCenterPoint()
@@ -110,6 +110,14 @@ export default class Scene {
                 if (previous.x === cellCoords.x || previous.y === cellCoords.y) return allPoints
                 return [...allPoints, previousCellCoords] 
             }, [])
+            
+            this.pathPoints = pathPoints.reduce((pathSegments, pathPoint, index)=>{
+                if(index === 0) return []
+                return [...pathSegments, [
+                    {x: pathPoints[index-1].x, y: pathPoints[index-1].y}, {x : pathPoint.x, y : pathPoint.y} 
+                ]]
+            }, [])
+
     }
 
     setSceneSize() {

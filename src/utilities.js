@@ -141,7 +141,7 @@ export function rectangleIntersectsRectangle(rect1, rect2) {
 
     const rect1Lines = getRectangleLines(rect1)
     const rect2Lines = getRectangleLines(rect2)
-l
+
     for (let i = 0; i < rect1Lines.length; i++) {
         
 
@@ -242,8 +242,8 @@ export function randomSign() {
  */
 export function getProjectionPoint(distance, angle) {
     return {
-        x: Math.round(distance * Math.cos(degreesToRadians(angle))),
-        y: Math.round(distance * Math.sin(degreesToRadians(angle)))
+        x: distance * Math.cos(degreesToRadians(angle)),
+        y: distance * Math.sin(degreesToRadians(angle))
     }
 }
 
@@ -286,27 +286,50 @@ export function addToPoint(p1, p2) {
     } 
 }
 
-Victor.prototype.projectOnto = function(v2) {
+export function addProjectionPoint(coords, distance, angle) {
+    const pp = getProjectionPoint(distance, angle)
+    return addToPoint(coords, pp)
+}
 
+
+Victor.prototype.projectOnto = function(v2) {
     var coeff = ( (this.x * v2.x) + (this.y * v2.y) ) / ( (v2.x * v2.x) + (v2.y * v2.y) )
     this.x = coeff * v2.x
     this.y = coeff * v2.y
     return this
 } 
 
-export function getScalarProjectionPoint(po, ao, bo) {
-    //console.log("before victor",p,a,b);
+// export function getScalarProjectionPoint(po, ao, bo) {
+//     //console.log("before victor",p,a,b);
+
+//     //Point d'origine du segment
+//     const a = new Victor(ao.x, ao.y)
+//     //Point de destination du segment
+//     const b = new Victor(bo.x, bo.y)
+//     //Projection de la position de l'enemy
+//     const p = new Victor(po.x, po.y)//.subtract(a)
+    
+//     //Vecteur representant le segment
+//     let ab = b.clone().subtract(a)
+    
+//     // {x:?? + a.x, y: ?? + a.y}
+//     return p.projectOnto(ab).add(a).toObject()
+// }
+
+export function getScalarProjectionPoint(ao, po, bo) {
 
     //Point d'origine du segment
     const a = new Victor(ao.x, ao.y)
+
     //Point de destination du segment
     const b = new Victor(bo.x, bo.y)
+    
     //Projection de la position de l'enemy
-    const p = new Victor(po.x, po.y)//.subtract(a)
+    const p = new Victor(po.x, po.y).subtract(a)
     
     //Vecteur representant le segment
     let ab = b.clone().subtract(a)
     
     // {x:?? + a.x, y: ?? + a.y}
-    return p.projectOnto(ab).add(a).toObject()
+    return p.clone().projectOnto(ab).add(a).toObject()
 }

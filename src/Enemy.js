@@ -32,22 +32,25 @@ PVector scalarProjection(PVector p, PVector a, PVector b) {
 export default class Enemy {
 
     static id = 0
+    static width = 16
     
+    pathSegments = []
+
     /**
      * Enemy constructor
      * @param {Level} level
      */
-    constructor(level) {
+    constructor(level, x, y, offset) {
         
         Enemy.id++
 
         this.id = Enemy.id
 
         // Center point is the reference for enemy
-        this.x = null
-        this.y = null
+        this.x = x
+        this.y = y
 
-        this.width = 16
+        this.width = this.constructor.width
         this.height = this.width
         
         this.health = 15
@@ -57,49 +60,42 @@ export default class Enemy {
         
         // Object de l'enemy contenant les 3 points qui définissent le chemin 
         // qu'il est en train de suivre
-        const pathPoints = level.game.scene.pathPoints
-        this.pathSegments = pathPoints.reduce((pathSegments, pathPoint, index)=>{
-            if(index === 0) return []
-            return [...pathSegments, [
-                {x: pathPoints[index-1].x, y: pathPoints[index-1].y}, {x : pathPoint.x, y : pathPoint.y} 
-            ]]
-        }, [])
-
-        // @TODO : find right angle
+        this.defaultPathSegments = level.game.scene.pathPoints
+        
         const from = level.config.map.from
         this.angle = from == 'top' ? 90 : from == 'bottom' ? 270 : from == 'left' ? 180 : 0
-
+        
         // Offset en px par rapport à l'origine de la cellule (x ou y)
-        this.offset = 0
-
+        this.offset = offset
+        
         // Px / ms parcourus par l'enemy
         this.defaultSpeed = 0.07
         this.speed = 0.07
-
+        
         // Index de la cellule sur laquelle est l'enemy
         this.currentCellIndex = null
-
+        
         // Indique si l'enemy est sur le retour du chemin
         this.isBack = false
-
+        
         // Indique si l'enemy doit être supprimé
         this.isDeleted = false
-
+        
         // L'enemy est en train de parcourir la dernière cellule de l'aller du chemin
         this.isTurning = false
-
+        
         // L'enemy est en train de parcourir la dernière cellule du retour du chemin
         this.isExiting = false    
-
+        
         // Profondeur des poches d'un enemy
         this.pocketCapacity = 80
         
         // Valeur volée par l'enemy
         this.pocket = 0
-
+        
         // Ratio de valeur rendue si l'enemy meurt
         this.penalty = 0.8
-
+        
         // Load the image of the enemy
         this.image = document.getElementById(level.game.DOMConfig.sprites.enemy)
         this.sprite = new Sprite(50, 50, {
@@ -108,13 +104,42 @@ export default class Enemy {
             right : { sourceY: 100, nbFrames: 4, interval: 80 },
             left : { sourceY: 150, nbFrames: 4, interval: 80 }
         })
-
+        
         // Indique l'orientation de l'ennemi pour rendre le bon sprite
         this.currentDirection = null
-
+        
         this.isHighlighted = false
         this.currentSegmentIndex = 0
-        console.log(pathPoints)
+        
+        //Prend
+        this.pathRadius = this.level.game.scene.pathRadius
+        this.setPathSegments()
+
+    }
+    
+    setPathSegments() {
+        
+        for(let i = 0; i < this.defaultPathSegments.length ; i++) {
+            let varX = 0, varY = 0
+
+            const segment = this.defaultPathSegments[i]
+            const origin = segment[0]
+            const destination = segment[1]
+            const angle = util.angle(origin.x, origin.y, destination.x,destination.y)
+            const pathRadiusMax = this.pathRadius / 2 
+        
+            if (angle == 90 || angle == 270) {
+                varX = util.randomBetween(-1 * pathRadiusMax, pathRadiusMax)
+            } else {
+                varY = util.randomBetween(-1 * pathRadiusMax, pathRadiusMax)
+            }         
+            
+            const newSegment = [
+                {x : origin.x + varX, y : origin.y + varY},
+                {x : destination.x + varX, y : destination.y + varY}
+            ]
+            this.pathSegments.push(newSegment)
+        }
     }
 
     updatePathAndMove(diffTimestamp) {
@@ -131,120 +156,166 @@ export default class Enemy {
         this.moveAlongPath(diffTimestamp)
     }
 
+    getPredictedPosition() {
+        const point = util.addProjectionPoint(this.getCoords(), 25, this.angle)
+        this.p = point
+        return point        
+    }
+
+    getScalarProjection(pathSegmentsIndex, predictedPosition, inverted = false) {
+        
+        let i = 1, j = 0
+
+        if (inverted) {
+            i = 0
+            j = 1
+        } 
+        const ao1 = this.pathSegments[pathSegmentsIndex][i]
+        const bo1 = this.pathSegments[pathSegmentsIndex][j];
+        return util.getScalarProjectionPoint(ao1, predictedPosition, bo1) // coords      
+    }
+    
+    moveToward(targetAngle, diffTimestamp) {
+        
+        const rotationMax = 5
+        
+        // On calcule la différence d'angle entre l'angle du missile et celui nécessaire pour atteindre la cible 
+        // sur une échelle de [0, 180]
+        let degreesDifference = util.angleDifference(this.angle, targetAngle)
+        
+        // On calcule le sens de rotation optimum pour atteindre la cible
+        const direction = util.angleDirection(this.angle, targetAngle)  
+        
+        if (degreesDifference > rotationMax) {
+            this.angle = this.angle + (rotationMax * direction)
+            if(this.angle < 0) this.angle = 360 + (rotationMax * direction)
+            if(this.angle > 360) this.angle = this.angle - 360
+        }
+        else {
+            this.angle = targetAngle
+        }
+        console.log('move toward'+this.speed);
+        const distance = this.speed * diffTimestamp
+        const newPosition = util.getProjectionPoint(distance, this.angle)
+        this.x += newPosition.x
+        this.y += newPosition.y
+        
+    }
+
     /**
      * Gère la position de l'enemy
      * @param {number} diffTimestamp 
      */
     updatePosition(diffTimestamp) {
-        
-        Victor.prototype.projectOnto = function(v2) {
 
-            var coeff = ( (this.x * v2.x) + (this.y * v2.y) ) / ( (v2.x * v2.x) + (v2.y * v2.y) )
-            this.x = coeff * v2.x
-            this.y = coeff * v2.y
-            return this
+        // Find next segment index (sauf pour le dernier...)
+        let nextSegmentIndex
+        if (!this.isBack) {
+
+            if (this.currentSegmentIndex === this.pathSegments.length - 1) nextSegmentIndex = null
+            else nextSegmentIndex = this.currentSegmentIndex + 1
+        } else {
+            this.isTurning = false
+            if (this.currentSegmentIndex === 0) nextSegmentIndex = null
+            else nextSegmentIndex = this.currentSegmentIndex - 1
         } 
-
-        const getScalarProjectionPoint = (ao,po,bo) => {
-
-            //Point d'origine du segment
-            const a = new Victor(ao.x, ao.y)
-            //Point de destination du segment
-            const b = new Victor(bo.x, bo.y)
-            //Projection de la position de l'enemy
-            const p = new Victor(po.x, po.y).subtract(a)
-            
-            //Vecteur representant le segment
-            let ab = b.clone().subtract(a)
-            
-            // {x:?? + a.x, y: ?? + a.y}
-            return p.clone().projectOnto(ab).add(a).toObject()
-        }
-
-        // const pathRadius = this.level.game.scene.pathRadius
-        const pathRadius = this.level.game.scene.pathRadius
+        
+        let segmentDistance = null
 
         // Projection du vecteur de l'enemy
-        const pp = util.getProjectionPoint(50, this.angle)
-        const p = util.addToPoint(this.getCoords(), pp)
-        // console.log('p', p, pp);
-        this.p = p
+        const predictedPosition = this.getPredictedPosition()
         
-        let matchingSegmentIndex = null
-        let segmentDistance = null
+        //Scalar Projection de la position predite de enemy sur le segment actuel
+       
+        const sp1 = this.getScalarProjection(this.currentSegmentIndex, predictedPosition, this.isBack)
+        //Distance entre la position predite et la projection scalaire
+        const d1 = util.getDistance(predictedPosition.x, predictedPosition.y, sp1.x, sp1.y)  
         
-        //Trouve le segment qui match
-        // for (let i = 0; i < this.pathSegments.length; i++) {
-        // for (let i = 0; i < 1; i++) {
-            
-            //OriginPoint du segment
-            
-            //DestinationPoint du segment
-            const ao1 = this.pathSegments[this.currentSegmentIndex][0]
-            const bo1 = this.pathSegments[this.currentSegmentIndex][1];
-            const sp1 = getScalarProjectionPoint(ao1, p, bo1)
-            const d1 = util.getDistance(p.x, p.y, sp1.x, sp1.y)
-            
-            const ao2 = this.pathSegments[this.currentSegmentIndex + 1][0]
-            const bo2 = this.pathSegments[this.currentSegmentIndex + 1][1]
-            const sp2 = getScalarProjectionPoint(ao2, p, bo2)
-            const d2 = util.getDistance(p.x, p.y, sp2.x, sp2.y)
-            
-            
-            if (d2 <= d1) {
-                this.currentSegmentIndex++
-                segmentDistance = d2
-                this.sp = sp2
+        
+        
+        if (nextSegmentIndex == null) {
+            if (!this.isTurning) {
+                const endOfPath = this.pathSegments[this.currentSegmentIndex][1]
+                const distance = util.getDistance(sp1.x, sp1.y, endOfPath.x, endOfPath.y)
+    
+                if(distance < 1) {
+                    this.isTurning = true
+                    this.isBack = true
+                    this.angle = util.angle(
+                        this.pathSegments[this.currentSegmentIndex][1].x, 
+                        this.pathSegments[this.currentSegmentIndex][1].y,
+                        this.pathSegments[this.currentSegmentIndex][0].x,
+                        this.pathSegments[this.currentSegmentIndex][0].y
+                        )
+                        
+                    return
+                    
+                } else{
+                    
+                    nextSegmentIndex = this.currentSegmentIndex
+                    
+                }
             } else {
-                segmentDistance = d1
-                this.sp = sp1
+                const endOfPath = this.pathSegments[this.currentSegmentIndex][0]
+                const distance = util.getDistance(this.x, this.y, endOfPath.x, endOfPath.y)         
+                nextSegmentIndex = this.currentSegmentIndex
             }
-            // //Projection scalaire sur le segment
-            // //Trouve la distance entre le point de projection de l'enemy et la projection scalaire sur le segment
-            // const currentDistance = util.getDistance(p.x, p.y, sp.x, sp.y)
-            // //Sauvegarde le segment qui match et la distance entre SP et P
-            // if (segmentDistance === null || currentDistance < segmentDistance) {
-                
-            //     if (matchingSegmentIndex === this.currentSegmentIndex || matchingSegmentIndex === this.currentSegmentIndex + 1) this.currentSegmentIndex++
-            //     this.sp = sp 
-            //     segmentDistance = currentDistance
-            //     matchingSegmentIndex = i
-            // }
-        // }
-        // console.log('-------------------');
+            
+        } 
+        //Scalar Projection de la position predite de enemy sur le prochain segment
+        const sp2 = this.getScalarProjection(nextSegmentIndex, predictedPosition, this.isBack)
+        //Distance entre la position predite et la projection scalaire
+        const d2 = util.getDistance(predictedPosition.x, predictedPosition.y, sp2.x, sp2.y) 
+
+        // Compare les deux distances pour trouver le segment le plus proche
+        // console.log("d1", d1, "d2", d2)
         
-        const projAngle = util.angle(
-            this.pathSegments[this.currentSegmentIndex][0].x, 
-            this.pathSegments[this.currentSegmentIndex][0].y, 
-            this.pathSegments[this.currentSegmentIndex][1].x,
-            this.pathSegments[this.currentSegmentIndex][1].y
-         )
-         const projPoint = util.getProjectionPoint(25, projAngle)
-         const spProj = util.addToPoint(this.sp, projPoint)
-         this.spProj = spProj
-         
+        let pathSegment = null
+        
+        // Le prochain segment est plus proche ou on passe à proximité
+        if (d2 < d1 || d2 < 1) {
+            this.currentSegmentIndex = nextSegmentIndex
+            segmentDistance = d2
+            //Update la projection scalaire selectionnée
+            this.sp = sp2
+
+            pathSegment = this.pathSegments[this.currentSegmentIndex]
+
+            //Le segment actuel est le plus proche
+        } else {
+            
+            segmentDistance = d1
+            this.sp = sp1
+            pathSegment = this.pathSegments[this.currentSegmentIndex]
+        }
+
+        // Angle entre les deux extrémitées du segment
+        const point1Index = this.isBack ? 1 : 0
+        const point2Index = this.isBack ? 0 : 1
+        const projAngle = util.angle(pathSegment[point1Index].x, pathSegment[point1Index].y, pathSegment[point2Index].x, pathSegment[point2Index].y)
+        
+        // On ajoute une valeur à la projection scalaire sur le segment actuel 
+        const spProj = util.addProjectionPoint(this.sp, 25, projAngle)
+        this.spProj = spProj
+            
         //Check si l'enemy reste dans le radius
-        if (segmentDistance < pathRadius) {
-            const newAngle = util.angle(this.x, this.y, p.x, p.y)
-            const distance = this.speed * diffTimestamp
-            const newPosition = util.getProjectionPoint(distance, newAngle)
-            this.x += newPosition.x
-            this.y += newPosition.y
-            this.angle = newAngle
+        if (segmentDistance < this.pathRadius) {
+            const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
+            this.moveToward(newAngle, diffTimestamp)
         } else {
             const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
-            const distance = this.speed * diffTimestamp
-            const newPosition = util.getProjectionPoint(distance, newAngle)
-            this.x += newPosition.x
-            this.y += newPosition.y
-            this.angle = newAngle
+            this.moveToward(newAngle, diffTimestamp)
         }
-        //this.updatePathAndMove(diffTimestamp)
+    
 
-        
     }
 
     updateSpeed() {
+        // if(this.speed < this.defaultSpeed){
+        //     this.speed += 0.005
+        // } else {
+        //     this.speed = this.defaultSpeed
+        // }
         this.speed = this.defaultSpeed
     }
 
@@ -256,7 +327,12 @@ export default class Enemy {
         this.updatePosition(diffTimestamp)
         this.updatePocket()
         this.updateSpeed()
+        this.updateIsDeleted()
     } 
+
+    updateIsDeleted(){
+        if(this.x < 0 || this.y < 0) this.isDeleted = true
+    }
 
     updatePocket() {
         if (this.isTurning && this.pocket === 0) {
@@ -297,28 +373,28 @@ export default class Enemy {
                 const bb = this.getBoundingBox()
                 layer.beginPath()
                 layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
-                layer.strokeStyle = 'red'
+                layer.strokeStyle = 'black'
                 layer.stroke()
 
             // }
-            layer.beginPath()
-            layer.moveTo(this.pathSegments[this.currentSegmentIndex][0].x, this.pathSegments[this.currentSegmentIndex][0].y)
-            layer.lineTo(this.pathSegments[this.currentSegmentIndex][1].x, this.pathSegments[this.currentSegmentIndex][1].y)
-            layer.stroke()
+            // layer.beginPath()
+            // layer.moveTo(this.pathSegments[this.currentSegmentIndex][0].x, this.pathSegments[this.currentSegmentIndex][0].y)
+            // layer.lineTo(this.pathSegments[this.currentSegmentIndex][1].x, this.pathSegments[this.currentSegmentIndex][1].y)
+            // layer.stroke()
             
-            layer.beginPath()
-            layer.arc(this.p.x, this.p.y, 3, 0, 2 * Math.PI)
-            layer.fillStyle = "black"
-            layer.fill()
-            layer.beginPath()
-            layer.arc(this.sp.x, this.sp.y, 3, 0, 2 * Math.PI)
-            layer.fillStyle = "red"
-            layer.fill()
+            // layer.beginPath()
+            // layer.arc(this.p.x, this.p.y, 3, 0, 2 * Math.PI)
+            // layer.fillStyle = "black"
+            // layer.fill()
+            // layer.beginPath()
+            // layer.arc(this.sp.x, this.sp.y, 3, 0, 2 * Math.PI)
+            // layer.fillStyle = "red"
+            // layer.fill()
 
-            layer.beginPath()
-            layer.arc(this.spProj.x, this.spProj.y, 3, 0, 2 * Math.PI)
-            layer.fillStyle = "blue"
-            layer.fill()
+            // layer.beginPath()
+            // layer.arc(this.spProj.x, this.spProj.y, 3, 0, 2 * Math.PI)
+            // layer.fillStyle = "blue"
+            // layer.fill()
         }
     }
 
@@ -746,6 +822,8 @@ export default class Enemy {
     }
 
     slow(factor){
-        this.speed = this.speed - (this.speed * factor)
+        
+        this.speed = this.speed / factor
+        
     }
 }
