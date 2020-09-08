@@ -71,10 +71,7 @@ export default class Enemy {
         // Px / ms parcourus par l'enemy
         this.defaultSpeed = 0.07
         this.speed = 0.07
-        
-        // Index de la cellule sur laquelle est l'enemy
-        this.currentCellIndex = null
-        
+  
         // Indique si l'enemy est sur le retour du chemin
         this.isBack = false
         
@@ -83,9 +80,6 @@ export default class Enemy {
         
         // L'enemy est en train de parcourir la dernière cellule de l'aller du chemin
         this.isTurning = false
-        
-        // L'enemy est en train de parcourir la dernière cellule du retour du chemin
-        this.isExiting = false    
         
         // Profondeur des poches d'un enemy
         this.pocketCapacity = 80
@@ -115,6 +109,7 @@ export default class Enemy {
         this.pathRadius = this.level.game.scene.pathRadius
         this.setPathSegments()
 
+        this.hasTurned = false
     }
     
     setPathSegments() {
@@ -126,7 +121,7 @@ export default class Enemy {
             const origin = segment[0]
             const destination = segment[1]
             const angle = util.angle(origin.x, origin.y, destination.x,destination.y)
-            const pathRadiusMax = this.pathRadius / 2 
+            const pathRadiusMax = (this.pathRadius / 2) - 5
         
             if (angle == 90 || angle == 270) {
                 varX = util.randomBetween(-1 * pathRadiusMax, pathRadiusMax)
@@ -140,20 +135,6 @@ export default class Enemy {
             ]
             this.pathSegments.push(newSegment)
         }
-    }
-
-    updatePathAndMove(diffTimestamp) {
-
-        // S'il n'y a pas de chemin calculé 
-        // (si c'est le 1er appel ou si le précédent chemin a été entièrement parcouru)
-        if (!this.hasCurrentPath()) {
-
-            // On calcule le prochain chemin
-            this.updatePathCoordinates()
-        }
-
-        // On se déplace le long du chemin
-        this.moveAlongPath(diffTimestamp)
     }
 
     getPredictedPosition() {
@@ -179,7 +160,7 @@ export default class Enemy {
         
         const rotationMax = 5
         
-        // On calcule la différence d'angle entre l'angle du missile et celui nécessaire pour atteindre la cible 
+        // On calcule la différence d'angle entre l'angle de l'enemy et celui nécessaire pour atteindre la cible 
         // sur une échelle de [0, 180]
         let degreesDifference = util.angleDifference(this.angle, targetAngle)
         
@@ -194,12 +175,47 @@ export default class Enemy {
         else {
             this.angle = targetAngle
         }
-        console.log('move toward'+this.speed);
         const distance = this.speed * diffTimestamp
         const newPosition = util.getProjectionPoint(distance, this.angle)
         this.x += newPosition.x
         this.y += newPosition.y
         
+    }
+
+    // Find next segment index (sauf pour le dernier...)
+    getNextSegmentIndex(sp1) {
+
+        let nextSegmentIndex
+        
+        if (!this.isBack) {
+            if (this.currentSegmentIndex === this.pathSegments.length - 1) nextSegmentIndex = null
+            else nextSegmentIndex = this.currentSegmentIndex + 1
+        } else {
+            this.isTurning = false
+            if (this.currentSegmentIndex === 0) nextSegmentIndex = null
+            else nextSegmentIndex = this.currentSegmentIndex - 1
+        }  
+        
+        if (nextSegmentIndex == null) {
+            
+            if (!this.isTurning) {
+                const endOfPath = this.pathSegments[this.currentSegmentIndex][1]
+                const distance = util.getDistance(sp1.x, sp1.y, endOfPath.x, endOfPath.y)
+
+                if(distance < 1) {
+                    this.isTurning = true
+                    this.isBack = true
+                    const segment = this.pathSegments[this.currentSegmentIndex]
+                    this.angle = util.angle(segment[1].x, segment[1].y, segment[0].x, segment[0].y)
+                } else {
+                    nextSegmentIndex = this.currentSegmentIndex
+                }
+            } else {        
+                nextSegmentIndex = this.currentSegmentIndex
+            } 
+        }
+        
+        return nextSegmentIndex         
     }
 
     /**
@@ -208,86 +224,42 @@ export default class Enemy {
      */
     updatePosition(diffTimestamp) {
 
-        // Find next segment index (sauf pour le dernier...)
-        let nextSegmentIndex
-        if (!this.isBack) {
-
-            if (this.currentSegmentIndex === this.pathSegments.length - 1) nextSegmentIndex = null
-            else nextSegmentIndex = this.currentSegmentIndex + 1
-        } else {
-            this.isTurning = false
-            if (this.currentSegmentIndex === 0) nextSegmentIndex = null
-            else nextSegmentIndex = this.currentSegmentIndex - 1
-        } 
-        
-        let segmentDistance = null
-
         // Projection du vecteur de l'enemy
         const predictedPosition = this.getPredictedPosition()
-        
-        //Scalar Projection de la position predite de enemy sur le segment actuel
-       
-        const sp1 = this.getScalarProjection(this.currentSegmentIndex, predictedPosition, this.isBack)
-        //Distance entre la position predite et la projection scalaire
-        const d1 = util.getDistance(predictedPosition.x, predictedPosition.y, sp1.x, sp1.y)  
-        
-        
-        
-        if (nextSegmentIndex == null) {
-            if (!this.isTurning) {
-                const endOfPath = this.pathSegments[this.currentSegmentIndex][1]
-                const distance = util.getDistance(sp1.x, sp1.y, endOfPath.x, endOfPath.y)
-    
-                if(distance < 1) {
-                    this.isTurning = true
-                    this.isBack = true
-                    this.angle = util.angle(
-                        this.pathSegments[this.currentSegmentIndex][1].x, 
-                        this.pathSegments[this.currentSegmentIndex][1].y,
-                        this.pathSegments[this.currentSegmentIndex][0].x,
-                        this.pathSegments[this.currentSegmentIndex][0].y
-                        )
-                        
-                    return
-                    
-                } else{
-                    
-                    nextSegmentIndex = this.currentSegmentIndex
-                    
-                }
-            } else {
-                const endOfPath = this.pathSegments[this.currentSegmentIndex][0]
-                const distance = util.getDistance(this.x, this.y, endOfPath.x, endOfPath.y)         
-                nextSegmentIndex = this.currentSegmentIndex
-            }
-            
-        } 
-        //Scalar Projection de la position predite de enemy sur le prochain segment
-        const sp2 = this.getScalarProjection(nextSegmentIndex, predictedPosition, this.isBack)
-        //Distance entre la position predite et la projection scalaire
-        const d2 = util.getDistance(predictedPosition.x, predictedPosition.y, sp2.x, sp2.y) 
 
+        // Scalar Projection de la position predite de enemy sur le segment actuel
+        const sp1 = this.getScalarProjection(this.currentSegmentIndex, predictedPosition, this.isBack)
+        
+        // Distance entre la position predite et la projection scalaire
+        const d1 = util.getDistance(predictedPosition.x, predictedPosition.y, sp1.x, sp1.y) 
+        
+        // On détermine le prochain segment (null si on est sur le dernier segment à l'aller, 1er segment si sur dernier segment au retour)
+        let nextSegmentIndex = this.getNextSegmentIndex(sp1)
+        
+        if (nextSegmentIndex === null) return
+        
+        // Scalar Projection de la position predite de enemy sur le prochain segment
+        const sp2 = this.getScalarProjection(nextSegmentIndex, predictedPosition, this.isBack)
+
+        // Distance entre la position predite et la projection scalaire
+        const d2 = util.getDistance(predictedPosition.x, predictedPosition.y, sp2.x, sp2.y) 
+        
+        let segmentDistance = null
+        
         // Compare les deux distances pour trouver le segment le plus proche
-        // console.log("d1", d1, "d2", d2)
-        
-        let pathSegment = null
-        
         // Le prochain segment est plus proche ou on passe à proximité
         if (d2 < d1 || d2 < 1) {
             this.currentSegmentIndex = nextSegmentIndex
             segmentDistance = d2
-            //Update la projection scalaire selectionnée
+            // Update la projection scalaire selectionnée
             this.sp = sp2
 
-            pathSegment = this.pathSegments[this.currentSegmentIndex]
-
-            //Le segment actuel est le plus proche
+        // Le segment actuel est le plus proche
         } else {
-            
             segmentDistance = d1
             this.sp = sp1
-            pathSegment = this.pathSegments[this.currentSegmentIndex]
         }
+        const pathSegment = this.pathSegments[this.currentSegmentIndex]
 
         // Angle entre les deux extrémitées du segment
         const point1Index = this.isBack ? 1 : 0
@@ -298,7 +270,7 @@ export default class Enemy {
         const spProj = util.addProjectionPoint(this.sp, 25, projAngle)
         this.spProj = spProj
             
-        //Check si l'enemy reste dans le radius
+        // Check si l'enemy reste dans le radius
         if (segmentDistance < this.pathRadius) {
             const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
             this.moveToward(newAngle, diffTimestamp)
@@ -306,17 +278,23 @@ export default class Enemy {
             const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
             this.moveToward(newAngle, diffTimestamp)
         }
-    
-
     }
 
     updateSpeed() {
-        // if(this.speed < this.defaultSpeed){
-        //     this.speed += 0.005
-        // } else {
-        //     this.speed = this.defaultSpeed
-        // }
         this.speed = this.defaultSpeed
+    }
+
+    updateDirection() {
+        let newDirection 
+        if(this.angle > 0 && this.angle < 45 || this.angle > 315 && this.angle < 360) newDirection = "right"
+        else if (this.angle > 135 && this.angle < 225) newDirection = "left"
+        else if (this.angle >= 45 && this.angle <= 135) newDirection = "down"
+        else newDirection = "up"
+
+        if (this.currentDirection !== newDirection) {
+            this.currentDirection = newDirection
+            this.hasTurned = true
+        }
     }
 
     /**
@@ -324,7 +302,9 @@ export default class Enemy {
      * @param {number} diffTimestamp 
      */
     update(diffTimestamp) {
+        this.hasTurned = false
         this.updatePosition(diffTimestamp)
+        this.updateDirection(diffTimestamp)
         this.updatePocket()
         this.updateSpeed()
         this.updateIsDeleted()
@@ -356,11 +336,12 @@ export default class Enemy {
             const y = Math.round(this.y)
 
             // Render image   
-            // this.sprite.setNextState(this.currentDirection)
-            // this.sprite.setTimerDiff(diffTimestamp)
-            // layer.translate(x, y)
-            // layer.drawImage(this.image, ...this.sprite.getCurrent())
-            // layer.setTransform(1, 0, 0, 1, 0, 0);
+            if (this.isTurning || this.hasTurned) this.sprite.setState(this.currentDirection)
+            this.sprite.setNextState(this.currentDirection)
+            this.sprite.setTimerDiff(diffTimestamp)
+            layer.translate(x, y)
+            layer.drawImage(this.image, ...this.sprite.getCurrent())
+            layer.setTransform(1, 0, 0, 1, 0, 0);
 
             // Render simple drawing
             // layer.beginPath()
@@ -370,11 +351,11 @@ export default class Enemy {
 
             // Debug bounding box
             // if (this.isHighlighted) {
-                const bb = this.getBoundingBox()
-                layer.beginPath()
-                layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
-                layer.strokeStyle = 'black'
-                layer.stroke()
+                // const bb = this.getBoundingBox()
+                // layer.beginPath()
+                // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
+                // layer.strokeStyle = 'black'
+                // layer.stroke()
 
             // }
             // layer.beginPath()
@@ -396,393 +377,6 @@ export default class Enemy {
             // layer.fillStyle = "blue"
             // layer.fill()
         }
-    }
-
-    /**
-     * Gère le chemin parcouru par l'enemy sur la case courante
-     */
-    updatePathCoordinates() {
-
-        // Update currentCellIndex
-        this.updateCurrentCellIndex()
-
-        // Get cells
-        let cell = this.getCellFromCurrentIndex()
-        let nextCell = this.getNextCellFromCurrentIndex()
-        let previousCell = this.getPreviousCellFromCurrentIndex()
-
-        // Last cell on forward
-        if (this.willTurnAround()) {
-            this.isTurning = true
-            this.updateTurningPathCoordinates(cell, previousCell)
-
-        // Last cell on backward
-        } else if (this.willExit()) {
-            this.isExiting = true
-            this.updateExitingPathCoordinates(cell, previousCell)
-
-        // Other cells
-        } else this.updateNormalPathCoordinates(cell, nextCell, previousCell) 
-
-        
-    }
-
-    /**
-     * Met à jour les coordonnées de l'enemy en suivant le pathfinding calculé
-     * @param {number} diffTimestamp 
-     */
-    moveAlongPath(diffTimestamp) {
-
-        // Update time passed in a cell
-        this.path.time += diffTimestamp
-
-        // Calculate target time to passed in a cell
-        this.path.totalTime = this.level.game.scene.cellSize / this.speed
-
-        // Update t (la proportion de la courbe parcourue de 0 à 1)
-        let t = this.path.time / this.path.totalTime
-        // Save the current direction
-        this.currentDirection = t < 0.5 ? 
-            this.path.firstDirection : 
-            this.path.secondDirection
-
-        // update coordinates with t
-        let newCoords = null 
-        const p1 = this.path.originPoint
-        const p2 = this.path.middlePoint 
-        const p3 = this.path.endPoint
-
-        // Si on a parcouru toute la courbe, on s'assure d'être exactment 
-        // sur le dernier point et on met à jour les propriétés de l'enemy
-        if (t >= 1) {
-
-            // t vaut au maximum 1
-            t = 1
-            
-            // Si on était sur un exit, on doit supprimer l'entité 
-            if (this.isExiting) this.isDeleted = true
-
-            // Si on était en train de tourner, on est sur le retour et on ne tourne plus
-            if (this.isTurning) {
-                this.isBack = true
-                this.isTurning = false
-            }            
-        }
-
-        // Update t in enemy's path
-        this.path.t = t
-
-        // On calcule les nouvelles coordonnées en fonction de t
-        newCoords = util.getBezierPoint(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y, t)
-        
-        // Update le x et y de l'enemy
-        this.x = newCoords.x
-        this.y = newCoords.y
-        
-        // On efface le chemin courant si on est au bout
-        if (t === 1) this.removeCurrentPathCoordinates() 
-    }
-
-    /**
-     * Met à jour l'index courant de la cellule
-     */    
-    updateCurrentCellIndex() {
-
-        // Check si c'est la 1er fois et selectionne la 1ere celulle du path
-        if (this.currentCellIndex == null) {
-            this.currentCellIndex = 0
-        
-        // Sinon si on est sur l'aller sélectionne la cell suivante
-        } else if (!this.isBack) {
-            this.currentCellIndex++ 
-        
-        // Sinon si on est sur le retour sélectionne la cell précédente
-        } else {
-            this.currentCellIndex--
-        }
-    }
-
-    /**
-     * Retourne l'objet cell en fonction de index
-     * @param {number} index 
-     */
-    getCellFromIndex(index) {
-
-        return this.level.config.map.path
-            .map(cellIndex => this.level.game.scene.gridCells[cellIndex])  
-            [index]
-    } 
-
-    /**
-     * Retourne l'objet cell 
-     */
-    getCellFromCurrentIndex()  {
-        return this.getCellFromIndex(this.currentCellIndex)
-    }
-
-    /**
-     * Retourne la prochaine cell du tableau
-     */
-    getNextCellFromCurrentIndex() {
-        const nextCellIndex = (this.isBack) ? this.currentCellIndex - 1 : this.currentCellIndex + 1 
-        return this.getCellFromIndex(nextCellIndex)
-    }
-
-    /**
-     * Retourne la cell précédente du tableau
-     */
-    getPreviousCellFromCurrentIndex() {
-        const previousCellIndex = (this.isBack) ? this.currentCellIndex + 1 : this.currentCellIndex - 1 
-        return this.getCellFromIndex(previousCellIndex)
-    }
-
-    /**
-     * Retourne True si l'ennemi va faire demi-tour après la cellule en cours
-     */
-    willTurnAround() {
-        return typeof this.getNextCellFromCurrentIndex() === "undefined" && !this.isBack
-    }
-
-    /**
-     * Retourne True si l'enemy va sortir de la map après la cellule en cours
-     */
-    willExit() {
-        return typeof this.getNextCellFromCurrentIndex() === "undefined" && this.isBack
-    } 
-
-    /**
-     * Calcul et met a jour les coordonnées pour le virage
-     * @param {Cell} cell 
-     * @param {Cell} previousCell 
-     */
-    updateTurningPathCoordinates(cell, previousCell) {
-        
-        let firstDirection = null 
-        let secondDirection = null
-        
-        // Côté par lequel on arrive 
-        const side = cell.getDirection(previousCell)  
-
-        // Points de référence du chemin pour la cellule courante
-        const originPoint = { x: this.x, y: this.y }       
-        let endPoint = {...originPoint}
-        let middlePoint = { }     
-
-        // Calcul des coordonnées des points de référence
-        if (side == "up") {
-            firstDirection = "down"
-            secondDirection = "up"
-            middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize)
-        } else if (side == "down") {
-            firstDirection = "up"
-            secondDirection = "down"            
-            middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y - (this.level.game.scene.cellSize)
-        } else if (side == "left") {
-            firstDirection = "right"
-            secondDirection = "left"            
-            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize)
-            middlePoint.y = originPoint.y 
-        } else if (side == "right") {
-            firstDirection = "left"
-            secondDirection = "right"
-            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize)
-            middlePoint.y = originPoint.y 
-        }
-
-        // On met à jour les coordonnées
-        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }        
-    }
-
-    /**
-     * Calcul et met a jour le coordonnées pour la sortie
-     * @param {Cell} cell 
-     * @param {Cell} previousCell 
-     */
-    updateExitingPathCoordinates(cell, previousCell) {
-
-        let firstDirection = null 
-        let secondDirection = null
-
-        // Côté par lequel on arrive
-        const side = cell.getDirection(previousCell)  
-
-        // Points de référence du chemin pour la cellule courante
-        const originPoint = { x: this.x, y: this.y }        
-        const endPoint = {...originPoint}
-        let middlePoint = { }
-
-        // Calcul des coordonnées des points de référence
-        if (side == "up") {
-            firstDirection = "down"
-            secondDirection = "down"            
-            endPoint.y += this.level.game.scene.cellSize
-            middlePoint.x = endPoint.x
-            middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2)
-        } else if (side == "down") {
-            firstDirection = "up"
-            secondDirection = "up"             
-            endPoint.y = 0
-            middlePoint.x = endPoint.x
-            middlePoint.y = this.level.game.scene.cellSize / 2
-        } else if (side == "left") {
-            firstDirection = "right"
-            secondDirection = "right"             
-            endPoint.x += this.level.game.scene.cellSize
-            middlePoint.x = endPoint.x + (this.level.game.scene.cellSize / 2)
-            middlePoint.y = originPoint.y 
-        } else if (side == "right") {
-            firstDirection = "left"
-            secondDirection = "left"             
-            endPoint.x -= this.level.game.scene.cellSize
-            middlePoint.x = endPoint.x - (this.level.game.scene.cellSize / 2)
-            middlePoint.y = originPoint.y 
-        }
-
-        // On met à jour les coordonnées
-        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }        
-    }
-
-    /**
-     * Calcul et met a jour le coordonnées pour le chemin normal
-     * @param {Cell} cell 
-     * @param {Cell} nextCell 
-     * @param {Cell|undefined} previousCell 
-     */
-    updateNormalPathCoordinates(cell, nextCell, previousCell) {
-
-        let firstDirection = null
-        let secondDirection = null
-        
-        // Direction entre la cellule courante et la prochaine
-        const direction = cell.getDirection(nextCell)
-
-        // Si on est sur la 1ère cellule, side dépend de la direction de départ
-        // (de la direction donnée par les 2 premières cellules du path)
-        const side = (typeof previousCell === 'undefined' && !this.isBack) ? 
-            nextCell.getDirection(cell) :
-            cell.getSide(previousCell)
-
-        // Points de référence du chemin pour la cellule courante
-        const originPoint = { x: this.x, y: this.y } 
-        let middlePoint = { }
-        let endPoint = { }
-
-        // Calcul des coordonnées des points de référence
-        if (direction === "up") {
-            
-            secondDirection = "up"
-
-            if (side === "left") {
-                firstDirection = "right"
-                endPoint.x = nextCell.coords.xMax - this.offset
-                endPoint.y = nextCell.coords.yMax
-                middlePoint.y = originPoint.y
-                middlePoint.x = endPoint.x
-            } else if (side === "right") {
-                firstDirection = "left"
-                endPoint.x = nextCell.coords.xMin + this.offset
-                endPoint.y = nextCell.coords.yMax
-                middlePoint.y = originPoint.y
-                middlePoint.x = endPoint.x
-            } else {
-                firstDirection = "up"
-                endPoint.x = originPoint.x
-                endPoint.y = nextCell.coords.yMax
-                middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y - (this.level.game.scene.cellSize / 2)
-            }
-
-        } else if (direction == "down") {
-
-            secondDirection = "down"
-
-            if (side == "left") {
-                firstDirection = "right"
-                endPoint.x = nextCell.coords.xMin + this.offset
-                endPoint.y = nextCell.coords.yMin
-                middlePoint.y = originPoint.y
-                middlePoint.x = endPoint.x
-            } else if (side == "right") {
-                firstDirection = "left"
-                endPoint.x = nextCell.coords.xMax - this.offset
-                endPoint.y = nextCell.coords.yMin
-                middlePoint.x = endPoint.x
-                middlePoint.y = originPoint.y
-            } else {
-                firstDirection = "down"
-                endPoint.x = originPoint.x
-                endPoint.y = nextCell.coords.yMin
-                middlePoint.x = originPoint.x
-                middlePoint.y = originPoint.y + (this.level.game.scene.cellSize / 2) 
-            }
-
-        } else if (direction == "left") {
-            
-            secondDirection = "left"
-            
-            if (side == "up") {
-                firstDirection = "down"
-                endPoint.x = nextCell.coords.xMax
-                endPoint.y = nextCell.coords.yMax - this.offset
-                middlePoint.y = endPoint.y
-                middlePoint.x = originPoint.x
-            } else if (side == "down") {
-                firstDirection = "up"
-                endPoint.x = nextCell.coords.xMax
-                endPoint.y = nextCell.coords.yMin + this.offset
-                middlePoint.y = endPoint.y
-                middlePoint.x = originPoint.x                 
-            } else {
-                firstDirection = "left"
-                endPoint.x = nextCell.coords.xMax
-                endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x - (this.level.game.scene.cellSize / 2)
-                middlePoint.y = originPoint.y           
-            }
-
-        } else if (direction == "right") {
-
-            secondDirection = "right"
-
-            if (side == "up") { 
-                firstDirection = "down"
-                endPoint.x = nextCell.coords.xMin
-                endPoint.y = nextCell.coords.yMin + this.offset
-                middlePoint.x = originPoint.x
-                middlePoint.y = endPoint.y
-            } else if (side == "down") {
-                firstDirection = "up"
-                endPoint.x = nextCell.coords.xMin
-                endPoint.y = nextCell.coords.yMax - this.offset
-                middlePoint.x = originPoint.x
-                middlePoint.y = endPoint.y
-            } else {
-                firstDirection = "right"
-                endPoint.x = nextCell.coords.xMin
-                endPoint.y = originPoint.y
-                middlePoint.x = originPoint.x + (this.level.game.scene.cellSize / 2)
-                middlePoint.y = originPoint.y  
-            }
-        }
-        
-        // On met à jour les coordonnées
-        this.path = { originPoint, middlePoint, endPoint, time: 0, firstDirection, secondDirection }    
-    }
-
-    /**
-     * Met a null les coordonnées enregistrées
-     */
-    removeCurrentPathCoordinates() {
-        return this.path = null
-    }
-
-    /**
-     * Retourn True si les coordonnées ne sont pas définies
-     */
-    hasCurrentPath() {
-        return this.path !== null
     }
 
     /**

@@ -122,7 +122,11 @@ export default class Bullet {
             const enemyBoundingBox = enemy.getBoundingBox()
             const bulletBoundingBox = this.getBoundingBox()
 
-            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox)) {
+            const isInside = (point, box) => {
+                return point.x > box.xMin && point.x < box.xMax && point.y > box.yMin && point.y < box.yMax
+            }
+
+            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox) || isInside(this.coords, enemyBoundingBox) ) {
                 this.isInAir = false
                 enemy.hit(this.dammage)
                 return

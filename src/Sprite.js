@@ -47,11 +47,8 @@ export default class Sprite {
             this.currentFrame = 1
             this.force = false
         } else {
-            
             this.currentFrame = this.getNewCurrentFrame()
-            
         }
-
     }
 
     getCurrentStateName() {
@@ -59,7 +56,7 @@ export default class Sprite {
     }
 
     getCurrent() {
-        
+       
         const stateTotalTime = this.currentState.interval * this.currentState.nbFrames
         
         if (this.isEnded) return [
