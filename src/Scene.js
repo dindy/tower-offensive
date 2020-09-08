@@ -79,7 +79,6 @@ export default class Scene {
 
         this.setPathPoints()
         this.setPathRadius()
-        console.log(this.pathPoints);
     }
 
     setPathRadius() {
@@ -89,7 +88,7 @@ export default class Scene {
     setPathPoints() {
         const { path, from, to } = this.game.currentLevel.config.map 
         
-        this.pathPoints = path
+        const pathPoints = path
             .map(cellIndex => this.gridCells[cellIndex])
             .reduce((allPoints, cell, cellIndex )=> {
                 const cellCoords = cell.getCenterPoint()
@@ -104,11 +103,21 @@ export default class Scene {
                     if (to === "left") return [...allPoints, { ...cellCoords, x: cell.coords.xMin}]
                     if (to === "right") return [...allPoints, { ...cellCoords, x: cell.coords.xMax}]                    
                 }
+                const previousCellCoords = this.gridCells[path[cellIndex - 1]].getCenterPoint()
 
                 const previous = allPoints[allPoints.length - 1]
+                
                 if (previous.x === cellCoords.x || previous.y === cellCoords.y) return allPoints
-                return [...allPoints, cellCoords] 
+                return [...allPoints, previousCellCoords] 
             }, [])
+            
+            this.pathPoints = pathPoints.reduce((pathSegments, pathPoint, index)=>{
+                if(index === 0) return []
+                return [...pathSegments, [
+                    {x: pathPoints[index-1].x, y: pathPoints[index-1].y}, {x : pathPoint.x, y : pathPoint.y} 
+                ]]
+            }, [])
+
     }
 
     setSceneSize() {

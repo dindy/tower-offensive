@@ -22,6 +22,8 @@ export default class Tesla extends Tower {
         this.lightningDuration = 250
         this.coolingDuration = 100
 
+        this.slowPower = 5
+
         this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerTesla)
         
         
@@ -38,6 +40,10 @@ export default class Tesla extends Tower {
             this.currentTargets = []
             return
         } else if(this.currentTargets.length > 0) {
+            for (let i = 0; i < this.currentTargets.length; i++) {
+                const enemy = this.currentTargets[i];
+                enemy.slow(this.slowPower)
+            }
             return
         }
         
@@ -54,7 +60,7 @@ export default class Tesla extends Tower {
 
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
             
-            // enemy.slow(.2)
+            enemy.slow(this.slowPower)
             this.currentTargets.push(enemy)
             
         }

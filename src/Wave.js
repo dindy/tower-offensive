@@ -4,7 +4,7 @@ import { randomBetween, randomSign } from './utilities'
 export default class Wave {
 
     // Average delay between two enemies
-    spawningFrequency = 600 // ms
+    spawningFrequency = 700 // ms
 
     // Randomized delay between two enemies (recalcualte for each enemy)
     randomSpawningFrequency = this.spawningFrequency
@@ -13,7 +13,7 @@ export default class Wave {
 
     spawnedEnemiesCount = 0
 
-    initialDelay = 5000 // ms
+    initialDelay = 500 // ms
     
     initialTimer = 0    
 
@@ -26,7 +26,7 @@ export default class Wave {
         this.difficulty = difficulty
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = this.difficulty * 50 
+        this.nbEnemies = this.difficulty * 15 
         
     }
 
@@ -87,25 +87,27 @@ export default class Wave {
      * Créer un nouvelle enemy et le positione de façon aléatoire sur la ligne de départ
      */
     createEnemy() {
-
-        const enemy = new Enemy(this.level)
         
+        let offset, x, y
+        const map = this.level.config.map
+        const cellSize = this.level.game.scene.cellSize
+
         // Récupérer les coordonnées de la 1ère cell du path
-        const firstCell = this.level.game.scene.gridCells[this.level.config.map.path[0]]
-        const secondCell = this.level.game.scene.gridCells[this.level.config.map.path[1]]
+        const firstCell = this.level.game.scene.gridCells[map.path[0]]
+        const secondCell = this.level.game.scene.gridCells[map.path[1]]
 
         // Déterminer une position aléatoire de départ
-        enemy.offset = (Math.random() * (this.level.game.scene.cellSize - enemy.width)) + enemy.width / 2
+        offset = (Math.random() * (cellSize - Enemy.width)) + Enemy.width / 2
         
         if(firstCell.column === secondCell.column) {
-            enemy.x = Math.floor(enemy.offset) + firstCell.coords.xMin
-            enemy.y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
+            x = Math.floor(offset) + firstCell.coords.xMin
+            y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
         } else if (firstCell.row === secondCell.row) {
-            enemy.y = Math.floor(enemy.offset) + firstCell.coords.yMin
-            enemy.x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
+            y = Math.floor(offset) + firstCell.coords.yMin
+            x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
         }
 
-        return enemy
+        return new Enemy(this.level, x, y, offset)
     }
 
     isFinished() {

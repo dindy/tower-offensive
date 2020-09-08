@@ -9,6 +9,7 @@ import {
     getProjectionPoint,
     getIntersectionPoint,
     randomBetween,
+    addToPoint,
 } from './utilities'
 
 /**
@@ -34,11 +35,6 @@ export default class Lightning {
             let segmentTargetPoint
             const randomAngleVariation = randomBetween(-30, 30)
             const projectionDistance = 500
-            
-            const addToPoint = (p1, p2) => ({ 
-                x: p1.x + p2.x, 
-                y: p1.y + p2.y, 
-            }) 
 
             // Creer les points de references
             const centerProjectionPoint = getProjectionPoint(segmentLength * k + 1, arcAngle)

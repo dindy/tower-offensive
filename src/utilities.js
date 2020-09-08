@@ -1,3 +1,5 @@
+import Victor from "victor"
+
 
 /**
  * Génere une courbe de bezier en fonction de 3 point de controle et retourne la position sur cette courbe en fonction de T
@@ -275,4 +277,59 @@ export function getIntersectionPoint(x1, y1, x2, y2, x3, y3, x4, y4) {
     let y = y1 + ua * (y2 - y1)
 
     return {x, y}
+}
+
+export function addToPoint(p1, p2) {
+    return {
+        x: p1.x + p2.x, 
+        y: p1.y + p2.y
+    } 
+}
+
+export function addProjectionPoint(coords, distance, angle) {
+    const pp = getProjectionPoint(distance, angle)
+    return addToPoint(coords, pp)
+}
+
+
+Victor.prototype.projectOnto = function(v2) {
+    var coeff = ( (this.x * v2.x) + (this.y * v2.y) ) / ( (v2.x * v2.x) + (v2.y * v2.y) )
+    this.x = coeff * v2.x
+    this.y = coeff * v2.y
+    return this
+} 
+
+// export function getScalarProjectionPoint(po, ao, bo) {
+//     //console.log("before victor",p,a,b);
+
+//     //Point d'origine du segment
+//     const a = new Victor(ao.x, ao.y)
+//     //Point de destination du segment
+//     const b = new Victor(bo.x, bo.y)
+//     //Projection de la position de l'enemy
+//     const p = new Victor(po.x, po.y)//.subtract(a)
+    
+//     //Vecteur representant le segment
+//     let ab = b.clone().subtract(a)
+    
+//     // {x:?? + a.x, y: ?? + a.y}
+//     return p.projectOnto(ab).add(a).toObject()
+// }
+
+export function getScalarProjectionPoint(ao, po, bo) {
+
+    //Point d'origine du segment
+    const a = new Victor(ao.x, ao.y)
+
+    //Point de destination du segment
+    const b = new Victor(bo.x, bo.y)
+    
+    //Projection de la position de l'enemy
+    const p = new Victor(po.x, po.y).subtract(a)
+    
+    //Vecteur representant le segment
+    let ab = b.clone().subtract(a)
+    
+    // {x:?? + a.x, y: ?? + a.y}
+    return p.clone().projectOnto(ab).add(a).toObject()
 }

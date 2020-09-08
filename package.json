@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-class-properties": "^7.10.4",
-    "babel-polyfill": "^6.26.0"
+    "babel-polyfill": "^6.26.0",
+    "victor": "^1.1.0"
   }
 }
