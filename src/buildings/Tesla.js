@@ -59,7 +59,12 @@ export default class Tesla extends Tower {
             const originCoords = this.getMiddleCoords()
 
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
-            
+            if(this.currentTargets.length > 0 && getDistance(
+                this.currentTargets[this.currentTargets.length - 1].x, 
+                this.currentTargets[this.currentTargets.length - 1].y,
+                targetCoords.x,
+                targetCoords.y
+            ) > 150) return
             enemy.slow(this.slowPower)
             this.currentTargets.push(enemy)
             
@@ -73,7 +78,6 @@ export default class Tesla extends Tower {
 
     renderAttack(layer, diffTimestamp) {
         if(this.canLight && this.currentTargets.length > 0) this.lightning.render(layer, diffTimestamp)
-        
     }
 
     update(diffTimestamp) {
