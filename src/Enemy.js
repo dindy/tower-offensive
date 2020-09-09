@@ -33,6 +33,7 @@ export default class Enemy {
 
     static id = 0
     static width = 16
+    static healthMax = 15
     
     pathSegments = []
 
@@ -50,10 +51,10 @@ export default class Enemy {
         this.x = x
         this.y = y
 
-        this.width = this.constructor.width
+        this.width = Enemy.width
         this.height = this.width
         
-        this.health = 15
+        this.health = Enemy.healthMax
 
         // Objet level auquel appartient l'enemy
         this.level = level
@@ -334,6 +335,8 @@ export default class Enemy {
             // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
             const x = Math.round(this.x)
             const y = Math.round(this.y)
+            const w = this.width
+            const h = this.height
 
             // Render image   
             if (this.isTurning || this.hasTurned) this.sprite.setState(this.currentDirection)
@@ -342,7 +345,28 @@ export default class Enemy {
             layer.translate(x, y)
             layer.drawImage(this.image, ...this.sprite.getCurrent())
             layer.setTransform(1, 0, 0, 1, 0, 0);
+            
+            if(this.health !== this.constructor.healthMax){
 
+                const healthWidth = w
+                const healthHeight = h / 6
+                const healthX = x - (w / 2)
+                const healthY = y - (h / 2) - 5
+    
+                layer.beginPath()
+                layer.rect(healthX, healthY, healthWidth, healthHeight)
+                layer.fillStyle = "green"
+                layer.fill()
+                
+                const lostHealth = Enemy.healthMax - this.health
+                const lostHealthWidth = (w * lostHealth) / Enemy.healthMax
+                
+                layer.beginPath()
+                layer.rect(healthX + (healthWidth - lostHealthWidth), healthY, lostHealthWidth, healthHeight)
+                layer.fillStyle = "red"
+                layer.fill()
+
+            }
             // Render simple drawing
             // layer.beginPath()
             // layer.rect(x, y, this.width, this.height)
