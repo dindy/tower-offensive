@@ -29,19 +29,20 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``C`` 🐞 Les projectiles ne devraient pas être masqués par les batiments
 1. ✔️ ``I`` 🌟 Créer un nouveau type de tour "sniper"
 1. ❌ ``J`` 🌟 Créer un nouveau type de tour "mortier"
-1. ❌ ``K`` 🌟 Créer un nouveau type de tour "balles téléguidées"
+1. ✔️ ``K`` 🌟 Créer un nouveau type de tour "balles téléguidées"
 1. ✔️ ``L`` 🌟 Enchainer les vagues du level
 1. ✔️ ``D`` 🌟 Rendre les tours sélectionnables pour afficher leur portée sur la map
 1. ❌ ``E`` 📖 Trouver un meilleur nom au jeu
-1. 🔨 ``F`` 📢 Rédiger une courte présentation du jeu
+1. ✔️ ``F`` 📢 Rédiger une courte présentation du jeu
 1. ❌ ``G`` 🎨 Créer un logo pour le jeu
 1. ✔️ ``H`` ⚡️⚙️ Supprimer EaselJS
 1. ✔️ ``M`` 🌟 Implémenter le zoom 
 1. ❌ ``N`` 🎨 Séparer la flamme du canon dans les sprites 
 1. ✔️ ``O`` 🌟 Les ennemis peuvent voler de la valeur 0
 1. ✔️ ``P`` 🌟 Les eclairs secondaires ne peuvent pas s'éloigner trop de l'éclair principale
+1. ✔️ ``Q`` 🌟 Adapter la vitesse d'animation des enemy a leur vitesse de déplacement
 
-**Prochain code** : ``Q``
+**Prochain code** : ``R``
 
 | Emoji | Type de tache |
 |---|---|

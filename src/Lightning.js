@@ -125,7 +125,7 @@ export default class Lightning {
             
             let arc = null
 
-            if (existingPair.length !== 0 && existingPair[0].timer < 50) {
+            if (existingPair.length !== 0 && existingPair[0].timer < 80) {
                 arc = this.updateArcExtremities(existingPair[0], arcOrigin, arcTarget)
             } else {
                 arc = this.createArc(arcOrigin, arcTarget)                
