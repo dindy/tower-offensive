@@ -64,7 +64,7 @@ export default class Tesla extends Tower {
                 this.currentTargets[this.currentTargets.length - 1].y,
                 targetCoords.x,
                 targetCoords.y
-            ) > 150) return
+            ) > 100) return
             enemy.slow(this.slowPower)
             this.currentTargets.push(enemy)
             
