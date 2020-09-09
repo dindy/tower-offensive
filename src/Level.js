@@ -278,8 +278,20 @@ export default class Level {
 
         this.renderTowers(diffTimestamp)
 
-        this.renderExplosions(diffTimestamp)
+        this.renderTowersCannon(diffTimestamp)
         
+        this.renderTowersAttack(diffTimestamp)
+
+        this.renderExplosions(diffTimestamp)
+    }
+
+    renderTowersCannon(diffTimestamp) {
+        
+        for (let i = 0; i < this.towers.length; i++) {
+            const tower = this.towers[i] 
+            if (typeof tower.renderCannon === 'function')
+                tower.renderCannon(this.game.scene.dynamicLayer, diffTimestamp)
+        }
     }
 
     renderExplosions(diffTimestamp) {
@@ -290,8 +302,11 @@ export default class Level {
     }
 
     renderEnemies(diffTimestamp) {
-        for (let i = 0; i < this.enemies.length; i++) {
-            const enemy = this.enemies[i];
+        
+        const enemies = this.enemies.sort((a, b) => a.y > b.y)
+
+        for (let i = 0; i < enemies.length; i++) {
+            const enemy = enemies[i];
             enemy.render(this.game.scene.dynamicLayer, diffTimestamp)
         }
     }
@@ -304,6 +319,12 @@ export default class Level {
     renderTowers(diffTimestamp) {
         for (let i = 0; i < this.towers.length; i++) {
             this.towers[i].render(this.game.scene.dynamicLayer, diffTimestamp)
+        }
+    }
+    
+    renderTowersAttack(diffTimestamp) {
+        for (let i = 0; i < this.towers.length; i++) {
+            this.towers[i].renderAttack(this.game.scene.dynamicLayer, diffTimestamp)
         }
     }
 

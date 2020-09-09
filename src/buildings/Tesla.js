@@ -69,7 +69,9 @@ export default class Tesla extends Tower {
 
     render(layer, diffTimestamp) {
         super.render(layer, diffTimestamp)
-        
+    }
+
+    renderAttack(layer, diffTimestamp) {
         if(this.canLight && this.currentTargets.length > 0) this.lightning.render(layer, diffTimestamp)
         
     }

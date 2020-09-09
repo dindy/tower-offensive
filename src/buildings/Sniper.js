@@ -51,6 +51,11 @@ export default class Sniper extends TowerCannon {
 
         super.render(layer, diffTimestamp)
 
+        
+    }
+
+    renderAttack(layer, diffTimestamp) {
+        
         // Si pas de cible visée, il n'y a rien à animer
         if (this.lastShotTargetPosition === null) return
 
@@ -68,11 +73,6 @@ export default class Sniper extends TowerCannon {
             layer.strokeStyle = `rgba(255, 255, 255, ${ opacity }`
             layer.lineWidth = 2
             layer.stroke()
-            
-            // Render explosion
-            // if (this.getTimeSinceAnimationBeginning() < this.getTotalAnimationTime()) {
-            //     this.renderExplosion(layer)
-            // }   
         }
     }
 

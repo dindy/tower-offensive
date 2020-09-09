@@ -128,4 +128,8 @@ export default class Tower extends Building {
     render(layer, diffTimestamp) {
         super.render(layer, diffTimestamp)
     }
+
+    renderAttack(layer, diffTimestamp) {
+        // void
+    }
 }

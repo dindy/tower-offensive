@@ -66,11 +66,8 @@ export default class TowerCannon extends Tower {
      * @param {DOMElement} layer 
      */
     render(layer, diffTimestamp) {
-        super.render(layer, diffTimestamp)
-        this.renderCannon(layer, diffTimestamp)
-        for (let i = 0; i < this.bullets.length; i++) {
-            this.bullets[i].render(layer, diffTimestamp)
-        }        
+
+        super.render(layer, diffTimestamp) 
     }
 
     /**
@@ -257,7 +254,7 @@ export default class TowerCannon extends Tower {
      * Rendu des balles tirées par la tower
      * @param {DOMElement} layer 
      */
-    renderBullets(layer, diffTimestamp) {
+    renderAttack(layer, diffTimestamp) {
 
         for (let i = 0; i < this.bullets.length; i++) {
             const bullet = this.bullets[i];
