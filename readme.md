@@ -65,6 +65,10 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 
 ---
 
+## UI WIP 
+
+- https://www.figma.com/file/UE7hejmb8fQTLWHBdpAXWi/Untitled?node-id=1%3A28
+
 ## Idées gameplay
 
 - Laisser un délai entre 2 vagues
