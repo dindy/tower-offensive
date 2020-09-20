@@ -1,5 +1,6 @@
 import config from './config.json'
 import Game from './Game'
+import { getDistance, radiansToDegrees, getProjectionPoint, degreesToRadians } from './utilities'
 
 /**
  * Continer les Classe et id des différent élement HTML
@@ -67,6 +68,7 @@ const DOMConfig = {
     },
     icons: {
         towerBasic: 'sprite-tower-basic-icon',
+        towerMortar: 'sprite-tower-basic-icon',
         towerRocket: 'sprite-tower-rocket-icon',
         towerSniper: 'sprite-tower-sniper-icon',
         towerSeeker: 'sprite-tower-seeker-icon',

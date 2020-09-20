@@ -217,6 +217,17 @@ export function degreesToRadians(a) {
 }
 
 /**
+ * Convertit un angle en radians vers un angle en degrés
+ * @param {numeric} a 
+ * @returns {numeric} Angle in degrees
+ */
+export function radiansToDegrees(radians)
+{
+  var pi = Math.PI;
+  return radians * (180/pi)
+}
+
+/**
  * Returns a pseudo random integer between min and max
  * @param {Numeric} min 
  * @param {Numeric} max 

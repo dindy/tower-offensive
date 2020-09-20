@@ -1,6 +1,5 @@
-import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from './utilities'
-import SpriteNew from "./Sprite"
-import SmallExplosion from './explosions/SmallExplosion'
+import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from '../utilities'
+import SmallExplosion from '../explosions/SmallExplosion'
 
 export default class Bullet {
 

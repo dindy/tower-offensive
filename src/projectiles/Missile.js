@@ -1,5 +1,5 @@
-import Sprite from './Sprite.js'
-import BigExplosion from './explosions/BigExplosion.js'
+import Sprite from '../Sprite.js'
+import BigExplosion from '../explosions/BigExplosion.js'
 import { 
     getPositionOnLine, 
     rectangleIntersectsRectangle, 
@@ -8,7 +8,7 @@ import {
     angleDifference,
     angleDirection,
     getProjectionPoint
-} from './utilities'
+} from '../utilities'
 
 export default class Missile {
     

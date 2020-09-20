@@ -1,5 +1,5 @@
 import TowerCannon from "./TowerCannon"
-import Missile from "../Missile"
+import Missile from "../projectiles/Missile"
 import Sprite from "../Sprite"
 
 export default class Seeker extends TowerCannon {

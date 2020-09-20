@@ -270,11 +270,11 @@ export default class Level {
      */
     render(diffTimestamp) {
 
-        this.renderEnemies(diffTimestamp)
-        
+        this.renderTowersRanges()
+
         this.renderPlacingBuilding()
         
-        this.renderTowersRanges()
+        this.renderEnemies(diffTimestamp)
 
         this.renderTowers(diffTimestamp)
 

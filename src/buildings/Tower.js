@@ -14,7 +14,7 @@ export default class Tower extends Building {
      * 
      * @param {Instance} level - L'instance en cours de la class Level
      */
-    constructor(level, range,) {
+    constructor(level, range) {
         
         super(level)
 
@@ -105,11 +105,25 @@ export default class Tower extends Building {
         if (this.highlightedRange) {
             layer.beginPath()
             layer.arc(this.rangeShapeCoords.x, this.rangeShapeCoords.y, this.range, 0, 2 * Math.PI)
+            layer.lineWidth = 2
             layer.fillStyle = "rgba(200, 200, 200, 0.5)"
             layer.strokeStyle = "rgba(200, 200, 200, 0.8)"
             layer.fill()
             layer.stroke()
-
+            
+            if(typeof this.minRange !== "undefinded") {
+                layer.globalCompositeOperation = 'destination-out'
+                layer.beginPath()
+                layer.arc(this.rangeShapeCoords.x, this.rangeShapeCoords.y, this.minRange, 0, 2 * Math.PI)
+                layer.fillStyle = "rgba(245, 90, 70, 1)"
+                layer.strokeStyle = "rgba(200, 200, 200, 0.8)"
+                layer.fill()
+                layer.globalCompositeOperation = 'source-over'
+                layer.beginPath()
+                layer.arc(this.rangeShapeCoords.x, this.rangeShapeCoords.y, this.minRange, 0, 2 * Math.PI)
+                layer.strokeStyle = "rgba(200, 200, 200, 0.8)"
+                layer.stroke()
+            }
             // Nettoie la zone de la cellule du batiment pour donner l'impression
             // que la forme de la range est en dessous de la tower
             // @todo Dynamically determines the zone

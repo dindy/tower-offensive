@@ -1,5 +1,5 @@
 import TowerCannon from "./TowerCannon"
-import Bullet from "../Bullet"
+import Bullet from "../projectiles/Bullet"
 import Sprite from "../Sprite"
 
 export default class Basic extends TowerCannon {
