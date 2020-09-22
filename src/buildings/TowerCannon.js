@@ -99,7 +99,7 @@ export default class TowerCannon extends Tower {
 
                 // On met à jour les infos de l'ennemi courant
                 this.currentTarget = enemy
-                this.currentTargetPosition = enemy.getCoords()
+                this.currentTargetPosition = enemy.getMiddleCoords()
                 
                 // Pas besoin de parcourir les autres ennemis
                 return

@@ -46,28 +46,34 @@ export default class Tesla extends Tower {
             }
             return
         }
-        
         for (let i = 0; i < this.nbTargetsMax; i++) {
-            
             const enemy = (i === 0) ? 
                 this.level.getCloserEnemyInRange(this.range, this.getMiddleCoords())
                 : this.level.getCloserEnemyFromEnemy(this.currentTargets)
             
             if (enemy === null) return
-
-            const targetCoords = enemy.getCoords()
+            
+            const targetCoords = enemy.getMiddleCoords()
             const originCoords = this.getMiddleCoords()
-
+            
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
-            if(this.currentTargets.length > 0 && getDistance(
-                this.currentTargets[this.currentTargets.length - 1].x, 
-                this.currentTargets[this.currentTargets.length - 1].y,
-                targetCoords.x,
-                targetCoords.y
-            ) > 100) return
+            
+            if (this.currentTargets.length > 0) {
+                
+                const lastCurrentTargetCoords = this.currentTargets[this.currentTargets.length - 1].getMiddleCoords() 
+                
+                if (getDistance(
+                    lastCurrentTargetCoords.x, 
+                    lastCurrentTargetCoords.y,
+                    targetCoords.x,
+                    targetCoords.y
+                ) > 100) return
+            }
+
             enemy.slow(this.slowPower)
             this.currentTargets.push(enemy)
-            
+                
+                
         }
         // this.currentTargets = currentTargets
     }
@@ -85,7 +91,7 @@ export default class Tesla extends Tower {
         
         this.updateTimer(diffTimestamp)
         this.updateTargets()
-        const targetsCoords = this.currentTargets.map(target => ({ coords: target.getCoords(), id: target.id }))
+        const targetsCoords = this.currentTargets.map(target => ({ coords: target.getMiddleCoords(), id: target.id }))
         this.lightning.update(targetsCoords, diffTimestamp)
     }
 

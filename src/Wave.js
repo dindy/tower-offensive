@@ -88,7 +88,7 @@ export default class Wave {
      */
     createEnemy() {
         
-        let offset, x, y
+        let x, y
         const map = this.level.config.map
         const cellSize = this.level.game.scene.cellSize
 
@@ -96,14 +96,23 @@ export default class Wave {
         const firstCell = this.level.game.scene.gridCells[map.path[0]]
         const secondCell = this.level.game.scene.gridCells[map.path[1]]
 
-        // Déterminer une position aléatoire de départ
-        offset = (Math.random() * (cellSize - Enemy.width)) + Enemy.width / 2
+        // Déterminer une position (centrale) aléatoire de départ entre 0 et largeur de la cellule - 1/2 de enemy 
+        // (pour pas que l'enemy sorte du chemin)
+        const limit = Math.random() * (cellSize - Enemy.width) + Enemy.width / 2
+        // Transforme la position central en une position top left
+        const offset = limit - Enemy.width / 2
         
+        // Si on est sur la même colonne (on descend depuis tout en haut ou on monte depuis tout en bas)
         if(firstCell.column === secondCell.column) {
+            // On part de la gauche de la 1ère cellule + l'offset
             x = Math.floor(offset) + firstCell.coords.xMin
+            // On part d'en haut ou d'en bas de la map (déterminé en fonction de yMin de la 1ère cellule)
             y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
+            // Si on est sur la même ligne (on va à droite depuis la gauche de la map ou on va à gauche depuis la droite de la map)
         } else if (firstCell.row === secondCell.row) {
+            // On part du haut de la 1ère cellule + l'offset
             y = Math.floor(offset) + firstCell.coords.yMin
+            // On part de la gauche ou la droite de la map (déterminé en fonction de xMin de la 1ère cellule)
             x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
         }
 

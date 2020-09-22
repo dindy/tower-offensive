@@ -84,7 +84,7 @@ export default class Tower extends Building {
      * @returns {boolean}
      */
     isInRange(enemy) {
-        return pointIntersectsCircle(enemy, this.rangeShapeCoords, this.range)
+        return pointIntersectsCircle(enemy.getMiddleCoords(), this.rangeShapeCoords, this.range)
     }
 
     /**
@@ -111,7 +111,7 @@ export default class Tower extends Building {
             layer.fill()
             layer.stroke()
             
-            if(typeof this.minRange !== "undefinded") {
+            if(typeof this.minRange !== "undefined") {
                 layer.globalCompositeOperation = 'destination-out'
                 layer.beginPath()
                 layer.arc(this.rangeShapeCoords.x, this.rangeShapeCoords.y, this.minRange, 0, 2 * Math.PI)

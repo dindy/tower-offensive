@@ -16,7 +16,7 @@ export default class Bullet {
         this.originPoint = tower.getMiddleCoords()
 
         // Coordonnées de l'enemy
-        this.targetPoint = enemy.getCoords()
+        this.targetPoint = enemy.getMiddleCoords()
         
         this.speed = speed // px/ms
         

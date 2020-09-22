@@ -1,33 +1,6 @@
 import * as util from "./utilities"
 import Sprite from './Sprite'
-import Victor from "victor"
-
-/*
-1- generer le tracé du path + radius
-2- Velocity
-3- une force qui l'empeche de sortir du radius
-4- Une force qui l'empeche de s'approcher des enemy
-
-
-enemy => coords actuelle
-      => vitesse
-      => angle
-
-On veut savoir les prochaine coordonnées
-verifier quelles sont toujours dans le radius
-si oui continue
-si non :
-    
-PVector scalarProjection(PVector p, PVector a, PVector b) {
-  PVector ap = PVector.sub(p, a);
-  PVector ab = PVector.sub(b, a);
-  ab.normalize(); // Normalize the line
-  ab.mult(ap.dot(ab));
-  PVector normalPoint = PVector.add(a, ab);
-  return normalPoint;
-}
-
-*/
+import * as traits from './traits'
 
 export default class Enemy {
 
@@ -47,13 +20,15 @@ export default class Enemy {
 
         this.id = Enemy.id
 
-        // Center point is the reference for enemy
-        this.x = x
-        this.y = y
+        super.getBoundingBox = traits.getBoundingBox
+        super.getMiddleCoords = traits.getMiddleCoords
 
         this.width = Enemy.width
         this.height = this.width
         
+        // Top left is the reference for enemy
+        this.x = x
+        this.y = y
         this.health = Enemy.healthMax
 
         // Objet level auquel appartient l'enemy
@@ -139,7 +114,7 @@ export default class Enemy {
     }
 
     getPredictedPosition() {
-        const point = util.addProjectionPoint(this.getCoords(), 25, this.angle)
+        const point = util.addProjectionPoint(this.getMiddleCoords(), 25, this.angle)
         this.p = point
         return point        
     }
@@ -178,9 +153,8 @@ export default class Enemy {
         }
         const distance = this.speed * diffTimestamp
         const newPosition = util.getProjectionPoint(distance, this.angle)
-        this.x += newPosition.x
+        this.x += newPosition.x 
         this.y += newPosition.y
-        
     }
 
     // Find next segment index (sauf pour le dernier...)
@@ -270,13 +244,15 @@ export default class Enemy {
         // On ajoute une valeur à la projection scalaire sur le segment actuel 
         const spProj = util.addProjectionPoint(this.sp, 25, projAngle)
         this.spProj = spProj
-            
+        
         // Check si l'enemy reste dans le radius
+        const {x, y} = this.getMiddleCoords()
+        
         if (segmentDistance < this.pathRadius) {
-            const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
+            const newAngle = util.angle(x, y, spProj.x, spProj.y)
             this.moveToward(newAngle, diffTimestamp)
         } else {
-            const newAngle = util.angle(this.x, this.y, spProj.x, spProj.y)
+            const newAngle = util.angle(x, y, spProj.x, spProj.y)
             this.moveToward(newAngle, diffTimestamp)
         }
     }
@@ -333,8 +309,9 @@ export default class Enemy {
             
             // Get new enemy position
             // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
-            const x = Math.round(this.x)
-            const y = Math.round(this.y)
+            const middleCoords = this.getMiddleCoords()
+            const x = Math.round(middleCoords.x)
+            const y = Math.round(middleCoords.y)
             const w = this.width
             const h = this.height
 
@@ -367,63 +344,18 @@ export default class Enemy {
                 layer.fill()
 
             }
-            // Render simple drawing
-            // layer.beginPath()
-            // layer.rect(x, y, this.width, this.height)
-            // layer.fillStyle = "red"
-            // layer.fill()
-
-            // Debug bounding box
-            // if (this.isHighlighted) {
-                // const bb = this.getBoundingBox()
-                // layer.beginPath()
-                // layer.rect(bb.xMin, bb.yMin, bb.xMax - bb.xMin, bb.yMax - bb.yMin)
-                // layer.strokeStyle = 'black'
-                // layer.stroke()
-
-            // }
-            // layer.beginPath()
-            // layer.moveTo(this.pathSegments[this.currentSegmentIndex][0].x, this.pathSegments[this.currentSegmentIndex][0].y)
-            // layer.lineTo(this.pathSegments[this.currentSegmentIndex][1].x, this.pathSegments[this.currentSegmentIndex][1].y)
-            // layer.stroke()
-            
-            // layer.beginPath()
-            // layer.arc(this.p.x, this.p.y, 3, 0, 2 * Math.PI)
-            // layer.fillStyle = "black"
-            // layer.fill()
-            // layer.beginPath()
-            // layer.arc(this.sp.x, this.sp.y, 3, 0, 2 * Math.PI)
-            // layer.fillStyle = "red"
-            // layer.fill()
-
-            // layer.beginPath()
-            // layer.arc(this.spProj.x, this.spProj.y, 3, 0, 2 * Math.PI)
-            // layer.fillStyle = "blue"
-            // layer.fill()
         }
     }
 
-    /**
-     * Retourne un objet contenant les coordonnées x et y
-     */
-    getCoords() {
-        return {
-            x : this.x,
-            y : this.y
-        }
-    }
-
-    /**
-     * Retourne un objet contenant les coordonnées des 4 coins du carré
-     */
-    getBoundingBox() {
-        return {
-            xMin: this.x - (this.width / 2),
-            xMax: this.x + (this.width / 2),
-            yMin: this.y - (this.height / 2),
-            yMax: this.y + (this.height / 2)
-        }
-    }
+    // /**
+    //  * Retourne un objet contenant les coordonnées x et y
+    //  */
+    // getMiddleCoords() {
+    //     return {
+    //         x : this.x,
+    //         y : this.y
+    //     }
+    // }
 
     /**
      * Met a jour la vie de l'enemy en fonction de dommage effectué et prépare le delet en cas de mort

@@ -37,7 +37,7 @@ export default class Sniper extends TowerCannon {
 
         super.shoot()
 
-        const enemyPosition = enemy.getCoords()
+        const enemyPosition = enemy.getMiddleCoords()
 
         this.lastShotTargetPosition = enemyPosition
 
