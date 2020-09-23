@@ -31,4 +31,63 @@ export default class Object extends Thing {
 
         this.position = Vector.add(this.position, vector)
     }    
+
+    /**
+     * Remplace la position par vector
+     * @param {*} vector 
+     */
+    setPosition(vector) {
+
+        this.position = vector
+    }
+
+    render(layer) {
+        this.renderBoundingBox(layer)
+        this.renderMiddlePosition(layer)
+        this.renderTopLeftPosition(layer)
+    }
+
+    /**
+     * Debug getBoundingBox
+     */
+    renderBoundingBox(layer) {
+
+        const bb = this.getBoundingBox()
+        const x = bb.xMin
+        const y = bb.yMin
+        const width = bb.xMax - bb.xMin
+        const height = bb.yMax - bb.yMin
+
+        layer.beginPath()
+        layer.rect(x, y, width, height)
+        layer.strokeStyle = 'red'
+        layer.strokeWidth = 1
+        layer.stroke()
+    }
+
+    /**
+    * Debug getMiddlePosition
+    */
+    renderMiddlePosition(layer) {
+
+        const {x, y} = this.getMiddlePosition()
+
+        layer.beginPath()
+        layer.arc(x, y, 2, 0, 2 * Math.PI)
+        layer.fillStyle = 'green'
+        layer.fill()
+    }
+
+    /**
+    * Debug getTopLeftPosition
+    */
+    renderTopLeftPosition(layer) {
+
+        const {x, y} = this.getTopLeftPosition()
+
+        layer.beginPath()
+        layer.arc(x, y, 2, 0, 2 * Math.PI)
+        layer.fillStyle = 'blue'
+        layer.fill()
+    }    
 }

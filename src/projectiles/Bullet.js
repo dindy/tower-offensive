@@ -1,7 +1,9 @@
 import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from '../utilities'
 import SmallExplosion from '../explosions/SmallExplosion'
+import Circle from "../abstract/Circle"
+import Vector from "../abstract/Vector"
 
-export default class Bullet {
+export default class Bullet extends Circle {
 
     /**
      * Constructor 
@@ -10,30 +12,35 @@ export default class Bullet {
      */
     constructor(tower, enemy, dammage, speed) {
 
+        // Le point d'origine de la balle est le centre de la tower
+        const originPoint = tower.getMiddleCoords() 
+        
+        // On crée le circle
+        super(originPoint.x, originPoint.y, 2)
+    
+        // On enregistre le point d'origine
+        this.originPosition = this.getMiddlePosition()
+
+        // Raccourci vers level
         this.level = tower.level
 
-        // Centre de La tour et point d'origine des balles
-        this.originPoint = tower.getMiddleCoords()
-
         // Coordonnées de l'enemy
-        this.targetPoint = enemy.getMiddlePosition()
+        this.targetPosition = enemy.getMiddlePosition()
         
+        // Vitesse de la balle
         this.speed = speed // px/ms
         
+        // Dommages causés par la balle
         this.dammage = dammage
         
-        this.radius = 2
-
-        this.coords = this.originPoint
-
-        this.previousCoords = this.originPoint
-
+        // La balle est à supprimer
         this.isDeleted = false
 
+        // La balle est dans les airs
         this.isInAir = true
 
         // Distance entre les coordonnées de départ et de destination en px
-        this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
+        this.distance = this.originPosition.getDistance(this.targetPosition) 
 
         // Rapport entre les coordonnées de depart et destination et la range de le tower
         this.coef = this.distance / tower.range
@@ -41,6 +48,7 @@ export default class Bullet {
         // Temps ecoulé depuis le debut de l'animation , ajouter timestamp a chaque update
         this.timeSpent = 0 
 
+        // Temps total de l'animation
         this.totalTime = tower.range / this.speed 
     }   
 
@@ -61,9 +69,9 @@ export default class Bullet {
         } 
 
         // Update les coordonnées de la balle
-        const lastCoords = getPositionOnLine(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y, t)
+        const lastCoords = getPositionOnLine(this.originPosition.x, this.originPosition.y, this.targetPosition.x, this.targetPosition.y, t)
         
-        this.coords = lastCoords
+        this.setPosition(new Vector(lastCoords.x, lastCoords.y))
     }
 
     /**
@@ -72,18 +80,23 @@ export default class Bullet {
      */
     update(diffTimestamp) {
         
+        // Si la balle est toujours en l'air
         if (this.isInAir) {
 
+            // On update sa position
             this.updateInAir(diffTimestamp)
             
+            // On détecte une éventuelle détection
             this.detectCollisions()    
-            
+        
+        // Sinon on doit forcément exploser (collision enemy ou fin de la range de tower)
         } else {
             
-            const explosion = new SmallExplosion(this.level, this.coords)
-                
+            // Sprite de l'explosion
+            const explosion = new SmallExplosion(this.level, this.getMiddlePosition())
             this.level.addExplosion(explosion)
 
+            // La balle peut être supprimée du jeu
             this.isDeleted = true
         }
     }
@@ -93,25 +106,20 @@ export default class Bullet {
      * @param {DOMElement} layer 
      */
     render(layer, diffTimestamp) {
+
         if (this.isInAir) {
+            const coords = this.getMiddlePosition()
             layer.beginPath()
-            layer.arc(this.coords.x, this.coords.y, this.radius, 0, 2 * Math.PI)
+            layer.arc(coords.x, coords.y, this.radius, 0, 2 * Math.PI)
             layer.fillStyle = "black"
             layer.fill()
         }
-    }
 
-    getBoundingBox() {
-        return {
-            xMin: this.coords.x - this.radius,
-            xMax: this.coords.x + this.radius,
-            yMin: this.coords.y - this.radius,
-            yMax: this.coords.y + this.radius,
-        }
+        super.render(layer, diffTimestamp)
     }
 
     /**
-     * Parcours les enemy et détect si il y a une collision, si True : appelle la methode HIT() de enemy
+     * Parcourt les enemies et détecte si il y a une collision, si True : appelle la methode HIT() de enemy
      */
     detectCollisions() {
 
@@ -124,8 +132,8 @@ export default class Bullet {
             const isInside = (point, box) => {
                 return point.x > box.xMin && point.x < box.xMax && point.y > box.yMin && point.y < box.yMax
             }
-
-            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox) || isInside(this.coords, enemyBoundingBox) ) {
+            const coords = this.getMiddlePosition()
+            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox) || isInside(coords, enemyBoundingBox) ) {
                 this.isInAir = false
                 enemy.hit(this.dammage)
                 return

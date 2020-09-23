@@ -343,6 +343,8 @@ export default class Enemy extends Rectangle {
 
             }
         }
+        
+        super.render(layer, diffTimestamp)
     }
 
     /**
