@@ -1,5 +1,6 @@
 import Thing from './Thing'
 import Vector from './Vector'
+import Box from './Box'
 
 /**
  * Une chose qui possède une position dans l'espace
@@ -8,6 +9,7 @@ export default class Object extends Thing {
 
     /**
      * Vecteur représentant la position de l'objet
+     * @type {Vector}
      */
     position = null
 
@@ -41,6 +43,16 @@ export default class Object extends Thing {
         this.position = vector
     }
 
+
+    intersectsBox(box) {
+        return Box.bordersIntersect(this.getBoundingBox(), box) 
+            || Box.middleIsInside(this.getMiddlePosition(), box)
+    }
+
+    /**
+     * Useful to debug
+     * @param {Context} layer 
+     */
     render(layer) {
         this.renderBoundingBox(layer)
         this.renderMiddlePosition(layer)

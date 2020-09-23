@@ -1,6 +1,6 @@
 import Object from './Object'
 import Vector from './Vector'
-import BoundingBox from './BoundingBox'
+import Box from './Box'
 
 export default class Rectangle extends Object {
 
@@ -31,11 +31,11 @@ export default class Rectangle extends Object {
     }
 
     /**
-     * @return {BoundingBox}
+     * @return {Box}
      */
     getBoundingBox() {
 
-        return new BoundingBox(this.position, this.width, this.height)    
+        return new Box(this.position, this.width, this.height)    
     }
 
     /**

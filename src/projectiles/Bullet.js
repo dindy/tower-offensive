@@ -19,13 +19,13 @@ export default class Bullet extends Circle {
         super(originPoint.x, originPoint.y, 2)
     
         // On enregistre le point d'origine
-        this.originPosition = this.getMiddlePosition()
+        this.originPosition = this.getMiddlePosition() // Vector
 
         // Raccourci vers level
         this.level = tower.level
 
         // Coordonnées de l'enemy
-        this.targetPosition = enemy.getMiddlePosition()
+        this.targetPosition = enemy.getMiddlePosition() // Vector
         
         // Vitesse de la balle
         this.speed = speed // px/ms
@@ -125,20 +125,14 @@ export default class Bullet extends Circle {
 
         for (let i = 0; i < this.level.enemies.length; i++){
 
-            let enemy = this.level.enemies[i]
+            const enemy = this.level.enemies[i]
             const enemyBoundingBox = enemy.getBoundingBox()
-            const bulletBoundingBox = this.getBoundingBox()
-
-            const isInside = (point, box) => {
-                return point.x > box.xMin && point.x < box.xMax && point.y > box.yMin && point.y < box.yMax
-            }
-            const coords = this.getMiddlePosition()
-            if (rectangleIntersectsRectangle(bulletBoundingBox, enemyBoundingBox) || isInside(coords, enemyBoundingBox) ) {
+            
+            if (this.intersectsBox(enemyBoundingBox)) {
                 this.isInAir = false
                 enemy.hit(this.dammage)
-                return
+                return                
             }
-
         }
     }
 
