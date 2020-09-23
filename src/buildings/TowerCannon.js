@@ -99,8 +99,7 @@ export default class TowerCannon extends Tower {
 
                 // On met à jour les infos de l'ennemi courant
                 this.currentTarget = enemy
-                this.currentTargetPosition = enemy.getMiddleCoords()
-                
+                this.currentTargetPosition = enemy.getMiddlePosition()
                 // Pas besoin de parcourir les autres ennemis
                 return
             }
@@ -164,7 +163,8 @@ export default class TowerCannon extends Tower {
             const middleCoords = this.getMiddleCoords()
 
             // On calcule l'angle de la cible par rapport aux coordonnées de la tour
-            const targetAngle = angle(middleCoords.x, middleCoords.y, this.currentTarget.x, this.currentTarget.y)
+            const currentTargetCoords = this.currentTarget.getMiddlePosition()
+            const targetAngle = angle(middleCoords.x, middleCoords.y, currentTargetCoords.x, currentTargetCoords.y)
             
             // On calcule la différence d'angle entre l'angle du cannon et celui nécessaire pour atteindre la cible 
             // sur une échelle de [0, 180]

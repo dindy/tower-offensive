@@ -53,14 +53,13 @@ export default class Tesla extends Tower {
             
             if (enemy === null) return
             
-            const targetCoords = enemy.getMiddleCoords()
+            const targetCoords = enemy.getMiddlePosition()
             const originCoords = this.getMiddleCoords()
-            
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
             
             if (this.currentTargets.length > 0) {
                 
-                const lastCurrentTargetCoords = this.currentTargets[this.currentTargets.length - 1].getMiddleCoords() 
+                const lastCurrentTargetCoords = this.currentTargets[this.currentTargets.length - 1].getMiddlePosition() 
                 
                 if (getDistance(
                     lastCurrentTargetCoords.x, 
@@ -91,7 +90,7 @@ export default class Tesla extends Tower {
         
         this.updateTimer(diffTimestamp)
         this.updateTargets()
-        const targetsCoords = this.currentTargets.map(target => ({ coords: target.getMiddleCoords(), id: target.id }))
+        const targetsCoords = this.currentTargets.map(target => ({ coords: target.getMiddlePosition(), id: target.id }))
         this.lightning.update(targetsCoords, diffTimestamp)
     }
 

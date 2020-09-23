@@ -125,20 +125,20 @@ export default class Level {
     getCloserEnemyInRange(range, coords) {
         let enemy = this.getCloserEnemy(coords)
         if(enemy === null) return null
-        const enemyCoords = enemy.getMiddleCoords()
+        const enemyCoords = enemy.getMiddlePosition()
         let distance = getDistance(coords.x, coords.y, enemyCoords.x, enemyCoords.y)
         return (distance <= range) ? enemy : null
     }
 
     getCloserEnemyFromEnemy(enemies) {
-        const originEnemy = enemies[enemies.length - 1].getMiddleCoords()
+        const originEnemy = enemies[enemies.length - 1].getMiddlePosition()
         const enemiesIds = enemies.map(enemy => enemy.id)
         
         let closerDistance = null, closerEnemy = null
         
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i];
-            const enemyCoords = enemy.getMiddleCoords()
+            const enemyCoords = enemy.getMiddlePosition()
             
             if (enemiesIds.includes(enemy.id)) continue
 
@@ -159,7 +159,7 @@ export default class Level {
         
         for (let i = 0; i < this.enemies.length; i++) {
             const enemy = this.enemies[i]
-            const enemyPosition = enemy.getMiddleCoords()
+            const enemyPosition = enemy.getMiddlePosition()
             const distance = getDistance(coords.x, coords.y, enemyPosition.x, enemyPosition.y)
             
             if (closerDistance === null || distance < closerDistance) {
@@ -301,7 +301,11 @@ export default class Level {
 
     renderEnemies(diffTimestamp) {
         
-        const enemies = this.enemies.sort((a, b) => a.y > b.y)
+        const enemies = this.enemies.sort((a, b) => {
+            const aVector = a.getMiddlePosition()
+            const bVector = b.getMiddlePosition()
+            return aVector.y > bVector.y
+        })
 
         for (let i = 0; i < enemies.length; i++) {
             const enemy = enemies[i];

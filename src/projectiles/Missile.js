@@ -100,7 +100,7 @@ export default class Missile {
                 this.isInAir = Math.random() <= (1/20) ? false : true
                 
             } else {
-                this.targetPoint = closerEnemy.getMiddleCoords() 
+                this.targetPoint = closerEnemy.getMiddlePosition() 
             }
             
             //Update la target du missile
@@ -108,7 +108,7 @@ export default class Missile {
             
         } else {
             this.targetHasChanged = false
-            this.targetPoint = this.enemy.getMiddleCoords()
+            this.targetPoint = this.enemy.getMiddlePosition()
         }     
         
         if (this.enemy !== null) this.enemy.isHighlighted = true

@@ -31,6 +31,7 @@ export default class Mortar extends TowerCannon {
 
     isInRange(enemy) {
         const coords = this.getMiddleCoords()
-        return super.isInRange(enemy) && getDistance(enemy.x, enemy.y, coords.x, coords.y) > this.minRange
+        const enemyCoords = enemy.getMiddlePosition()
+        return super.isInRange(enemy) && getDistance(enemyCoords.x, enemyCoords.y, coords.x, coords.y) > this.minRange
     }
 }

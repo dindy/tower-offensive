@@ -178,12 +178,15 @@ export function pointIntersectsCircle(point, circle, radius) {
  * @param {numeric} ey 
  * @returns {numeric} Angle en degrés
  */
-export function angle(cx, cy, ex, ey) {
+export function angle(cx, cy, ex, ey, convertToDegrees = true) {
+    
     var dy = ey - cy;
     var dx = ex - cx;
-    var theta = Math.atan2(dy, dx); // range (-PI, PI]
-    theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
-    if (theta < 0) theta = 360 + theta; // range [0, 360]
+    var theta = Math.atan2(dy, dx); // range [-PI, PI]
+    if (convertToDegrees === true) {
+        theta *= 180 / Math.PI; // rads to degs, range (-180, 180]
+        if (theta < 0) theta = 360 + theta; // range [0, 360]
+    }
     return theta;
   }
 

@@ -26,7 +26,7 @@ export default class Rocket {
         this.originPoint = tower.getMiddleCoords()
 
         // Coordonnées de l'enemy
-        this.targetPoint = enemy.getMiddleCoords()
+        this.targetPoint = enemy.getMiddlePosition()
         
         // Vitesse initiale de rocket
         this.speed = 80 // px/s
@@ -173,7 +173,7 @@ export default class Rocket {
         for (let i = 0; i < this.level.enemies.length; i++){
 
             let enemy = this.level.enemies[i]
-            const enemyCoords = enemy.getMiddleCoords()
+            const enemyCoords = enemy.getMiddlePosition()
 
             if (pointIntersectsCircle(enemyCoords, this.coords, this.radiusOfEffect)) {
                 enemy.hit(this.dammage)

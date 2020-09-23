@@ -116,7 +116,7 @@ export default class Wave {
             x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
         }
 
-        return new Enemy(this.level, x, y, offset)
+        return new Enemy(this.level, x, y)
     }
 
     isFinished() {

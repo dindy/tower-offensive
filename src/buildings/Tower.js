@@ -84,7 +84,7 @@ export default class Tower extends Building {
      * @returns {boolean}
      */
     isInRange(enemy) {
-        return pointIntersectsCircle(enemy.getMiddleCoords(), this.rangeShapeCoords, this.range)
+        return pointIntersectsCircle(enemy.getMiddlePosition(), this.rangeShapeCoords, this.range)
     }
 
     /**
