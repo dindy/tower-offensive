@@ -1,3 +1,6 @@
+import Circle from '../abstract/Circle'
+import Vector from '../abstract/Vector'
+
 import { 
     radiansToDegrees, 
     addToPoint, 
@@ -6,12 +9,15 @@ import {
     rectangleIntersectsRectangle, 
     angle, 
     getProjectionPoint,
-    pointIntersectsCircle 
+    pointIntersectsCircle, 
+    degreesToRadians
 } from '../utilities'
 
 import BigExplosion from '../explosions/BigExplosion'
 
-export default class Rocket {
+export default class Rocket extends Circle {
+
+    static radius = 2
 
     /**
      * Constructor 
@@ -20,31 +26,31 @@ export default class Rocket {
      */
     constructor(tower, enemy, dammage) {
 
+        // Centre de La tour et point d'origine des balles
+        const originPoint = tower.getMiddleCoords()
+        
+        // On crée le Circle
+        super(originPoint.x, originPoint.y, Rocket.radius)
+
+        // On met le point d'origine en mémoire
+        this.originPoint = this.getMiddlePosition() // Vector
+        
         this.level = tower.level
 
-        // Centre de La tour et point d'origine des balles
-        this.originPoint = tower.getMiddleCoords()
-
         // Coordonnées de l'enemy
-        this.targetPoint = enemy.getMiddlePosition()
+        this.targetPoint = Vector.createFrom(enemy.getMiddlePosition()) // Vector
         
         // Vitesse initiale de rocket
         this.speed = 80 // px/s
         
         // Constante gravitationelle du monde
-        this.gravity = 10 //px/s²
-        
-        // radius du projectile (graphisme)
-        this.radius = 2
+        this.gravity = 10 // px/s²
         
         // Dommage infligé par rocket
         this.dammage = dammage
 
         // Radius des dommages de l'explosion
         this.radiusOfEffect = 50
-
-        //Coordonnées de la rocket
-        this.coords = this.originPoint
 
         // Rocket doit être supprimé
         this.isDeleted = false
@@ -53,13 +59,13 @@ export default class Rocket {
         this.isInAir = true
 
         // Distance entre les coordonnées de départ et de destination en px
-        this.distance = getDistance(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y) 
+        this.distance = this.originPoint.getDistance(this.targetPoint) 
         
         // Angle vertical de rocket (0: parallèle au sol)
         this.firingAngle = null        
 
         // Angle horizontal du cannon
-        this.angle = angle(this.originPoint.x, this.originPoint.y, this.targetPoint.x, this.targetPoint.y)
+        this.angle = radiansToDegrees(this.originPoint.getAngle(this.targetPoint))
         
         // Temps ecoulé depuis le debut de l'animation, ajouter timestamp a chaque update
         this.timeSpent = 0 
@@ -77,7 +83,7 @@ export default class Rocket {
     setFiringAngle() {
 
         //Distance a parcourir // px
-        const x = getDistance(this.originPoint.x , this.originPoint.y, this.targetPoint.x, this.targetPoint.y)
+        const x = this.originPoint.getDistance(this.targetPoint)
         
         // Angle nécessaire pour atteindre la cible
         this.firingAngle = (1/2) * Math.asin((this.gravity * x) /  Math.pow(this.speed, 2))
@@ -97,17 +103,17 @@ export default class Rocket {
         const range = this.speed * Math.cos(this.firingAngle) * this.timeSpent
         
         // On met à jour les coordonnées de rocket en ajoutant la range à la position précédente
-        const projectionPoint = getProjectionPoint(range, this.angle)
-        this.coords = addToPoint(this.originPoint, projectionPoint)
-        
+        const newPosition = Vector.addPolarCoordinates(range, degreesToRadians(this.angle), this.originPoint) 
+        this.setPosition(newPosition)
+
         // On met à jour l'altitude de rocket
         // Y = altidude = Y0+V0*SIN(A)*T-G*T*(T/2) 
-        const gravLoss = 0.5 * (this.gravity * (this.timeSpent*this.timeSpent))
+        const gravLoss = 0.5 * (this.gravity * (this.timeSpent * this.timeSpent))
         const vacAltitude = Math.tan(this.firingAngle) * range
         this.altitude = vacAltitude - gravLoss
-        
+
         // Controle si rocket a touché le sol
-        const currentDistance = getDistance(this.originPoint.x , this.originPoint.y, this.coords.x, this.coords.y)
+        const currentDistance = this.originPoint.getDistance(this.getMiddlePosition())
         
         if ( currentDistance >= this.distance ) this.isInAir = false        
     }
@@ -131,7 +137,7 @@ export default class Rocket {
             this.hitEnemies()    
             
             // Créer une explosion
-            const explosion = new BigExplosion(this.level, this.coords)  
+            const explosion = new BigExplosion(this.level, this.getMiddlePosition())  
             this.level.addExplosion(explosion)
 
             // Le projectile est prés a être suprimé
@@ -145,24 +151,30 @@ export default class Rocket {
      */
     render(layer, diffTimestamp) {
 
+        // Debug target point
+        if (this.targetPoint !== null) {
+            layer.beginPath()
+            layer.arc(this.targetPoint.x, this.targetPoint.y,5,0,2*Math.PI)
+            layer.lineWidth = 1 
+            layer.strokeStyle = "blue" 
+            layer.fillStyle = "orange" 
+            layer.fill()    
+            layer.stroke()    
+        }
+
+        const coords = this.getMiddlePosition()
+
         // Calcule le radius de rocket en fonctin de l'altitude
         let radius = this.radius + this.altitude / 8
-        if (radius < 0) radius = this.radius // le radius ne peut être négatif
+        if (radius < this.radius) radius = this.radius // le radius ne peut être inférieur au radius à l'altitude 0
 
         // On trace rocket
         layer.beginPath()
-        layer.arc(this.coords.x, this.coords.y, radius, 0, 2 * Math.PI)
+        layer.arc(coords.x, coords.y, radius, 0, 2 * Math.PI)
         layer.fillStyle = "black"
         layer.fill()
-    }
 
-    getBoundingBox() {
-        return {
-            xMin: this.coords.x - this.radius,
-            xMax: this.coords.x + this.radius,
-            yMin: this.coords.y - this.radius,
-            yMax: this.coords.y + this.radius,
-        }
+        super.render(layer)
     }
 
     /**
@@ -175,10 +187,9 @@ export default class Rocket {
             let enemy = this.level.enemies[i]
             const enemyCoords = enemy.getMiddlePosition()
 
-            if (pointIntersectsCircle(enemyCoords, this.coords, this.radiusOfEffect)) {
+            if (pointIntersectsCircle(enemyCoords, this.getMiddlePosition(), this.radiusOfEffect)) {
                 enemy.hit(this.dammage)
             }
         } 
     }
-
 }

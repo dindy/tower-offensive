@@ -96,16 +96,18 @@ export default class Missile extends Rectangle {
     
     updateDestination(diffTimestamp) {
         
+        const currentMiddlePosition = this.getMiddlePosition()
+
         // Si pas d'ennemi en cours
         if (this.enemy === null || this.enemy.isDeleted) {
             
-            const closerEnemy = this.level.getCloserEnemy(this.getMiddlePosition()) // {x,y}
+            const closerEnemy = this.level.getCloserEnemy(currentMiddlePosition) // {x,y}
             
             // Si il n'y a plus d'enemy sur la map, on explose
             if (closerEnemy === null) {
                 
                 // On continue sur la direction actuelle
-                const currentPosition = this.getMiddlePosition()
+                const currentPosition = currentMiddlePosition
                 const newPosition = getPositionOnLine(currentPosition.x, currentPosition.y, this.targetPoint.x, this.targetPoint.y, 10)
                 
                 // On met à jour target point
@@ -158,6 +160,7 @@ export default class Missile extends Rectangle {
                 layer.beginPath()
                 layer.arc(this.targetPoint.x, this.targetPoint.y,5,0,2*Math.PI)
                 layer.strokeStyle = "blue" 
+                layer.lineWidth = 1 
                 layer.fillStyle = "orange" 
                 layer.fill()    
                 layer.stroke()    

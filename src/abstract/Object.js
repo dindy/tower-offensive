@@ -73,7 +73,7 @@ export default class Object extends Thing {
         layer.beginPath()
         layer.rect(x, y, width, height)
         layer.strokeStyle = 'red'
-        layer.strokeWidth = 1
+        layer.lineWidth = 1
         layer.stroke()
     }
 
