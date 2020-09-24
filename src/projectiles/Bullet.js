@@ -1,4 +1,4 @@
-import { getDistance, getPositionOnLine, rectangleIntersectsRectangle } from '../utilities'
+import { getPositionOnLine } from '../utilities'
 import SmallExplosion from '../explosions/SmallExplosion'
 import Circle from "../abstract/Circle"
 import Vector from "../abstract/Vector"
@@ -6,9 +6,11 @@ import Vector from "../abstract/Vector"
 export default class Bullet extends Circle {
 
     /**
-     * Constructor 
-     * @param {Object} tower La tour d'où les balles sont tirées
+     * @constructor 
+     * @param {Object} tower La tour d'où la balle est tirée
      * @param {Object} enemy Cible de la tour
+     * @param {Numeric} damage Dommages infligés
+     * @param {Numeric} speed Vitesse (px/s)
      */
     constructor(tower, enemy, dammage, speed) {
 

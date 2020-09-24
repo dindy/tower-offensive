@@ -17,6 +17,13 @@ export default class Missile extends Rectangle {
     
     static height = 10
 
+    /**
+     * @constructor 
+     * @param {Object} tower La tour d'où le missile est tiré
+     * @param {Object} enemy Cible initiale du missile
+     * @param {Numeric} damage Dommages infligés
+     * @param {Numeric} speed Vitesse (px/s)
+     */    
     constructor(tower, enemy, dammage, speed) {
         
         // Position initiale du missile

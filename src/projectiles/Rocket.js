@@ -3,12 +3,6 @@ import Vector from '../abstract/Vector'
 
 import { 
     radiansToDegrees, 
-    addToPoint, 
-    getDistance, 
-    getPositionOnLine, 
-    rectangleIntersectsRectangle, 
-    angle, 
-    getProjectionPoint,
     pointIntersectsCircle, 
     degreesToRadians
 } from '../utilities'
@@ -20,9 +14,10 @@ export default class Rocket extends Circle {
     static radius = 2
 
     /**
-     * Constructor 
+     * @constructor
      * @param {Tower} tower La tour d'où les balles sont tirées
      * @param {Enemy} enemy Cible de la tour
+     * @param {Numeric} dammage Dommages infligés
      */
     constructor(tower, enemy, dammage) {
 
