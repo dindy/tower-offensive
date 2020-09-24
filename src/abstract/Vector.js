@@ -26,6 +26,13 @@ export default class Vector {
         this.y = y
     }
 
+    static createFrom(o) {
+
+        if (o.hasOwnProperty('x') && o.hasOwnProperty('y')) return new Vector(o.x, o.y)
+        
+        throw new Error('No property `x` or `y` found.')
+    }
+
     /**
      * Additionne deux vecteurs
      * @param {Vector} v1 

@@ -71,7 +71,7 @@ export default class Bullet extends Circle {
         // Update les coordonnées de la balle
         const lastCoords = getPositionOnLine(this.originPosition.x, this.originPosition.y, this.targetPosition.x, this.targetPosition.y, t)
         
-        this.setPosition(new Vector(lastCoords.x, lastCoords.y))
+        this.setPosition(Vector.createFrom(lastCoords))
     }
 
     /**

@@ -176,7 +176,7 @@ export function pointIntersectsCircle(point, circle, radius) {
  * @param {numeric} cy 
  * @param {numeric} ex 
  * @param {numeric} ey 
- * @returns {numeric} Angle en degrés
+ * @returns {numeric} Angle en radians entre [-PI, PI] par défaut sinon en degrés entre [0, 360]
  */
 export function angle(cx, cy, ex, ey, convertToDegrees = true) {
     
@@ -188,7 +188,7 @@ export function angle(cx, cy, ex, ey, convertToDegrees = true) {
         if (theta < 0) theta = 360 + theta; // range [0, 360]
     }
     return theta;
-  }
+}
 
 /**
  * Différence d'angle (soit en horaire soit en anti-horaire de 0 à 180)
@@ -226,9 +226,14 @@ export function degreesToRadians(a) {
  */
 export function radiansToDegrees(radians)
 {
-  var pi = Math.PI;
-  return radians * (180/pi)
+  return normalizeDegreesAngle(radians * (180 / Math.PI))
 }
+
+export function normalizeDegreesAngle(a) {
+    a = a % 360
+    if (a < 0) a += 360   
+    return a
+}  
 
 /**
  * Returns a pseudo random integer between min and max
