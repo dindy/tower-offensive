@@ -13,10 +13,10 @@ export default class Bullet extends Circle {
     constructor(tower, enemy, dammage, speed) {
 
         // Le point d'origine de la balle est le centre de la tower
-        const originPoint = tower.getMiddleCoords() 
+        const towerPosition = tower.getMiddleCoords() 
         
         // On crée le circle
-        super(originPoint.x, originPoint.y, 2)
+        super(towerPosition.x, towerPosition.y, 2)
     
         // On enregistre le point d'origine
         this.originPosition = this.getMiddlePosition() // Vector

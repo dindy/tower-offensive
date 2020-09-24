@@ -27,10 +27,10 @@ export default class Rocket extends Circle {
     constructor(tower, enemy, dammage) {
 
         // Centre de La tour et point d'origine des balles
-        const originPoint = tower.getMiddleCoords()
+        const towerPosition = tower.getMiddleCoords()
         
         // On crée le Circle
-        super(originPoint.x, originPoint.y, Rocket.radius)
+        super(towerPosition.x, towerPosition.y, Rocket.radius)
 
         // On met le point d'origine en mémoire
         this.originPoint = this.getMiddlePosition() // Vector
