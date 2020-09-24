@@ -58,7 +58,7 @@ export default class Box {
      * @param {Box} box 
      * @returns {Boolean}
      */
-    static middleIsInside(v, box) {
+    static pointIsInside(v, box) {
 
         return v.x > box.xMin && v.x < box.xMax && v.y > box.yMin && v.y < box.yMax
     }

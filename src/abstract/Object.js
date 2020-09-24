@@ -46,7 +46,7 @@ export default class Object extends Thing {
 
     intersectsBox(box) {
         return Box.bordersIntersect(this.getBoundingBox(), box) 
-            || Box.middleIsInside(this.getMiddlePosition(), box)
+            || Box.pointIsInside(this.getMiddlePosition(), box)
     }
 
     /**
