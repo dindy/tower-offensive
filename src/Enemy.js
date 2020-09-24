@@ -84,8 +84,8 @@ export default class Enemy extends Rectangle {
             let varX = 0, varY = 0
 
             const segment = this.defaultPathSegments[i]
-            const origin = new Vector(segment[0].x, segment[0].y)
-            const destination = new Vector(segment[1].x, segment[1].y)
+            const origin = Vector.createFrom(segment[0])
+            const destination = Vector.createFrom(segment[1])
             const angle = origin.getAngle(destination, true)
 
             const pathRadiusMax = (this.pathRadius / 2) - 5
@@ -125,7 +125,7 @@ export default class Enemy extends Rectangle {
         const bo1 = this.pathSegments[pathSegmentsIndex][j];
         const point = util.getScalarProjectionPoint(ao1, predictedPosition, bo1) // coords     
         
-        return new Vector(point.x, point.y) 
+        return Vector.createFrom(point) 
     }
     
     moveToward(targetAngle, diffTimestamp) {
@@ -172,15 +172,15 @@ export default class Enemy extends Rectangle {
             
             if (!this.isTurning) {
                 const endOfPathPoint = this.pathSegments[this.currentSegmentIndex][1]
-                const endOfPath = new Vector(endOfPathPoint.x, endOfPathPoint.y)
+                const endOfPath = Vector.createFrom(endOfPathPoint)
                 const distance = sp1.getDistance(endOfPath)
 
                 if(distance < 1) {
                     this.isTurning = true
                     this.isBack = true
                     const segment = this.pathSegments[this.currentSegmentIndex]
-                    const to = new Vector(segment[0].x, segment[0].y)
-                    const from = new Vector(segment[1].x, segment[1].y)
+                    const to = Vector.createFrom(segment[0])
+                    const from = Vector.createFrom(segment[1])
                     this.angle = from.getAngle(to, true)
                 } else {
                     nextSegmentIndex = this.currentSegmentIndex
@@ -239,8 +239,8 @@ export default class Enemy extends Rectangle {
         // Angle entre les deux extrémitées du segment
         const point1Index = this.isBack ? 1 : 0
         const point2Index = this.isBack ? 0 : 1
-        const v1 = new Vector(pathSegment[point1Index].x, pathSegment[point1Index].y)
-        const v2 = new Vector(pathSegment[point2Index].x, pathSegment[point2Index].y)
+        const v1 = Vector.createFrom(pathSegment[point1Index])
+        const v2 = Vector.createFrom(pathSegment[point2Index])
         const projAngle = v1.getAngle(v2)
         
         // On ajoute une valeur à la projection scalaire sur le segment actuel 
