@@ -91,19 +91,20 @@ export default class Scene {
         const pathPoints = path
             .map(cellIndex => this.gridCells[cellIndex])
             .reduce((allPoints, cell, cellIndex )=> {
-                const cellCoords = cell.getCenterPoint()
+                const cellCoords = cell.getMiddlePosition()
+                const coords = cell.getBoundingBox()
                 if (cellIndex === 0) {
                     if (from === "top") return [{ ...cellCoords, y: 0}]
                     if (from === "bottom") return [{ ...cellCoords, y: this.height}]
                     if (from === "left") return [{ ...cellCoords, x: 0}]
                     if (from === "right") return [{ ...cellCoords, x: this.width}]
                 } else if (cellIndex === path.length - 1) {
-                    if (to === "top") return [...allPoints, { ...cellCoords, y: cell.coords.yMin}]
-                    if (to === "bottom") return [...allPoints, { ...cellCoords, y: cell.coords.yMax}]
-                    if (to === "left") return [...allPoints, { ...cellCoords, x: cell.coords.xMin}]
-                    if (to === "right") return [...allPoints, { ...cellCoords, x: cell.coords.xMax}]                    
+                    if (to === "top") return [...allPoints, { ...cellCoords, y: coords.yMin}]
+                    if (to === "bottom") return [...allPoints, { ...cellCoords, y: coords.yMax}]
+                    if (to === "left") return [...allPoints, { ...cellCoords, x: coords.xMin}]
+                    if (to === "right") return [...allPoints, { ...cellCoords, x: coords.xMax}]                    
                 }
-                const previousCellCoords = this.gridCells[path[cellIndex - 1]].getCenterPoint()
+                const previousCellCoords = this.gridCells[path[cellIndex - 1]].getMiddlePosition()
 
                 const previous = allPoints[allPoints.length - 1]
                 

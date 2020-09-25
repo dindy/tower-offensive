@@ -53,7 +53,7 @@ export default class Level {
      * @param {Object} cell 
      */
     highlightPlacingBuildingRange(cell) {
-        this.placingBuilding.highlightRange(cell.getCenterPoint())
+        this.placingBuilding.highlightRange(cell.getMiddlePosition())
         this.placingBuilding.renderRangeHighlight(this.game.scene.dynamicLayer)
     } 
 

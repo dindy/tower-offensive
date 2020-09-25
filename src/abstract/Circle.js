@@ -1,11 +1,11 @@
-import Object from './Object'
+import Body from './Body'
 import Vector from './Vector'
 import Box from './Box'
 
 /**
  * Représente un objet en forme de cercle
  */
-export default class Circle extends Object {
+export default class Circle extends Body {
 
     /**
      * The radius of the circle

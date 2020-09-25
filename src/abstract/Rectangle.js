@@ -1,8 +1,8 @@
-import Object from './Object'
+import Body from './Body'
 import Vector from './Vector'
 import Box from './Box'
 
-export default class Rectangle extends Object {
+export default class Rectangle extends Body {
 
     /**
      * Largeur du rectangle

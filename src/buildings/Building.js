@@ -65,21 +65,14 @@ export default class Building {
      * Retourne les coordonnéees du coin haut-gauche du rectangle
      */
     getTopLeftCoords() {
-        return {
-            x : this.cell.coords.xMin,
-            y : this.cell.coords.yMin
-        }
+        return this.cell.getTopLeftCoords()
     }
 
     /**
      * Retourne les coordonnées du centre du rectangle
      */
     getMiddleCoords() {
-        const offset = this.cell.cellSize / 2
-        return {
-            x : this.cell.coords.xMin + offset,
-            y : this.cell.coords.yMin + offset
-        }
+        return this.cell.getMiddlePosition()
     }
 
     /**

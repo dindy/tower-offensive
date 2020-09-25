@@ -101,19 +101,20 @@ export default class Wave {
         const limit = Math.random() * (cellSize - Enemy.width) + Enemy.width / 2
         // Transforme la position central en une position top left
         const offset = limit - Enemy.width / 2
-        
+        const firstCellBox = firstCell.getBoundingBox()
+         
         // Si on est sur la même colonne (on descend depuis tout en haut ou on monte depuis tout en bas)
         if(firstCell.column === secondCell.column) {
             // On part de la gauche de la 1ère cellule + l'offset
-            x = Math.floor(offset) + firstCell.coords.xMin
+            x = Math.floor(offset) + firstCellBox.xMin
             // On part d'en haut ou d'en bas de la map (déterminé en fonction de yMin de la 1ère cellule)
-            y = firstCell.coords.yMin === 0 ? firstCell.coords.yMin : firstCell.coords.yMax
+            y = firstCellBox.yMin === 0 ? firstCellBox.yMin : firstCellBox.yMax
             // Si on est sur la même ligne (on va à droite depuis la gauche de la map ou on va à gauche depuis la droite de la map)
         } else if (firstCell.row === secondCell.row) {
             // On part du haut de la 1ère cellule + l'offset
-            y = Math.floor(offset) + firstCell.coords.yMin
+            y = Math.floor(offset) + firstCellBox.yMin
             // On part de la gauche ou la droite de la map (déterminé en fonction de xMin de la 1ère cellule)
-            x = firstCell.coords.yMin === 0 ? firstCell.coords.xMin : firstCell.coords.xMax
+            x = firstCellBox.yMin === 0 ? firstCellBox.xMin : firstCellBox.xMax
         }
 
         return new Enemy(this.level, x, y)

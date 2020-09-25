@@ -5,7 +5,7 @@ import Box from './Box'
 /**
  * Une chose qui possède une position dans l'espace
  */
-export default class Object extends Thing {
+export default class Body extends Thing {
 
     /**
      * Vecteur représentant la position de l'objet
@@ -14,7 +14,7 @@ export default class Object extends Thing {
     position = null
 
     /**
-     * @constructor Initialise un Object avec des coordonnées
+     * @constructor Initialise un Body avec des coordonnées
      * @param {Numeric} x 
      * @param {Numeric} y 
      */

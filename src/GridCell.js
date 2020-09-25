@@ -1,10 +1,12 @@
-export default class GridCell {
+import Rectangle from "./abstract/Rectangle"
+
+export default class GridCell extends Rectangle{
 
     static cellsCount = 0
 
     static dragCount = 0
 
-    coords = {}
+    // coords = {}
 
     /**
      * Constructor
@@ -14,15 +16,20 @@ export default class GridCell {
      */
     constructor(column, row, scene) {
 
+        const cellSize = scene.cellSize
+        const xLeft = column * cellSize
+        const yTop = row * cellSize
+        super(xLeft, yTop, cellSize)
+
         this.scene = scene
         this.column = column
         this.row = row
-        this.cellSize = scene.cellSize
+        this.cellSize = cellSize
         this.isPath = false
         this.building = null
-        this.coords = null
+        // this.coords = null
 
-        this.setCoords()
+        // this.setCoords()
 
         this.DOMElement = document.createElement('div')
         this.DOMElement.classList.add(scene.game.DOMConfig.gridCell.class)
@@ -46,14 +53,14 @@ export default class GridCell {
     /**
      * Calcul les coordonnées réelles sur l'écran et les sauvegarde dans les propriétés
      */
-    setCoords() {
-        this.coords = {
-            xMin: this.column * this.cellSize,
-            xMax: this.column * this.cellSize + this.cellSize,
-            yMin: this.row * this.cellSize,
-            yMax: this.row * this.cellSize + this.cellSize
-        }
-    }
+    // setCoords() {
+    //     this.coords = {
+    //         xMin: this.column * this.cellSize,
+    //         xMax: this.column * this.cellSize + this.cellSize,
+    //         yMin: this.row * this.cellSize,
+    //         yMax: this.row * this.cellSize + this.cellSize
+    //     }
+    // }
 
     /**
      * Quand le drag sorts de la cell
@@ -134,7 +141,8 @@ export default class GridCell {
      * @param {Event} e 
      */
     handleClick(e) {
-        console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords: this.coords, building: this.building })
+        const coords = this.getBoundingBox()
+        console.log('Click on cell : ', { id: this.id, column: this.column, row: this.row, coords, building: this.building })
         this.scene.game.handleSceneClick(this)
     }
 
@@ -165,12 +173,13 @@ export default class GridCell {
     /**
      * Retourne les coordonnées du centre de la cell
      */
-    getCenterPoint() {
-        return {
-            x: this.coords.xMin + (this.cellSize / 2),
-            y: this.coords.yMin + (this.cellSize / 2)
-        }
-    }
+    // getCenterPoint() {
+    //     return super.getMiddlePosition()
+    //     // return {
+    //     //     x: this.coords.xMin + (this.cellSize / 2),
+    //     //     y: this.coords.yMin + (this.cellSize / 2)
+    //     // }
+    // }
 
     /**
      * Check si un batiment est présent sur la tour
