@@ -42,7 +42,6 @@ export default class Sniper extends TowerCannon {
         this.lastShotTargetPosition = enemyPosition
 
         this.level.addExplosion(new MediumExplosion(this.level, enemyPosition))
-        // this.explosionPosition = { x: enemyPosition.x, y: enemyPosition.y }
 
         enemy.hit(this.dammage)  
     }
@@ -61,7 +60,7 @@ export default class Sniper extends TowerCannon {
 
         if (this.timeSinceLastShot > this.animationDelay) {
 
-            const towerPosition = this.getMiddleCoords()
+            const towerPosition = this.getMiddlePosition()
     
             // On trace une ligne entre la tour et l'ennemi visé
             layer.beginPath()
@@ -80,19 +79,7 @@ export default class Sniper extends TowerCannon {
         return this.timeSinceLastShot - this.animationDelay
     }
 
-    // getTotalAnimationTime() {
-    //     return this.explosionFrames * this.explosionInterval
-    // }
-
-    // renderExplosion(layer) {
-    //     this.explosionSprite.setNextState('exploding')
-    //     this.explosionSprite.setTimer(this.getTimeSinceAnimationBeginning())
-    //     layer.translate(this.explosionPosition.x, this.explosionPosition.y)
-    //     layer.drawImage(this.explosionsSheet, ...this.explosionSprite.getCurrent())
-    //     layer.setTransform(1, 0, 0, 1, 0, 0)
-    // }
-
-    getOpacity(){
+    getOpacity() {
         const opacity = 1 - (this.getTimeSinceAnimationBeginning() / 100)
         return opacity < 0 ? 0 : opacity
     }

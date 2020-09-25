@@ -22,7 +22,7 @@ export default class Rocket extends Circle {
     constructor(tower, enemy, dammage) {
 
         // Centre de La tour et point d'origine des balles
-        const towerPosition = tower.getMiddleCoords()
+        const towerPosition = tower.getMiddlePosition()
         
         // On crée le Circle
         super(towerPosition.x, towerPosition.y, Rocket.radius)

@@ -1,4 +1,6 @@
-export default class Building {
+import Rectangle from '../abstract/Rectangle'
+
+export default class Building extends Rectangle {
     
     static price = 0
     
@@ -10,17 +12,18 @@ export default class Building {
      */
     constructor(level)  {
         
+        super(0, 0, level.game.scene.cellSize)
+
         this.level = level
         this.shape = null
         this.isPlaced = false
-        this.cell = null
         this.isSelected = false
         this.isDeleted = false
     }
 
     renderBuilding(layer) {
 
-        const coords = this.getMiddleCoords()
+        const coords = this.getMiddlePosition()
 
         if (this.spriteBuilding === null) {
             layer.beginPath()
@@ -48,10 +51,9 @@ export default class Building {
      * @param {Object} cell 
      */
     place(cell) {
-        this.cell = cell
+        this.setPosition(cell.getTopLeftPosition())
         this.isPlaced = true
     }
- 
 
     /**
      * Rendu
@@ -59,20 +61,6 @@ export default class Building {
      */
     render(layer) {
         this.renderBuilding(layer)
-    }
-
-    /**
-     * Retourne les coordonnéees du coin haut-gauche du rectangle
-     */
-    getTopLeftCoords() {
-        return this.cell.getTopLeftCoords()
-    }
-
-    /**
-     * Retourne les coordonnées du centre du rectangle
-     */
-    getMiddleCoords() {
-        return this.cell.getMiddlePosition()
     }
 
     /**

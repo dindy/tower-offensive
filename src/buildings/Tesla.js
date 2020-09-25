@@ -31,7 +31,7 @@ export default class Tesla extends Tower {
     
     place(cell) {
         super.place(cell)
-        this.lightning = new Lightning(this.level, this.getMiddleCoords())
+        this.lightning = new Lightning(this.level, this.getMiddlePosition())
     }
 
     updateTargets() {
@@ -48,13 +48,13 @@ export default class Tesla extends Tower {
         }
         for (let i = 0; i < this.nbTargetsMax; i++) {
             const enemy = (i === 0) ? 
-                this.level.getCloserEnemyInRange(this.range, this.getMiddleCoords())
+                this.level.getCloserEnemyInRange(this.range, this.getMiddlePosition())
                 : this.level.getCloserEnemyFromEnemy(this.currentTargets)
             
             if (enemy === null) return
             
             const targetCoords = enemy.getMiddlePosition()
-            const originCoords = this.getMiddleCoords()
+            const originCoords = this.getMiddlePosition()
             if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
             
             if (this.currentTargets.length > 0) {

@@ -6,6 +6,7 @@ import {
     angleDirection, 
     pointIntersectsCircle,
     degreesToRadians,
+    radiansToDegrees,
 } from "../utilities"
 
 export default class TowerCannon extends Tower {
@@ -160,11 +161,11 @@ export default class TowerCannon extends Tower {
         if (this.currentTarget != null) {
             
             // On récupère les coordonnées de la tour 
-            const middleCoords = this.getMiddleCoords()
+            const middleCoords = this.getMiddlePosition()
 
             // On calcule l'angle de la cible par rapport aux coordonnées de la tour
             const currentTargetCoords = this.currentTarget.getMiddlePosition()
-            const targetAngle = angle(middleCoords.x, middleCoords.y, currentTargetCoords.x, currentTargetCoords.y)
+            const targetAngle = radiansToDegrees(middleCoords.getAngle(currentTargetCoords))
             
             // On calcule la différence d'angle entre l'angle du cannon et celui nécessaire pour atteindre la cible 
             // sur une échelle de [0, 180]
@@ -233,7 +234,7 @@ export default class TowerCannon extends Tower {
     renderCannon(layer, diffTimestamp) {
         
         // On récupère les coordonnées du point central de la tour
-        const coords = this.getMiddleCoords()
+        const coords = this.getMiddlePosition()
         // On détermine l'état du canon
         const cannonState = this.isShooting ? 'shooting' : 'idle'
 

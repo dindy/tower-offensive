@@ -27,7 +27,7 @@ export default class Missile extends Rectangle {
     constructor(tower, enemy, dammage, speed) {
         
         // Position initiale du missile
-        const towerPosition = tower.getMiddleCoords()
+        const towerPosition = tower.getMiddlePosition()
         
         // On instancie le Rectangle du Missile en passant les coordonnées top-left
         const width = Missile.width 
