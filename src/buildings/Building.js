@@ -19,6 +19,7 @@ export default class Building extends Rectangle {
         this.isPlaced = false
         this.isSelected = false
         this.isDeleted = false
+        this.cell = null
     }
 
     renderBuilding(layer) {
@@ -53,6 +54,7 @@ export default class Building extends Rectangle {
     place(cell) {
         this.setPosition(cell.getTopLeftPosition())
         this.isPlaced = true
+        this.cell = cell
     }
 
     /**

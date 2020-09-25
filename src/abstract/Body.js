@@ -54,9 +54,9 @@ export default class Body extends Thing {
      * @param {Context} layer 
      */
     render(layer) {
-        this.renderBoundingBox(layer)
-        this.renderMiddlePosition(layer)
-        this.renderTopLeftPosition(layer)
+        // this.renderBoundingBox(layer)
+        // this.renderMiddlePosition(layer)
+        // this.renderTopLeftPosition(layer)
     }
 
     /**

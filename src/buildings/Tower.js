@@ -42,7 +42,7 @@ export default class Tower extends Building {
 
     select() {
         super.select()
-        this.highlightRange(this.cell.getCenterPoint())
+        this.highlightRange(this.getMiddlePosition())
     }
     
     unselect() {
@@ -128,7 +128,7 @@ export default class Tower extends Building {
             // que la forme de la range est en dessous de la tower
             // @todo Dynamically determines the zone
             const coords = this.isPlaced ? 
-                this.getTopLeftCoords() :
+                this.getTopLeftPosition() :
                 { x: this.rangeShapeCoords.x - (50 / 2), y: this.rangeShapeCoords.y - (50 / 2) }
             
             layer.clearRect(coords.x, coords.y, 50, 50)

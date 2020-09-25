@@ -55,24 +55,18 @@ export default class Tesla extends Tower {
             
             const targetCoords = enemy.getMiddlePosition()
             const originCoords = this.getMiddlePosition()
-            if(getDistance(originCoords.x, originCoords.y, targetCoords.x, targetCoords.y) > this.range) continue            
+            if(originCoords.getDistance(targetCoords) > this.range) continue            
             
             if (this.currentTargets.length > 0) {
                 
                 const lastCurrentTargetCoords = this.currentTargets[this.currentTargets.length - 1].getMiddlePosition() 
                 
-                if (getDistance(
-                    lastCurrentTargetCoords.x, 
-                    lastCurrentTargetCoords.y,
-                    targetCoords.x,
-                    targetCoords.y
-                ) > 100) return
+                if (lastCurrentTargetCoords.getDistance(targetCoords) > 100) return
             }
 
             enemy.slow(this.slowPower)
             this.currentTargets.push(enemy)
-                
-                
+
         }
         // this.currentTargets = currentTargets
     }
