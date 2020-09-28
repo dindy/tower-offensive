@@ -356,12 +356,23 @@ export default class Enemy extends Rectangle {
      * @param {Number} damage
      */
     hit(damage) {
+
         this.health -= damage
+        
         if (this.health <= 0) {
-            this.level.addSocialPoints((this.socialValue))
-            this.isDeleted = true
-            this.level.takeBackValue(this.pocket * this.penalty)
             
+            const coords = this.getMiddlePosition()
+
+            this.level.addSocialPoints(this.socialValue)
+            this.level.addFloatingTextAnimation('+' + this.socialValue, coords.x, coords.y, "61, 87, 255")
+            
+            const backValue = this.pocket * this.penalty
+            if (backValue > 0) {
+                this.level.takeBackValue(backValue)
+                this.level.addFloatingTextAnimation('+' + backValue, coords.x, coords.y + 15, "250, 221, 107")
+            }
+            
+            this.isDeleted = true
         }
     }
 

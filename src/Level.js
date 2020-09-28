@@ -1,6 +1,7 @@
 import Wave from './Wave'
 import { getAvailableBuildingInstanceByName } from './buildings/availableBuildings'
 import { getDistance } from './utilities'
+import FloatingTextAnimation from './FloatingTextAnimation'
 
 export default class Level {
     
@@ -17,6 +18,7 @@ export default class Level {
     socialPoints = 0
     isNewWave = false
     report = 0
+    floatingTextAnimations = []
     
     /**
      * Constructor
@@ -27,6 +29,10 @@ export default class Level {
         
         this.game = game
         this.config = levelConfig
+    }
+
+    addFloatingTextAnimation(text, x, y, color) {
+        this.floatingTextAnimations.push(new FloatingTextAnimation(text, x, y, color))
     }
 
     addSocialPoints(number){
@@ -206,10 +212,21 @@ export default class Level {
             this.updateTowers(treshold)
 
             this.updateExplosions(treshold)
+
+            this.updateFloatingTextAnimations(treshold)
         }
         
         this.report = left
 
+    }
+
+    updateFloatingTextAnimations(diffTimestamp) {
+        
+        for (let i = 0; i < this.floatingTextAnimations.length; i++) {
+            this.floatingTextAnimations[i].update(diffTimestamp)
+        }         
+        
+        this.floatingTextAnimations = this.floatingTextAnimations.filter(anim => !anim.isDeleted) 
     }
 
     /**
@@ -286,6 +303,15 @@ export default class Level {
         this.renderTowersAttack(diffTimestamp)
 
         this.renderExplosions(diffTimestamp)
+
+        this.renderFloatingTextAnimations(diffTimestamp)
+    }
+
+    renderFloatingTextAnimations(diffTimestamp) {
+        for (let i = 0; i < this.floatingTextAnimations.length; i++) {
+            
+            this.floatingTextAnimations[i].render(this.game.scene.dynamicLayer)
+        }                
     }
 
     renderTowersCannon(diffTimestamp) {
