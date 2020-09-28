@@ -140,10 +140,6 @@ export default class Rocket extends Rectangle {
         const verticalPosition = new Vector(currentDistance, newAltitude)
         
         this.verticalAngle = oldVerticalPosition.getAngle(verticalPosition)
-        // =============
-        
-
-
 
         if ( currentDistance >= this.distance ) this.isInAir = false        
     }
@@ -201,9 +197,9 @@ export default class Rocket extends Rectangle {
         //face arr
         // side
         let front, back, side
-        front = this.width * (1 + this.verticalAngle) + this.altitude / 8
-        back = this.width * (1 - this.verticalAngle) + this.altitude / 8
-        side = this.height * (Math.abs(1 - Math.abs(this.verticalAngle))*0.8) + this.altitude / 8 
+        front = this.width * (1 + this.verticalAngle) + this.altitude / 10
+        back = this.width * (1 - this.verticalAngle) + this.altitude / 10
+        side = this.height * (Math.abs(1 - Math.abs(this.verticalAngle))*0.8) + this.altitude / 10 
         
         // Calcule le radius de rocket en fonctin de l'altitude
         // let radius = this.radius + this.altitude / 8

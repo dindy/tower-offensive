@@ -5,6 +5,7 @@ export default class LevelData_UI {
         this.game = game
         this.DOMValue = document.getElementById(this.game.DOMConfig.value.id)
         this.DOMBuildingPoints = document.getElementById(this.game.DOMConfig.buildingPoints.id)
+        this.DOMSocialPoints = document.getElementById(this.game.DOMConfig.socialPoints.id)
     }
 
     render() {
@@ -13,7 +14,10 @@ export default class LevelData_UI {
             this.DOMValue.innerHTML = `Valeur: ${value}`
 
             let buildingPoints = this.game.currentLevel.buildingPoints
-            this.DOMBuildingPoints.innerHTML = `Points de construction: ${buildingPoints}`
+            this.DOMBuildingPoints.innerHTML = `Points de construction : ${buildingPoints}`
+
+            let socialPoints = this.game.currentLevel.socialPoints
+            this.DOMSocialPoints.innerHTML = `Points sociaux : ${socialPoints}`
         }
 
 

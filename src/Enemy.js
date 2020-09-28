@@ -8,7 +8,8 @@ export default class Enemy extends Rectangle {
 
     static width = 16
     static healthMax = 15
-    
+    static socialValue = 10
+
     pathSegments = []
 
     /**
@@ -20,6 +21,8 @@ export default class Enemy extends Rectangle {
         super(x, y, Enemy.width)
 
         this.health = Enemy.healthMax
+
+        this.socialValue = Enemy.socialValue
 
         // Objet level auquel appartient l'enemy
         this.level = level
@@ -355,6 +358,7 @@ export default class Enemy extends Rectangle {
     hit(damage) {
         this.health -= damage
         if (this.health <= 0) {
+            this.level.addSocialPoints((this.socialValue))
             this.isDeleted = true
             this.level.takeBackValue(this.pocket * this.penalty)
             

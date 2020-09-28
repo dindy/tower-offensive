@@ -236,13 +236,13 @@ export default class TowerCannon extends Tower {
         // On récupère les coordonnées du point central de la tour
         const coords = this.getMiddlePosition()
         // On détermine l'état du canon
-        const cannonState = this.isShooting ? 'shooting' : 'idle'
-
+        // const cannonState = this.isShooting ? 'shooting' : 'idle'
         // On met à jour le sprite en fonction du temps écoulé
         this.spriteCannon.setTimerDiff(diffTimestamp)
         // On indique qu'à la fin de l'animation en cours on passera à l'état précédemment déterminé
         // (possiblement le même)
-        this.spriteCannon.setNextState(cannonState)
+        if (this.isShooting) this.spriteCannon.setState('shooting')
+        else this.spriteCannon.setNextState('idle')
 
         // On dessine le canon
         layer.translate(coords.x, coords.y)

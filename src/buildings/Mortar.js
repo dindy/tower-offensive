@@ -9,16 +9,16 @@ export default class Mortar extends TowerCannon {
 
     constructor(level) {
         
-        super(level, 300, 5000, 10, 0.5)
+        super(level, 300, 5000, 10, 0.1)
 
-        this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerBasic)
+        this.spriteSheet = document.getElementById(level.game.DOMConfig.sprites.towerMortar)
         
         this.minRange = this.range * (3/5)
 
         // Sprite du canon du sniper
         this.spriteCannon = new Sprite(100, 50, { 
             idle: { sourceY: 50, nbFrames: 1, interval: 0 },
-            shooting: { sourceY: 100, nbFrames: 2, interval: 80 }
+            shooting: { sourceY: 100, nbFrames: 4, interval: 80 }
         })
 
         this.delayRotationAfterShot = 600 // ms

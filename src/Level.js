@@ -14,6 +14,7 @@ export default class Level {
     value = 2500
     growthFactor = 20
     buildingPoints = 10000
+    socialPoints = 0
     isNewWave = false
     report = 0
     
@@ -26,6 +27,10 @@ export default class Level {
         
         this.game = game
         this.config = levelConfig
+    }
+
+    addSocialPoints(number){
+        this.socialPoints += number
     }
 
     selectBuilding(building) {

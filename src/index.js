@@ -64,11 +64,12 @@ const DOMConfig = {
         towerSniper: 'sprite-tower-sniper',
         towerSeeker: 'sprite-tower-seeker',
         towerTesla: 'sprite-tower-tesla-icon',
+        towerMortar: 'sprite-tower-mortar',
         explosions: 'sprite-explosions'
     },
     icons: {
         towerBasic: 'sprite-tower-basic-icon',
-        towerMortar: 'sprite-tower-basic-icon',
+        towerMortar: 'sprite-tower-mortar-icon',
         towerRocket: 'sprite-tower-rocket-icon',
         towerSniper: 'sprite-tower-sniper-icon',
         towerSeeker: 'sprite-tower-seeker-icon',
@@ -77,8 +78,11 @@ const DOMConfig = {
     value: {
         id: "value"
     },
-    buildingPoints : {
+    buildingPoints: {
         id: "buildingPoints"
+    },
+    socialPoints: {
+        id: "socialPoints"
     }
 }
 
