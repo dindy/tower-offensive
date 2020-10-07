@@ -65,7 +65,8 @@ const DOMConfig = {
         towerSeeker: 'sprite-tower-seeker',
         towerTesla: 'sprite-tower-tesla-icon',
         towerMortar: 'sprite-tower-mortar',
-        explosions: 'sprite-explosions'
+        explosions: 'sprite-explosions',
+        rocket: 'sprite-rocket'
     },
     icons: {
         towerBasic: 'sprite-tower-basic-icon',

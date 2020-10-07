@@ -1,5 +1,6 @@
 import Rectangle from '../abstract/Rectangle'
 import Vector from '../abstract/Vector'
+import Sprite from '../Sprite'
 
 import { 
     radiansToDegrees, 
@@ -11,8 +12,8 @@ import BigExplosion from '../explosions/BigExplosion'
 
 export default class Rocket extends Rectangle {
 
-    static width = 3
-    static height = 8
+    static width = 16
+    static height = 25
 
     /**
      * @constructor
@@ -80,6 +81,11 @@ export default class Rocket extends Rectangle {
         this.verticalAngle = 0 // radians
 
         this.range = 0 // px
+
+        this.sprite = document.getElementById(this.level.game.DOMConfig.sprites.rocket)
+
+        this.canvasTemp = document.createElement('canvas')
+        this.canvasTempContext = this.canvasTemp.getContext('2d')
     }   
 
     /**
@@ -189,39 +195,61 @@ export default class Rocket extends Rectangle {
             layer.stroke()    
         }
 
+       
+
+        
         const middleCoords = this.getMiddlePosition()
         const topLeftCoords = this.getTopLeftPosition()
 
-        // A B -> line AB ( avant )
-        //face avant
-        //face arr
-        // side
-        let front, back, side
-        front = this.width * (1 + this.verticalAngle) + this.altitude / 10
-        back = this.width * (1 - this.verticalAngle) + this.altitude / 10
-        side = this.height * (Math.abs(1 - Math.abs(this.verticalAngle))*0.8) + this.altitude / 10 
-        
-        // Calcule le radius de rocket en fonctin de l'altitude
-        // let radius = this.radius + this.altitude / 8
-        // if (radius < this.radius) radius = this.radius // le radius ne peut être inférieur au radius à l'altitude 0
+        let side = this.height * (Math.abs(1 - Math.abs(this.verticalAngle))*0.8) /*+ this.altitude / 10  +*/
+        //side = height / 2
 
         // On trace rocket
-        layer.beginPath()
-        layer.translate(middleCoords.x , middleCoords.y)
-        layer.rotate(this.angle - degreesToRadians(90))
-        // layer.rect(0 - this.width / 2 , 0 - this.height / 2 , this.width, this.height)
-        layer.moveTo(0 - back / 2, 0 - side / 2) // TOPLEFT
-        layer.lineTo(back / 2, 0 - side / 2)//TOPRIGHT
-        layer.lineTo(front / 2, side / 2)//BOTTOMRIGHT
-        layer.lineTo(0 - front / 2, side / 2)//BOTTOMleft
-        layer.lineTo(0 - back / 2, 0 - side / 2)//TOPLEFT
-        // layer.arc(coords.x, coords.y, radius, 0, 2 * Math.PI)
-        layer.fillStyle = "black"
-        layer.fill()
+        //layer.translate(middleCoords.x , middleCoords.y)
+        
+        // layer.drawImage(this.sprite, 0, 0, 16, 25)
+        // for (var i = 0; i <= this.height / 2; ++i) {
+        //     this.canvasTempContext.setTransform(1, -0.4 * i / this.height,
+        //         0, 1, 0, 40);
+                
+        //     this.canvasTempContext.drawImage(this.sprite,
+        //     0, this.height / 2 - i, this.width, 2,
+        //     0, this.height / 2 - i, this.width, 2);
+            
+        //     this.canvasTempContext.setTransform(1, 0.4 * i / this.height,
+        //     0, 1, 0, 40);
+            
+        //     this.canvasTempContext.drawImage(this.sprite,
+        //     0, this.height / 2 + i, this.width, 2,
+        //     0, this.height / 2 + i, this.width, 2);
+        // }
 
-        layer.beginPath()
-        layer.arc(0, side / 2 , front / 2, 0, Math.PI)
-        layer.fill()
+        
+        
+
+
+
+        console.log(this.height)
+        this.canvasTempContext.clearRect(0, 0, this.width*2, this.height*2)
+        for (let i = 0; i < this.width / 2; ++i) {
+
+            this.canvasTempContext.setTransform(1, 0, this.verticalAngle * i / this.width, 1, this.width, 0)
+
+            this.canvasTempContext.drawImage(this.sprite, 
+                this.width / 2 - i, 0, 2, this.height,
+                this.width / 2 - i, 0, 2, this.height
+            )
+
+            this.canvasTempContext.setTransform(1, 0, -1 * this.verticalAngle * i / this.width, 1, this.width, 0)
+            
+            this.canvasTempContext.drawImage(this.sprite, 
+                this.width / 2 + i, 0, 2, this.height,
+                this.width / 2 + i, 0, 2, this.height)                
+        }
+
+        layer.translate(middleCoords.x , middleCoords.y)
+        layer.rotate(this.angle + degreesToRadians(90))
+        layer.drawImage(this.canvasTemp, -1 * this.width - this.width/2, -1*this.height/2)
         layer.setTransform(1, 0, 0, 1, 0, 0);    
 
         super.render(layer)
@@ -242,4 +270,5 @@ export default class Rocket extends Rectangle {
             }
         } 
     }
+
 }
