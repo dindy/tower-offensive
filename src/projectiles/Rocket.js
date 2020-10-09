@@ -83,9 +83,6 @@ export default class Rocket extends Rectangle {
         this.range = 0 // px
 
         this.sprite = document.getElementById(this.level.game.DOMConfig.sprites.rocket)
-
-        this.canvasTemp = document.createElement('canvas')
-        this.canvasTempContext = this.canvasTemp.getContext('2d')
     }   
 
     /**
@@ -195,61 +192,19 @@ export default class Rocket extends Rectangle {
             layer.stroke()    
         }
 
-       
 
-        
-        const middleCoords = this.getMiddlePosition()
-        const topLeftCoords = this.getTopLeftPosition()
-
-        let side = this.height * (Math.abs(1 - Math.abs(this.verticalAngle))*0.8) /*+ this.altitude / 10  +*/
-        //side = height / 2
-
-        // On trace rocket
-        //layer.translate(middleCoords.x , middleCoords.y)
-        
-        // layer.drawImage(this.sprite, 0, 0, 16, 25)
-        // for (var i = 0; i <= this.height / 2; ++i) {
-        //     this.canvasTempContext.setTransform(1, -0.4 * i / this.height,
-        //         0, 1, 0, 40);
-                
-        //     this.canvasTempContext.drawImage(this.sprite,
-        //     0, this.height / 2 - i, this.width, 2,
-        //     0, this.height / 2 - i, this.width, 2);
-            
-        //     this.canvasTempContext.setTransform(1, 0.4 * i / this.height,
-        //     0, 1, 0, 40);
-            
-        //     this.canvasTempContext.drawImage(this.sprite,
-        //     0, this.height / 2 + i, this.width, 2,
-        //     0, this.height / 2 + i, this.width, 2);
-        // }
-
-        
-        
-
-
-
-        console.log(this.height)
-        this.canvasTempContext.clearRect(0, 0, this.width*2, this.height*2)
-        for (let i = 0; i < this.width / 2; ++i) {
-
-            this.canvasTempContext.setTransform(1, 0, this.verticalAngle * i / this.width, 1, this.width, 0)
-
-            this.canvasTempContext.drawImage(this.sprite, 
-                this.width / 2 - i, 0, 2, this.height,
-                this.width / 2 - i, 0, 2, this.height
-            )
-
-            this.canvasTempContext.setTransform(1, 0, -1 * this.verticalAngle * i / this.width, 1, this.width, 0)
-            
-            this.canvasTempContext.drawImage(this.sprite, 
-                this.width / 2 + i, 0, 2, this.height,
-                this.width / 2 + i, 0, 2, this.height)                
-        }
+        const middleCoords = this.getMiddlePosition()      
 
         layer.translate(middleCoords.x , middleCoords.y)
         layer.rotate(this.angle + degreesToRadians(90))
-        layer.drawImage(this.canvasTemp, -1 * this.width - this.width/2, -1*this.height/2)
+        
+        // Détermine le facteur de scaling en fonction de l'altitude
+
+        const scale = this.altitude/48 < 0.30 ? 0.30 : this.altitude/48
+
+        
+        layer.scale(scale, scale)
+        layer.drawImage(this.sprite, -2, 0)
         layer.setTransform(1, 0, 0, 1, 0, 0);    
 
         super.render(layer)
