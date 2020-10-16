@@ -6,9 +6,12 @@
                 "from": "top",
                 "to": "bottom"
             },
-            "waves": [{
-                "nbEnemies": 12
-            }]
+            "enemies": [
+                {"wave": 1, "enemies": { "Ceo": 100 }},
+                {"wave": 10, "enemies": { "Ceo": 60, "Crs": 40 }},
+                {"wave": 25, "enemies": { "Ceo": 50, "Crs": 40, "Banker": 10 }}
+            ],
+            "boss": "Bezos"
         },        
         {
             "map": {
