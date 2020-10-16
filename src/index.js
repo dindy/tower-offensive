@@ -59,7 +59,7 @@ const DOMConfig = {
     },    
     sprites: {
         missilePlaceHolder: 'missile-place-holder',
-        enemy: 'sprite-enemy',
+        ceo: 'sprite-ceo',
         towerBasic: 'sprite-tower-basic',
         towerSniper: 'sprite-tower-sniper',
         towerSeeker: 'sprite-tower-seeker',

@@ -1,14 +1,10 @@
-import * as util from "./utilities"
-import Sprite from './Sprite'
-import * as traits from './traits'
-import Rectangle from './abstract/Rectangle'
-import Vector from "./abstract/Vector"
+import * as util from "../utilities"
+import Sprite from '../Sprite'
+import * as traits from '../traits'
+import Rectangle from '../abstract/Rectangle'
+import Vector from "../abstract/Vector"
 
 export default class Enemy extends Rectangle {
-
-    static width = 16
-    static healthMax = 15
-    static socialValue = 10
 
     pathSegments = []
 
@@ -16,13 +12,9 @@ export default class Enemy extends Rectangle {
      * Enemy constructor
      * @param {Level} level
      */
-    constructor(level, x, y) {
+    constructor(level, x, y, width, height) {
         
-        super(x, y, Enemy.width)
-
-        this.health = Enemy.healthMax
-
-        this.socialValue = Enemy.socialValue
+        super(x, y, width, height)
 
         // Objet level auquel appartient l'enemy
         this.level = level
@@ -50,23 +42,11 @@ export default class Enemy extends Rectangle {
         // L'enemy a fait demi-tour
         this.hasTurned = false
 
-        // Profondeur des poches d'un enemy
-        this.pocketCapacity = 80
-        
         // Valeur volée par l'enemy
         this.pocket = 0
         
         // Ratio de valeur rendue si l'enemy meurt
         this.penalty = 0.8
-        
-        // Load the image of the enemy
-        this.image = document.getElementById(level.game.DOMConfig.sprites.enemy)
-        this.sprite = new Sprite(50, 50, {
-            down : { sourceY: 0, nbFrames: 4, interval: 80 },
-            up : { sourceY: 50, nbFrames: 4, interval: 80 },
-            right : { sourceY: 100, nbFrames: 4, interval: 80 },
-            left : { sourceY: 150, nbFrames: 4, interval: 80 }
-        })
         
         // Indique l'orientation de l'ennemi pour rendre le bon sprite
         this.currentDirection = null
@@ -77,6 +57,10 @@ export default class Enemy extends Rectangle {
         // Initialise le tableau des segments que doit suive l'ennemi en fonction du path
         this.pathRadius = this.level.game.scene.pathRadius
         this.setPathSegments()
+
+        this.healthBarWidth = 16
+        this.healthBarHeight = 4
+        this.healthBarOffset = 5       
 
     }
     
@@ -308,46 +292,64 @@ export default class Enemy extends Rectangle {
         
         if (!this.isDeleted) {
             
-            // Get new enemy position
-            // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
-            const middleCoords = this.getMiddlePosition()
-            const x = Math.round(middleCoords.x)
-            const y = Math.round(middleCoords.y)
-            const w = this.width
-            const h = this.height
-
-            // Render image   
-            if (this.isTurning || this.hasTurned) this.sprite.setState(this.currentDirection)
-            this.sprite.setNextState(this.currentDirection)
-            this.sprite.setTimerDiff(diffTimestamp)
-            layer.translate(x, y)
-            layer.drawImage(this.image, ...this.sprite.getCurrent())
-            layer.setTransform(1, 0, 0, 1, 0, 0);
+            this.renderSprite(layer, diffTimestamp)
+            this.renderHealth(layer, diffTimestamp)
             
-            if(this.health !== this.constructor.healthMax){
-
-                const healthWidth = w
-                const healthHeight = h / 6
-                const healthX = x - (w / 2)
-                const healthY = y - (h / 2) - 5
-    
-                layer.beginPath()
-                layer.rect(healthX, healthY, healthWidth, healthHeight)
-                layer.fillStyle = "green"
-                layer.fill()
-                
-                const lostHealth = Enemy.healthMax - this.health
-                const lostHealthWidth = (w * lostHealth) / Enemy.healthMax
-                
-                layer.beginPath()
-                layer.rect(healthX + (healthWidth - lostHealthWidth), healthY, lostHealthWidth, healthHeight)
-                layer.fillStyle = "red"
-                layer.fill()
-
-            }
         }
         
         super.render(layer, diffTimestamp)
+    }
+
+
+    renderSprite(layer, diffTimestamp) {
+        
+        // Get new enemy position
+        
+        const middleCoords = this.getMiddlePosition()
+        const x = Math.round(middleCoords.x)
+        const y = Math.round(middleCoords.y)
+       
+
+        // Render image   
+        if (this.isTurning || this.hasTurned) this.sprite.setState(this.currentDirection)
+        this.sprite.setNextState(this.currentDirection)
+        this.sprite.setTimerDiff(diffTimestamp)
+        layer.translate(x, y)
+        this.scaleSprite(layer)
+        layer.drawImage(this.image, ...this.sprite.getCurrent())
+        layer.setTransform(1, 0, 0, 1, 0, 0);
+    }
+
+    renderHealth(layer, diffTimestamp) {
+        
+        if (this.health !== this.constructor.healthMax) {
+            
+            const middleCoords = this.getMiddlePosition()
+            // @info Use Math.round to prevent browser anti-aliasing (better performances but not very smooth moving)
+            const x = Math.round(middleCoords.x)
+            const y = Math.round(middleCoords.y)            
+            const healthX = x - (this.healthBarWidth / 2)
+            const healthY = y - (this.healthBarHeight / 2) - this.healthBarOffset
+
+            layer.beginPath()
+            layer.rect(healthX, healthY, this.healthBarWidth, this.healthBarHeight)
+            layer.fillStyle = "green"
+            layer.fill()
+            
+            const lostHealth = this.constructor.healthMax - this.health
+            const lostHealthWidth = (this.healthBarWidth * lostHealth) / this.constructor.healthMax
+            
+            layer.beginPath()
+            layer.rect(healthX + (this.healthBarWidth - lostHealthWidth), healthY, lostHealthWidth, this.healthBarHeight)
+            layer.fillStyle = "red"
+            layer.fill()
+
+        }
+    }
+
+    scaleSprite(layer) {
+        
+        // No scale by default
     }
 
     /**

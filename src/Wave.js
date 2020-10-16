@@ -1,4 +1,5 @@
-import Enemy from './Enemy'
+import Ceo from './enemies/Ceo'
+import Bezos from './enemies/Bezos'
 import { randomBetween, randomSign } from './utilities'
 
 export default class Wave {
@@ -98,9 +99,9 @@ export default class Wave {
 
         // Déterminer une position (centrale) aléatoire de départ entre 0 et largeur de la cellule - 1/2 de enemy 
         // (pour pas que l'enemy sorte du chemin)
-        const limit = Math.random() * (cellSize - Enemy.width) + Enemy.width / 2
+        const limit = Math.random() * (cellSize - Ceo.width) + Ceo.width / 2
         // Transforme la position central en une position top left
-        const offset = limit - Enemy.width / 2
+        const offset = limit - Ceo.width / 2
         const firstCellBox = firstCell.getBoundingBox()
          
         // Si on est sur la même colonne (on descend depuis tout en haut ou on monte depuis tout en bas)
@@ -117,7 +118,7 @@ export default class Wave {
             x = firstCellBox.yMin === 0 ? firstCellBox.xMin : firstCellBox.xMax
         }
 
-        return new Enemy(this.level, x, y)
+        return new Bezos(this.level, x, y)
     }
 
     isFinished() {
