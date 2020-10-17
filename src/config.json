@@ -7,9 +7,10 @@
                 "to": "bottom"
             },
             "enemies": [
-                {"wave": 1, "enemies": { "Ceo": 100 }},
-                {"wave": 10, "enemies": { "Ceo": 60, "Crs": 40 }},
-                {"wave": 25, "enemies": { "Ceo": 50, "Crs": 40, "Banker": 10 }}
+                {"wave": 1, "enemies": { "Ceo": 1 }},
+                {"wave": 3, "enemies": { "Ceo": 0.6, "Crs": 0.4 }},
+                {"wave": 5, "enemies": { "Ceo": 0.4, "Crs": 0.6}},
+                {"wave": 10, "enemies": { "Ceo": 0.2, "Crs": 0.8}}
             ],
             "boss": "Bezos"
         },        

@@ -1,5 +1,4 @@
-import Ceo from './enemies/Ceo'
-import Bezos from './enemies/Bezos'
+import * as enemiesClasses from './enemies/availableEnemies'
 import { randomBetween, randomSign } from './utilities'
 
 export default class Wave {
@@ -23,24 +22,23 @@ export default class Wave {
      * @param {JSON} config 
      * @param {Object} level 
      */
-    constructor(level, difficulty) {
-        this.difficulty = difficulty
+    constructor(level) {
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = this.difficulty * 15 
-        
+        this.nbEnemies = (level.waveCounter/10) * 15 
     }
 
     /**
      * Gére le spawn des enemy en fonction du temps écoulé
-     * @param {Numbre} diffTimestamp Temps écoulé depuis le dernier raffraichissement
+     * @param {Numeric} diffTimestamp Temps écoulé depuis le dernier raffraichissement
+     * @returns {Array} Tableau d'ennemis
      */
     getSpawningEnemies = (diffTimestamp) => {
-        
+
         this.initialTimer += diffTimestamp
         
         if (this.initialTimer >= this.initialDelay) {
-        
+            
             // If not all enemies have spawn
             if (this.nbEnemies > this.spawnedEnemiesCount) {
             
@@ -85,9 +83,44 @@ export default class Wave {
     }
 
     /**
+     * @returns {Object} Retourne la configuration correspondant à la wave en cours
+     */
+    getWaveConfig() {
+
+        const config = this.level.config.enemies
+            .filter(waveConfig => waveConfig.wave <= this.level.waveCounter)
+            .map(waveConfig => waveConfig.enemies)
+
+        return config[config.length - 1]
+    }
+
+    /**
+     * @returns {Class} Retourne la classe de l'enemy a spawnner en fonction de la config et du numero de la wave
+     */
+    getSelectedEnemyClass() {
+        
+        const waveConfig = this.getWaveConfig()
+
+        const random = Math.random()
+        let total = 0
+        const enemiesKeys = Object.keys(waveConfig) 
+        
+        for (let i = 0; i < enemiesKeys.length; i++) {
+            const enemyKey = enemiesKeys[i];
+            const enemyProbability = waveConfig[enemyKey]
+            total += enemyProbability
+            if (random <= total) {
+                return enemiesClasses.getAvailableEnemyClassByName(enemyKey)
+            }
+        }        
+    }
+
+    /**
      * Créer un nouvelle enemy et le positione de façon aléatoire sur la ligne de départ
      */
     createEnemy() {
+        
+        let selectedEnemyClass = this.getSelectedEnemyClass()
         
         let x, y
         const map = this.level.config.map
@@ -99,9 +132,9 @@ export default class Wave {
 
         // Déterminer une position (centrale) aléatoire de départ entre 0 et largeur de la cellule - 1/2 de enemy 
         // (pour pas que l'enemy sorte du chemin)
-        const limit = Math.random() * (cellSize - Ceo.width) + Ceo.width / 2
+        const limit = Math.random() * (cellSize - selectedEnemyClass.width) + selectedEnemyClass.width / 2
         // Transforme la position central en une position top left
-        const offset = limit - Ceo.width / 2
+        const offset = limit - selectedEnemyClass.width / 2
         const firstCellBox = firstCell.getBoundingBox()
          
         // Si on est sur la même colonne (on descend depuis tout en haut ou on monte depuis tout en bas)
@@ -118,10 +151,10 @@ export default class Wave {
             x = firstCellBox.yMin === 0 ? firstCellBox.xMin : firstCellBox.xMax
         }
 
-        return new Bezos(this.level, x, y)
+        return new selectedEnemyClass(this.level, x, y)
     }
 
     isFinished() {
-        return this.spawnedEnemiesCount === this.nbEnemies
+        return this.spawnedEnemiesCount >= this.nbEnemies
     }
 }

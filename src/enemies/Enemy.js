@@ -64,6 +64,8 @@ export default class Enemy extends Rectangle {
 
     }
     
+    
+
     setPathSegments() {
         
         for(let i = 0; i < this.defaultPathSegments.length ; i++) {

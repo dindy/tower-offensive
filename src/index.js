@@ -60,6 +60,7 @@ const DOMConfig = {
     sprites: {
         missilePlaceHolder: 'missile-place-holder',
         ceo: 'sprite-ceo',
+        crs: 'sprite-crs',
         towerBasic: 'sprite-tower-basic',
         towerSniper: 'sprite-tower-sniper',
         towerSeeker: 'sprite-tower-seeker',

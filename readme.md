@@ -42,8 +42,9 @@ Le rendu de la carte est réalisé grâce à l'API ``canvas``.
 1. ✔️ ``P`` 🌟 Les eclairs secondaires ne peuvent pas s'éloigner trop de l'éclair principale
 1. ✔️ ``Q`` 🌟 Adapter la vitesse d'animation des enemy a leur vitesse de déplacement
 1. ❌ ``R`` 🌟 Créer un effet de perspective sur les rockets
+1. ❌ ``S`` ⚙️ Refactorer availableBuildings en Classe
 
-**Prochain code** : ``S``
+**Prochain code** : ``U``
 
 | Emoji | Type de tache |
 |---|---|
