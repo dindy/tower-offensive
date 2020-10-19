@@ -2,6 +2,8 @@ import Enemy from './Enemy'
 
 export default class Boss extends Enemy {
 
+    isBoss = true
+
     constructor(level, x, y, width, height, socialDestructionMax) {
 
         super(level, x, y, width, height)

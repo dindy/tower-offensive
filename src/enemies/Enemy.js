@@ -7,7 +7,8 @@ import Vector from "../abstract/Vector"
 export default class Enemy extends Rectangle {
 
     pathSegments = []
-
+    isBoss = false
+    
     /**
      * Enemy constructor
      * @param {Level} level

@@ -12,7 +12,8 @@
                 {"wave": 5, "enemies": { "Ceo": 0.4, "Crs": 0.6}},
                 {"wave": 10, "enemies": { "Ceo": 0.2, "Crs": 0.8}}
             ],
-            "boss": "Bezos"
+            "boss": "Bezos",
+            "bossLevel": 2
         },        
         {
             "map": {

@@ -85,6 +85,13 @@ const DOMConfig = {
     },
     socialPoints: {
         id: "socialPoints"
+    },
+    btnCallBoss: {
+        id: "call-boss",
+        class: 'call-boss',
+        modifiers: {
+            hidden: '--hidden'
+        }        
     }
 }
 
@@ -111,4 +118,7 @@ document.getElementById('increase-speed').addEventListener('mouseup', e => {
 
 document.getElementById('decrease-speed').addEventListener('mouseup', e => {
     game.decreaseSpeed()
+})
+document.getElementById(DOMConfig.btnCallBoss.id).addEventListener('mouseup', e => {
+    game.currentLevel.callBoss()
 })

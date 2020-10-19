@@ -19,6 +19,7 @@ export default class Level {
     isNewWave = false
     report = 0
     floatingTextAnimations = []
+    bossCalled = false
     
     /**
      * Constructor
@@ -29,6 +30,11 @@ export default class Level {
         
         this.game = game
         this.config = levelConfig
+
+        // On masque le bouton qui appelle le boss
+        document.getElementById(this.game.DOMConfig.btnCallBoss.id).classList.add(
+            this.game.DOMConfig.btnCallBoss.class + this.game.DOMConfig.btnCallBoss.modifiers.hidden
+        )
     }
 
     addFloatingTextAnimation(text, x, y, color) {
@@ -130,6 +136,12 @@ export default class Level {
             this.waveCounter ++ 
             this.currentWave = new Wave(this, this.waveCounter)
             this.isNewWave = true
+            if(this.waveCounter > this.config.bossLevel) {
+                document.getElementById(this.game.DOMConfig.btnCallBoss.id).classList.remove(
+                    this.game.DOMConfig.btnCallBoss.class + this.game.DOMConfig.btnCallBoss.modifiers.hidden
+                )               
+                this.bossCalled = false 
+            }
         }
     } 
     
@@ -245,7 +257,27 @@ export default class Level {
             this.enemies[i].update(diffTimestamp)
         }        
         
-        this.enemies = this.enemies.filter(enemy => !enemy.isDeleted) 
+        let updatedEnemies = []
+
+        for (let i = 0; i < this.enemies.length; i++) {
+            const enemy = this.enemies[i];
+            if (!enemy.isDeleted) updatedEnemies.push(enemy)
+            else if (enemy.isBoss && enemy.health <= 0) this.win()
+        }
+
+        this.enemies = updatedEnemies
+    }
+
+    callBoss() {
+        this.bossCalled = true
+        document.getElementById(this.game.DOMConfig.btnCallBoss.id).classList.add(
+            this.game.DOMConfig.btnCallBoss.class + this.game.DOMConfig.btnCallBoss.modifiers.hidden
+        )            
+    }
+
+    win() {
+        console.log('Vous avez gagné !');
+        this.game.pause()
     }
 
     /**

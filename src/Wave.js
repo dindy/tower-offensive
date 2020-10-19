@@ -25,7 +25,25 @@ export default class Wave {
     constructor(level) {
         this.level = level
         this.spawnedEnemiesCount = 0
-        this.nbEnemies = (level.waveCounter/10) * 15 
+        this.nbEnemies = (level.waveCounter / 10) * 15 
+        this.config = this.getWaveConfig()
+        this.bossLevel = this.level.config.bossLevel
+
+        if (this.bossLevel === level.waveCounter || level.bossCalled) {           
+            this.nbEnemies = 1
+            this.config = { [this.level.config.boss]: 1}
+        }
+    }
+
+    getSpawningBasicEnemies = diffTimestamp => {
+
+
+        
+        return []
+    }
+
+    getSpawningBoss = diffTimestamp => {
+        
     }
 
     /**
@@ -38,7 +56,6 @@ export default class Wave {
         this.initialTimer += diffTimestamp
         
         if (this.initialTimer >= this.initialDelay) {
-            
             // If not all enemies have spawn
             if (this.nbEnemies > this.spawnedEnemiesCount) {
             
@@ -75,7 +92,7 @@ export default class Wave {
                         return [this.createEnemy()]    
                     }     
                 }
-            }
+            }      
         }
         
         // Else no enemy has spawn
@@ -99,15 +116,13 @@ export default class Wave {
      */
     getSelectedEnemyClass() {
         
-        const waveConfig = this.getWaveConfig()
-
         const random = Math.random()
         let total = 0
-        const enemiesKeys = Object.keys(waveConfig) 
+        const enemiesKeys = Object.keys(this.config) 
         
         for (let i = 0; i < enemiesKeys.length; i++) {
             const enemyKey = enemiesKeys[i];
-            const enemyProbability = waveConfig[enemyKey]
+            const enemyProbability = this.config[enemyKey]
             total += enemyProbability
             if (random <= total) {
                 return enemiesClasses.getAvailableEnemyClassByName(enemyKey)
