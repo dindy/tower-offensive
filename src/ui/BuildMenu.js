@@ -1,4 +1,4 @@
-import { getAllAvailableBuildingsClasses } from '../buildings/availableBuildings'
+import buildingsClasses from '../buildings/index'
 
 export default class BuildMenu_UI {
 
@@ -32,9 +32,7 @@ export default class BuildMenu_UI {
      */
     createBuildingsInventory() {
         
-        const availableClasses = getAllAvailableBuildingsClasses()
-
-        availableClasses.forEach(buildingClass => {
+        buildingsClasses.forEach(buildingClass => {
 
             const name = buildingClass.name
             const DOMImage = document.getElementById(this.DOMConfig.icons['tower' + name])

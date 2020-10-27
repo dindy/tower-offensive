@@ -1,5 +1,5 @@
-import * as enemiesClasses from './enemies/availableEnemies'
-import { randomBetween, randomSign } from './utilities'
+import enemiesClasses from './enemies/index'
+import { randomBetween, randomSign, getClassByName } from './utilities'
 
 export default class Wave {
 
@@ -125,7 +125,7 @@ export default class Wave {
             const enemyProbability = this.config[enemyKey]
             total += enemyProbability
             if (random <= total) {
-                return enemiesClasses.getAvailableEnemyClassByName(enemyKey)
+                return getClassByName(enemyKey, enemiesClasses)
             }
         }        
     }

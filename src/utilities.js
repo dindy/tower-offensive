@@ -352,3 +352,17 @@ export function getScalarProjectionPoint(ao, po, bo) {
     // {x:?? + a.x, y: ?? + a.y}
     return p.clone().projectOnto(ab).add(a).toObject()
 }
+
+export function getClassByName(name, classes) { 
+
+    return classes
+        .filter(Class => Class.name == name)
+        [0]
+}
+
+export function getClassInstanceByName(name, classes, ...args) {
+
+    const Class = getClassByName(name, classes)
+
+    return new Class(...args)
+}

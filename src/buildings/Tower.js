@@ -1,5 +1,6 @@
 import Building from './Building'
 import Sprite from '../Sprite'
+import Techtree from '../Techtree'
 import { 
     angle, 
     angleDifference, 
@@ -40,6 +41,9 @@ export default class Tower extends Building {
 
     }
 
+    getDammageModifier() {
+        return Techtree.getTechnologiesByNames(['globalDammage'])
+    }
     select() {
         super.select()
         this.highlightRange(this.getMiddlePosition())

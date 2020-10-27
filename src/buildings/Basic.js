@@ -1,6 +1,7 @@
 import TowerCannon from "./TowerCannon"
 import Bullet from "../projectiles/Bullet"
 import Sprite from "../Sprite"
+import Techtree from "../Techtree"
 
 export default class Basic extends TowerCannon {
 
@@ -20,9 +21,19 @@ export default class Basic extends TowerCannon {
 
         this.bulletSpeed = 0.3 
     }
+    
+    getDammageModifier() {
+        
+        const defaultDammage = super.getDammageModifier()
+        
+        return Techtree.getTechnologiesByNames(['basicDammage']) * defaultDammage
+    }
 
     shoot(enemy) {
+        
         super.shoot(enemy)
-        this.bullets.push(new Bullet(this, enemy, this.dammage, this.bulletSpeed))        
+        
+        const dammage = this.getDammageModifier() * this.dammage
+        this.bullets.push(new Bullet(this, enemy, dammage, this.bulletSpeed))        
     }
 }

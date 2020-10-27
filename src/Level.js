@@ -1,6 +1,6 @@
 import Wave from './Wave'
-import { getAvailableBuildingInstanceByName } from './buildings/availableBuildings'
-import { getDistance } from './utilities'
+import buildingsClasses from './buildings/index'
+import { getDistance, getClassInstanceByName } from './utilities'
 import FloatingTextAnimation from './FloatingTextAnimation'
 
 export default class Level {
@@ -62,7 +62,7 @@ export default class Level {
      */
     startPlacingBuilding(name) {
         
-        this.placingBuilding = getAvailableBuildingInstanceByName(name, this)
+        this.placingBuilding = getClassInstanceByName(name, buildingsClasses, this)
     }
 
     /**
