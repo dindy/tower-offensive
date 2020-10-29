@@ -4,7 +4,7 @@ import Sprite from '../Sprite'
 export default class Bezos extends Boss {
     
     static width = 32
-    static healthMax = 150
+    static healthMax = 15000
     static socialValue = 1000
     static pocketCapacity = 500
     static socialDestructionMax = 500

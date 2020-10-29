@@ -92,6 +92,10 @@ const DOMConfig = {
         modifiers: {
             hidden: '--hidden'
         }        
+    },
+    techtree: {
+        id: "techtree",
+        class: "techtree",
     }
 }
 

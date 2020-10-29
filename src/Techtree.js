@@ -15,5 +15,9 @@ export default class Techtree {
         .reduce((total, modifier) => modifier * total, 1)
 
     static getCurrentTechtree = () => techtree
-        .map(tech => ({ ...tech, level: Techtree.levels[tech.name] || 0 }))
+        .map(tech => {     
+            const level = Techtree.levels[tech.name] || 0
+            const isMaxLevel = level === tech.values.length - 1
+            return {...tech, level, isMaxLevel }
+        })
 }

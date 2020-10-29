@@ -43,6 +43,12 @@ export default class Level {
 
     addSocialPoints(number){
         this.socialPoints += number
+        this.game.techtree_UI.refresh()
+    }
+
+    removeSocialPoints(number){
+        this.socialPoints -= number
+        this.game.techtree_UI.refresh()
     }
 
     selectBuilding(building) {

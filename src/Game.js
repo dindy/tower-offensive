@@ -3,6 +3,7 @@ import BuildMenu_UI from './ui/BuildMenu'
 import ContextualMenu_UI from './ui/ContextualMenu'
 import LevelData_UI from './ui/LevelData'
 import Scene from './Scene'
+import Techtree_UI from "./ui/Techtree"
 
 export default class Game {
     
@@ -30,7 +31,8 @@ export default class Game {
 
         this.loadLevels()    
         this.scene = new Scene(this) 
-
+        
+        this.techtree_UI = new Techtree_UI(this)
         this.buildMenu_UI = new BuildMenu_UI(this)        
         this.levelData_UI = new LevelData_UI(this)
         this.contextualMenu_UI = new ContextualMenu_UI(this)
