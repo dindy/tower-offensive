@@ -42,7 +42,7 @@ export default class Tower extends Building {
     }
 
     getDammageModifier() {
-        return Techtree.getTechnologiesByNames(['globalDammage'])
+        return Techtree.getTechModifiersByNames(['globalDammage'])
     }
     select() {
         super.select()

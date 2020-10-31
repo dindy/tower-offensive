@@ -96,6 +96,20 @@ const DOMConfig = {
     techtree: {
         id: "techtree",
         class: "techtree",
+        elements: {
+            item: {
+                class: "techtree__item"
+            },
+            items: {
+                class: "techtree__items"
+            },
+            btnUpdate: {
+                class: "techtree__btn"
+            },
+            label: {
+                class: "techtree__label"
+            }
+        }
     }
 }
 

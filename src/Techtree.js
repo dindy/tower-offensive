@@ -8,8 +8,13 @@ export default class Techtree {
         if (typeof Techtree.levels[techName] === 'undefined') Techtree.levels[techName] = 1
         else Techtree.levels[techName]++
     }
-                        
-    static getTechnologiesByNames = names => techtree
+    
+    static getTechnologyByName = name => this
+        .getCurrentTechtree()
+        .filter( tech => tech.name === name )
+        [0]
+    
+    static getTechModifiersByNames = names => techtree
         .filter(tech => names.includes(tech.name))
         .map(tech => (tech.values[Techtree.levels[tech.name]] || 1 )) 
         .reduce((total, modifier) => modifier * total, 1)
@@ -18,6 +23,7 @@ export default class Techtree {
         .map(tech => {     
             const level = Techtree.levels[tech.name] || 0
             const isMaxLevel = level === tech.values.length - 1
-            return {...tech, level, isMaxLevel }
+            const cost = tech.costs[level]
+            return { ...tech, level, cost, isMaxLevel }
         })
 }

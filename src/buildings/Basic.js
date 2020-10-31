@@ -26,7 +26,7 @@ export default class Basic extends TowerCannon {
         
         const defaultDammage = super.getDammageModifier()
         
-        return Techtree.getTechnologiesByNames(['basicDammage']) * defaultDammage
+        return Techtree.getTechModifiersByNames(['basicDammage']) * defaultDammage
     }
 
     shoot(enemy) {
